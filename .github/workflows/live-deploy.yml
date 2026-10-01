@@ -9,6 +9,12 @@ name: Live Deploy
 on:
   push:
     branches: [ main ]
+  # Manual trigger. Three consecutive deploys failed on runner side problems
+  # that could only be observed inside the Actions runtime, and every fix cost a
+  # full open, review and merge cycle before it could be tested. This turns that
+  # loop from minutes into about thirty seconds, which is the difference between
+  # diagnosing and guessing.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -286,25 +292,43 @@ jobs:
       - name: Confirm ssh connectivity
         run: |
           set -euo pipefail
-          ssh -i deploy_key \
+
+          # Print the target before using it. The server IP and the deploy user are
+          # not credentials: the IP is public and the username is the sole purpose of
+          # the account. Three deploys failed on this step and the one fact that would
+          # have identified the cause was not in the log, because the username and IP
+          # were both masked as secrets.
+          #
+          # A trailing newline in a secret is invisible in a masked log and fatal here.
+          # `ssh ghdeploy\n@host` fails with "remote username contains invalid
+          # characters", which reads nothing like a newline problem. Both short secrets
+          # are now set with `gh secret set NAME --body value` rather than piped through
+          # echo, which appends one.
+          echo "deploy target: ${LIVE_SERVER_USER}@${LIVE_SERVER_IP}"
+
+          if ssh -i deploy_key \
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=accept-new \
+            -o BatchMode=yes \
             -o ConnectTimeout=15 \
             "${LIVE_SERVER_USER}@${LIVE_SERVER_IP}" \
-            'printf "connected: %s\n" "$(whoami)"; sudo -n true && echo "passwordless sudo: ok"'
+            'printf "connected: %s\n" "$(whoami)"; sudo -n true && echo "passwordless sudo: ok"'; then
+            echo "ssh and sudo both work"
+          else
+            rc=$?
+            echo ""
+            echo "ssh failed with exit ${rc}. Full verbose trace follows." >&2
+            echo "This is here because a bare 'Permission denied (publickey)' says" >&2
+            echo "nothing about which side rejected the key." >&2
+            ssh -vvv -i deploy_key \
+              -o IdentitiesOnly=yes \
+              -o StrictHostKeyChecking=accept-new \
+              -o BatchMode=yes \
+              -o ConnectTimeout=15 \
+              "${LIVE_SERVER_USER}@${LIVE_SERVER_IP}" true 2>&1 | tail -40 >&2
+            exit "${rc}"
+          fi
 
-      # GUARD. This step exists because the rsync below uses --delete, and
-      # rsync --delete against the WordPress install root would delete
-      # wp-includes, wp-admin and every other theme, taking the site down with
-      # no way back from the workflow. The destination is asserted to be
-      # exactly the theme directory before any delete capable command runs.
-      #
-      # The theme must be a real COPY and never a symlink. A symlink from
-      # wp-content/themes/maulik-portfolio back to the repository renders a zero
-      # byte page: WordPress recognises the theme, wp_is_block_theme() returns
-      # true and file_exists() passes on templates/index.html, so nothing errors
-      # and nothing is logged. The page simply comes back empty. rsync copies
-      # real files, which is why this workflow never links instead of copying.
       - name: Guard the destination path
         run: |
           set -euo pipefail
