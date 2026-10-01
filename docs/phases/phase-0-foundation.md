@@ -100,7 +100,7 @@ and zero in any file's contents.
 
 Found during the agent's own verification: `phpstan.neon` had `includes` nested
 inside `parameters`; `inc/helpers.php` had `namespace` after the ABSPATH guard,
-a hard syntax error; `maulik-dev` was invalid as a PHP symbol prefix; `@forward
+a hard syntax error; `maulik-dev` (the old slug) was invalid as a PHP symbol prefix; `@forward
 ... as tokens:` is not valid Sass; and the CI grep patterns matched the
 workflow files that described them.
 

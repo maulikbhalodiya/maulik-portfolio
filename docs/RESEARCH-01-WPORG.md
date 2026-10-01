@@ -36,7 +36,7 @@ There are exactly two honest paths. There is no third one.
 ### Path A: Split architecture (theme stays submittable)
 
 ```
-maulik-dev-portfolio/          <- THEME. Presentation only.
+maulik-portfolio/          <- THEME. Presentation only.
   theme.json                   design tokens, palette, typography, layout
   templates/*.html             how things look
   patterns/*.php               reusable layout patterns

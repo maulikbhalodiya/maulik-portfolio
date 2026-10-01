@@ -179,7 +179,7 @@ Full page caching **cannot work for logged-in users**: auth cookies plus per-use
 3. Stable asset versioning so cached HTML points at immutable URLs:
    ```php
    $css = get_theme_file_path( 'assets/css/main.css' );
-   wp_enqueue_style( 'maulik-dev-main', get_theme_file_uri( 'assets/css/main.css' ),
+   wp_enqueue_style( 'maulik-portfolio-main', get_theme_file_uri( 'assets/css/main.css' ),
        array(), filemtime( $css ) );
    ```
 4. No cookies set on front-end GETs

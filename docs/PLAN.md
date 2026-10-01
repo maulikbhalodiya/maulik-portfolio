@@ -1,5 +1,5 @@
 # PLAN
-### `maulik-dev` WordPress block theme · what we are building and why
+### `maulik-portfolio` WordPress block theme · what we are building and why
 ### The approved design at `maulikbhalodiya/personal-porfolio-website` is final. This is how it becomes WordPress.
 
 ---
@@ -22,7 +22,7 @@ the site itself, so the portfolio is its own case study.
 |---|---|
 | Platform | WordPress block theme, no framework |
 | Path | Single theme, no wp.org submission, built to review standards anyway |
-| Slug | `maulik-dev` |
+| Slug | `maulik-portfolio` |
 | Content model | Nested blocks in post content, **no custom post type** |
 | SEO | **RankKernel, his own plugin. Not Rank Math, not Yoast.** |
 | Rank Math case study | **Removed entirely.** The site does not use it and never did as his product. |
@@ -169,7 +169,7 @@ both more honest and more impressive than either version.
 ### 6.1 Files
 
 ```
-maulik-dev/
+maulik-portfolio/
 ├── style.css                    required block theme marker
 ├── theme.json                   v3, 13-value dark palette, 3 font families
 ├── functions.php                thin loader
@@ -183,7 +183,7 @@ maulik-dev/
 ├── assets/scss/                 source, @use only, never enqueued
 ├── assets/js/                   hero canvas, modal, diagrams, reveal
 ├── assets/fonts/                self-hosted woff2 subsets
-├── languages/                   maulik-dev.pot
+├── languages/                   maulik-portfolio.pot
 └── scripts/generate-scss-tokens.mjs
 ```
 

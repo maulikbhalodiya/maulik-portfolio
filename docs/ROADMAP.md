@@ -1,5 +1,5 @@
 # ROADMAP
-### `maulik-dev` WordPress block theme · phased delivery
+### `maulik-portfolio` WordPress block theme · phased delivery
 ### Read `PLAN.md` first for the reasoning. This file is the build order and the checklist.
 
 ---

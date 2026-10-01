@@ -49,18 +49,18 @@ But the main stylesheet still needs an explicit enqueue. Twenty Twenty-Five's
 pattern, and the `SCRIPT_DEBUG` `.min` suffix trick are worth copying:
 
 ```php
-add_action( 'wp_enqueue_scripts', 'maulik_dev_enqueue_styles' );
-function maulik_dev_enqueue_styles() {
+add_action( 'wp_enqueue_scripts', 'maulik_portfolio_enqueue_styles' );
+function maulik_portfolio_enqueue_styles() {
     $suffix = SCRIPT_DEBUG ? '' : '.min';
     $src    = 'style' . $suffix . '.css';
 
     wp_enqueue_style(
-        'maulik-dev-style',
+        'maulik-portfolio-style',
         get_parent_theme_file_uri( $src ),
         array(),
         wp_get_theme()->get( 'Version' )
     );
-    wp_style_add_data( 'maulik-dev-style', 'path', get_parent_theme_file_path( $src ) );
+    wp_style_add_data( 'maulik-portfolio-style', 'path', get_parent_theme_file_path( $src ) );
 }
 ```
 
@@ -217,18 +217,18 @@ add_filter( 'should_load_remote_block_patterns', '__return_false' );
 Since themes get no scanner, `functions.php` does it. Preferred, WP 6.8+:
 
 ```php
-add_action( 'init', 'maulik_dev_register_blocks' );
-function maulik_dev_register_blocks() {
+add_action( 'init', 'maulik_portfolio_register_blocks' );
+function maulik_portfolio_register_blocks() {
     if ( function_exists( 'wp_register_block_types_from_metadata_collection' )
-        && file_exists( MAULIK_DEV_DIR . '/build/blocks-manifest.php' ) ) {
+        && file_exists( MAULIK_PORTFOLIO_DIR . '/build/blocks-manifest.php' ) ) {
         wp_register_block_types_from_metadata_collection(
-            MAULIK_DEV_DIR . '/build',
-            MAULIK_DEV_DIR . '/build/blocks-manifest.php'
+            MAULIK_PORTFOLIO_DIR . '/build',
+            MAULIK_PORTFOLIO_DIR . '/build/blocks-manifest.php'
         );
         return;
     }
 
-    foreach ( glob( MAULIK_DEV_DIR . '/build/*', GLOB_ONLYDIR ) as $block_dir ) {
+    foreach ( glob( MAULIK_PORTFOLIO_DIR . '/build/*', GLOB_ONLYDIR ) as $block_dir ) {
         if ( file_exists( $block_dir . '/block.json' ) ) {
             register_block_type( $block_dir );
         }
@@ -248,7 +248,7 @@ hooks, no style variations, no `theme.json` styles, no REST block-types entry.
 **PHP-only block, zero JS, zero build step** (WP 7.0+, `supports.autoRegister`):
 
 ```php
-register_block_type( 'maulik-dev/server-note', array(
+register_block_type( 'maulik-portfolio/server-note', array(
     'render_callback' => function ( $attributes ) {
         return sprintf(
             '<div %1$s>%2$s</div>',
@@ -272,7 +272,7 @@ they need no build step.
 ## 10. `render.php` rules
 
 ```php
-$wrapper_attributes = get_block_wrapper_attributes( array( 'class' => 'maulik-dev-card' ) );
+$wrapper_attributes = get_block_wrapper_attributes( array( 'class' => 'maulik-portfolio-card' ) );
 ```
 
 - Returns an attribute **string**, not an element.
@@ -294,10 +294,10 @@ block actually renders.
 ## 11. Per-block CSS
 
 ```php
-add_action( 'init', 'maulik_dev_enqueue_block_styles' );
-function maulik_dev_enqueue_block_styles() {
+add_action( 'init', 'maulik_portfolio_enqueue_block_styles' );
+function maulik_portfolio_enqueue_block_styles() {
     wp_enqueue_block_style( 'core/image', array(
-        'handle' => 'maulik-dev-block-image',
+        'handle' => 'maulik-portfolio-block-image',
         'src'    => get_theme_file_uri( 'assets/blocks/core-image.css' ),
         'path'   => get_theme_file_path( 'assets/blocks/core-image.css' ),
     ) );
