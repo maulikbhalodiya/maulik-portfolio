@@ -102,15 +102,20 @@ npm install
 
 ```bash
 npm run tokens      # regenerate SCSS tokens from theme.json
-npm run build:css   # compile assets/styles/main.scss to style.css
-npm run build:css:min   # compile to style.min.css
+npm run build:css   # compile assets/styles/main.scss to assets/css/theme.css
+npm run build:css:min   # compile to assets/css/theme.min.css
 npm start           # tokens then build
 ```
 
-Compiled `style.css` is committed. `/build/` and `/assets/css/` are deliberately **not**
-in `.gitignore`, so that any fresh checkout can produce the release ZIP and every change
-to compiled output shows up as a reviewable diff. The trade is diff noise in exchange for
-a build that is reproducible from the repository alone.
+Compiled `assets/css/theme.css` is committed. `/build/` and `/assets/css/` are deliberately
+**not** in `.gitignore`, so that any fresh checkout can produce the release ZIP and every
+change to compiled output shows up as a reviewable diff. The trade is diff noise in exchange
+for a build that is reproducible from the repository alone.
+
+**`style.css` is the theme header and is never a build target.** WordPress reads `Theme Name`,
+`Version`, `Text Domain` and `Requires PHP` from it, and it is one of the two files that mark
+this directory as a block theme alongside `templates/index.html`. The build writes to
+`assets/css/theme.css` instead, precisely so the header survives. Two CI gates enforce this.
 
 ---
 
@@ -327,10 +332,32 @@ These are enforced in CI, not just documented.
 - **No `build/` output.** That directory is marked `linguist-generated` in
   `.gitattributes` and is populated by whatever produces the release ZIP. It does not
   exist yet.
-- **The palette is provisional.** See the architecture notes above.
+- **The AI reviewer workflows cannot run yet.** `ai-review.yml` and `ai-audit.yml` need a
+  model API key set as a repository secret. `ci.yml` needs nothing and works today.
 - **No navigation menu.** The Navigation block is absent from `parts/header.html`
   because an unassigned navigation block renders an empty container that costs layout
   shift. It goes in once a menu exists.
+
+---
+
+## Contributing
+
+**Start with [`docs/`](docs/README.md).** It holds the reasoning behind the architecture,
+the full phase by phase to-do list, and the research that the decisions rest on.
+
+| Document | What it covers |
+|---|---|
+| [`docs/PLAN.md`](docs/PLAN.md) | What this theme is and why it is built this way |
+| [`docs/ROADMAP.md`](docs/ROADMAP.md) | Build order across nine phases |
+| [`docs/README.md`](docs/README.md) | Phase index, critical path, working rules, open decisions |
+| [`docs/phases/`](docs/phases/) | The working checklist for each phase |
+| [`docs/DESIGN-SPEC.md`](docs/DESIGN-SPEC.md) | Colour, type, texture, motion, layout tokens |
+| [`docs/CONTENT-INVENTORY.md`](docs/CONTENT-INVENTORY.md) | Every case study, verbatim |
+| [`docs/PORT-ANALYSIS.md`](docs/PORT-ANALYSIS.md) | Component conversions, accessibility, compliance |
+| [`docs/RESEARCH-0*.md`](docs/) | WordPress architecture, performance, tooling research |
+
+Pick a phase, read its checklist, tick items as you land them, and keep the status line at
+the top of the file current. Every phase ends with a commit and green gates.
 
 ---
 

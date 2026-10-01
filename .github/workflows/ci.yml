@@ -165,11 +165,48 @@ jobs:
         run: |
           set -euo pipefail
           npm run build:css
-          if [ ! -f style.css ]; then
-            echo "::error::style.css was not produced by the build."
+          if [ ! -f assets/css/theme.css ]; then
+            echo "::error::assets/css/theme.css was not produced by the build."
             exit 1
           fi
-          echo "OK: style.css exists after build."
+          echo "OK: assets/css/theme.css exists after build."
+
+      # style.css is the hand authored theme header. WordPress reads Theme Name,
+      # Version, Text Domain and Requires PHP from it, and it is one of the two
+      # files that mark this directory as a block theme. The Sass build once
+      # targeted this exact path, so a single npm run build:css silently
+      # overwrote the header and left an uninstallable theme. This gate makes
+      # that class of mistake fail loudly instead.
+      - name: Assert style.css still carries the WordPress theme header
+        run: |
+          set -euo pipefail
+          for header in 'Theme Name:' 'Text Domain:' 'Version:' 'Requires at least:' 'Requires PHP:' 'License:'; do
+            if ! head -40 style.css | grep -qF "${header}"; then
+              echo "::error::style.css is missing the '${header}' header."
+              echo "style.css is the theme header and must never be a build target."
+              exit 1
+            fi
+          done
+          if ! head -40 style.css | grep -qF 'Text Domain: maulik-portfolio'; then
+            echo "::error::style.css Text Domain does not match the theme slug."
+            exit 1
+          fi
+          echo "OK: style.css carries a valid WordPress theme header."
+
+      # A build step that writes into style.css would pass every other gate while
+      # destroying the theme header, so the build target itself is checked.
+      - name: Assert the build does not write to style.css
+        run: |
+          set -euo pipefail
+          script="$(node -p "require('./package.json').scripts['build:css']")"
+          case "${script}" in
+            *:style.css*|*"style.css"*)
+              echo "::error::build:css targets style.css."
+              echo "The build must write to assets/css/theme.css. style.css is the theme header."
+              exit 1
+              ;;
+          esac
+          echo "OK: build:css does not target style.css."
 
   content-rules:
     name: Content rules

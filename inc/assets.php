@@ -20,26 +20,33 @@ if ( ! function_exists( 'maulik_portfolio_enqueue_styles' ) ) {
 	 * theme. Core uses the path to build per-block style dependencies, so
 	 * without it the on demand loading heuristics cannot see this handle.
 	 *
+	 * The compiled stylesheet lives at assets/css/theme.css and is NOT style.css.
+	 * style.css is the hand authored theme header that WordPress reads to learn
+	 * the theme name, version and text domain, and it is one of the two files
+	 * that mark this directory as a block theme. The Sass build deliberately
+	 * targets a different path so the header survives every build.
+	 *
 	 * @since 0.1.0
 	 *
 	 * @return void
 	 */
 	function maulik_portfolio_enqueue_styles() {
 		$suffix = SCRIPT_DEBUG ? '.min' : '';
+		$rel    = 'assets/css/theme' . $suffix . '.css';
 
 		/*
 		 * The parent theme file URI is used rather than
-		 * get_template_directory_uri() so a child theme can override style.css
-		 * and have that override take effect.
+		 * get_template_directory_uri() so a child theme can override the
+		 * stylesheet and have that override take effect.
 		 */
 		wp_enqueue_style(
 			'maulik-portfolio-style',
-			get_parent_theme_file_uri( 'style' . $suffix . '.css' ),
+			get_parent_theme_file_uri( $rel ),
 			array(),
-			maulik_portfolio_asset_version( 'style' . $suffix . '.css' )
+			maulik_portfolio_asset_version( $rel )
 		);
 
-		wp_style_add_data( 'maulik-portfolio-style', 'path', get_parent_theme_file_path( 'style' . $suffix . '.css' ) );
+		wp_style_add_data( 'maulik-portfolio-style', 'path', get_parent_theme_file_path( $rel ) );
 	}
 }
 

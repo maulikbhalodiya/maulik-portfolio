@@ -9,8 +9,8 @@
 	},
 	"scripts": {
 		"tokens": "node scripts/generate-scss-tokens.mjs",
-		"build:css": "sass --load-path=assets/styles assets/styles/main.scss:style.css --style=expanded --no-source-map",
-		"build:css:min": "sass --load-path=assets/styles assets/styles/main.scss:style.min.css --style=compressed --no-source-map",
+		"build:css": "sass --load-path=assets/styles assets/styles/main.scss:assets/css/theme.css --style=expanded --no-source-map",
+		"build:css:min": "sass --load-path=assets/styles assets/styles/main.scss:assets/css/theme.min.css --style=compressed --no-source-map",
 		"start": "npm run tokens && npm run build:css",
 		"lint:css": "stylelint \"assets/**/*.scss\"",
 		"lint:js": "eslint \"scripts/**/*.mjs\"",
