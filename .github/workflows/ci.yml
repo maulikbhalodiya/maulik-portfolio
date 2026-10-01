@@ -237,6 +237,12 @@ jobs:
       # literally. A literal pattern inside this workflow file would match itself
       # and fail the build forever, which is a confusing way to discover the check
       # works.
+      #
+      # docs/ is excluded because it legitimately cites this rule and records the
+      # historical finding, including the shape of the violation. Documentation is
+      # never served to a browser, so a mailto string there cannot leak an
+      # address. The gate covers everything that actually ships: PHP, templates,
+      # parts, patterns, styles, JS and SCSS.
       - name: Assert no mailto links
         run: |
           set -euo pipefail
@@ -244,12 +250,13 @@ jobs:
           if git grep -nI -F "${pattern}" -- . \
             ':(exclude)node_modules' \
             ':(exclude)vendor' \
-            ':(exclude)package-lock.json'; then
-            echo "::error::A mailto link was found in this repository."
+            ':(exclude)package-lock.json' \
+            ':(exclude)docs'; then
+            echo "::error::A mailto link was found in shipped theme content."
             echo "Contact is a form with an intent dropdown, not an email link."
             exit 1
           fi
-          echo "OK: no mailto links found."
+          echo "OK: no mailto links in shipped theme content."
 
       # The .pot header carries the standard gettext translator placeholder, which
       # is what upstream wp i18n make-pot emits, so the POT file is excluded here

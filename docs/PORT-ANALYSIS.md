@@ -362,7 +362,7 @@ design's voice. Keep it.
 
 | URL | Type | Count |
 |---|---|---|
-| `mailto:maulikbhalodiya9999@gmail.com` | mailto | 9, all to be removed |
+| `mailto:` plus the raw address | mailto | 9, all to be removed |
 | `https://github.com/maulikbhalodiya` | external | 6 |
 | `https://www.linkedin.com/in/maulikbhalodiya/` | external | 7 |
 | Google Fonts CSS2, 3 families | third-party asset | 1, render-blocking |
