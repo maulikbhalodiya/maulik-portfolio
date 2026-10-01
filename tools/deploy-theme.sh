@@ -33,10 +33,84 @@ SITE_URL="${SITE_URL:-https://maulik-dev.duckdns.org}"
 log() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 die() { printf '\033[1;31mFAIL\033[0m %s\n' "$*" >&2; exit 1; }
 
+# Pre-deploy gate for failure C: a theme callback pointing at a function that no
+# longer exists. WordPress does not resolve add_action callbacks at registration
+# time, it resolves them when the hook fires, so a dangling reference does not
+# fail on deploy and does not fail on the pages that never reach that hook. It
+# fires the first time the hook runs and is fatal there. That is exactly how a
+# deleted maulik_portfolio_noindex took down wp_head and left a 200 with no body.
+#
+# Only string literals starting maulik_portfolio_ are checked: those are the
+# theme's own callbacks, and those are the ones this gate can resolve. Core
+# callbacks such as __return_true are deliberately out of scope.
+#
+# Reads the working tree, so it runs before anything is copied to the live theme.
+gate_dangling_callbacks() {
+	local report
+	command -v python3 >/dev/null 2>&1 || die "python3 is required for the dangling callback gate, refusing to deploy"
+
+	report=$(python3 - "${REPO_DIR}" <<'PY'
+import pathlib, re, sys
+
+root = pathlib.Path(sys.argv[1])
+targets = [root / "functions.php"] + sorted((root / "inc").glob("*.php"))
+
+# Only the two argument form with a maulik_portfolio_ string literal is matched.
+# Anything else (arrays, variables, core callbacks) cannot be resolved statically
+# and is left alone rather than guessed at.
+call_re = re.compile(
+    r"add_(?:action|filter)\s*\(\s*['\"](?P<hook>[^'\"]+)['\"]\s*,\s*"
+    r"['\"](?P<cb>maulik_portfolio_[A-Za-z0-9_]+)['\"]"
+)
+declared = set()
+dangling = []
+
+for path in targets:
+    if not path.is_file():
+        continue
+    src = path.read_text(encoding="utf-8", errors="replace")
+    # Collect declarations from every file first, since a callback may be hooked
+    # in one file and defined in another.
+    declared |= set(re.findall(r"function\s+(maulik_portfolio_[A-Za-z0-9_]+)\s*\(", src))
+
+for path in targets:
+    if not path.is_file():
+        continue
+    src = path.read_text(encoding="utf-8", errors="replace")
+    for m in call_re.finditer(src):
+        cb = m.group("cb")
+        if cb not in declared:
+            line = src[: m.start()].count("\n") + 1
+            rel = path.relative_to(root)
+            dangling.append(f"{rel}:{line}: hook '{m.group('hook')}' -> '{cb}'")
+
+print("\n".join(dangling))
+sys.exit(1 if dangling else 0)
+PY
+	) && return 0
+
+	# Print each offender on its own line so the cause is unambiguous.
+	while IFS= read -r line; do
+		[ -n "${line}" ] || continue
+		die "dangling theme callback, refusing to deploy: ${line}. WordPress resolves this when the hook fires, so it fatals at runtime, not now."
+	done <<< "${report}"
+	return 0
+}
+
 verify() {
 	local bytes handle palette tt5 tpl pat
 	bytes=$(curl -sS --max-time 30 -o /tmp/deploy-verify.html -w '%{size_download}' "${SITE_URL}/")
 	handle=$(grep -c 'maulik-portfolio-style' /tmp/deploy-verify.html || true)
+
+	# A fatal partway through render still returns HTTP 200, and it still returns
+	# a large body, because the <head> is already complete by the time it dies:
+	# the recorded failure was 200 with about 65KB of content, a full <head>, and
+	# no <body> whatsoever. The byte check below passes that without noticing.
+	# The only thing that distinguishes a real render is the body itself.
+	grep -q '<body' /tmp/deploy-verify.html \
+		|| die "front page returned 200 with ${bytes} bytes but no <body. A PHP fatal during render produces a complete head and no body."
+	grep -q '<main' /tmp/deploy-verify.html \
+		|| die "front page has no <main landmark, so the template did not render the content block."
 	palette=$(grep -ci '0a0a0b' /tmp/deploy-verify.html || true)
 	tt5=$(grep -c 'twentytwentyfive\|canary' /tmp/deploy-verify.html || true)
 
@@ -66,6 +140,40 @@ verify() {
 	# than advisory. The templates render fine without patterns, which is exactly
 	# why it went unnoticed.
 	[ "${pat}" -ge 1 ]      || die "Core recognises ${pat} patterns. If this is 0 the pattern cache is stale."
+
+	# Static assets are checked separately because a broken docroot .htaccess 404s
+	# every one of them while the HTML still renders perfectly. A .htaccess that
+	# was missing the RewriteCond %{REQUEST_FILENAME} !-f and !-d lines sent the
+	# front end into the WordPress rewrite for files that plainly existed, which
+	# 404'd the four self hosted woff2 fonts, assets/css/theme.css, and even a core
+	# script module. Nothing about the page load looks wrong, so this only fails
+	# if the assets themselves are fetched. The core file is in the list on purpose:
+	# it 404'd in the same incident and is the one that cannot be blamed on the
+	# theme.
+	for asset in \
+		"/wp-content/themes/${THEME_SLUG}/assets/css/theme.css" \
+		"/wp-content/themes/${THEME_SLUG}/assets/fonts/syne-latin-700-800.woff2" \
+		"/wp-content/themes/${THEME_SLUG}/assets/fonts/plus-jakarta-sans-latin-400-600.woff2" \
+		"/wp-content/themes/${THEME_SLUG}/assets/fonts/ibm-plex-mono-latin-400.woff2" \
+		"/wp-content/themes/${THEME_SLUG}/assets/fonts/ibm-plex-mono-latin-600.woff2" \
+		"/wp-includes/js/dist/script-modules/interactivity/index.min.js"
+	do
+		result=$(curl -sS --max-time 30 -o /dev/null -w '%{http_code} %{size_download}' "${SITE_URL}${asset}" 2>/dev/null) || result="000 0"
+		code=${result%% *}
+		size=${result##* }
+		[ "${code}" = "200" ] || die "${asset} returned HTTP ${code}. A broken .htaccess 404s every static asset while the HTML still renders."
+		[ "${size}" -gt 1000 ] || die "${asset} returned ${size} bytes, too small to be the real file."
+		printf '    asset ok          : %s (%s bytes)\n' "${asset}" "${size}"
+	done
+
+	# wp-login.php was caught in a self redirect loop once, which locked everyone
+	# out of the admin while every public page looked perfect. A public route
+	# check cannot see that, so the login endpoint is fetched directly. Not
+	# following redirects: a loop never settles, and the exit code alone would
+	# not distinguish a loop from a missing file.
+	code=$(curl -sS --max-time 30 -o /dev/null -w '%{http_code}' "${SITE_URL}/wp-login.php" 2>/dev/null) || code=000
+	[ "${code}" = "200" ] || die "/wp-login.php returned HTTP ${code}, expected 200. The admin login is unreachable."
+
 	log "verified: the live site is serving ${THEME_SLUG}"
 }
 
@@ -91,6 +199,8 @@ fi
 if git grep -qI -P '[\x{2014}\x{2013}]' -- . ':(exclude)node_modules' ':(exclude)vendor' ':(exclude)package-lock.json'; then
 	die "an em dash or en dash is present, refusing to deploy"
 fi
+
+gate_dangling_callbacks
 
 log "copying to ${THEME_DEST}"
 sudo rm -rf "${THEME_DEST}"

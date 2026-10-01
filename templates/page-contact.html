@@ -1,26 +1,3 @@
-<!--
-	CONDITION: a page using the "contact" custom template. Registered in
-	theme.json customTemplates under the name "contact". Served at /contact/.
-
-	THERE IS NO EMAIL ADDRESS ON THIS SITE. No mail link, no plaintext
-	address, no obfuscated address, in this template, in any pattern, or
-	anywhere else in the theme. The prototype carried seven plaintext
-	occurrences and nine mail link targets and all of them were removed on
-	purpose.
-	Publishing an address scrapes it off the site the day it ships. LinkedIn
-	and GitHub are the entire contact surface.
-
-	THE FORM IS A LATER PHASE. The section heading below is already in place
-	and correctly labelled, and it is deliberately empty. An empty heading in
-	the site editor is a clear instruction to the editor. A disabled form
-	wired to nowhere is a broken promise to a visitor. Leave it empty.
-
-	DO NOT ADD HIRING, SERVICE, AVAILABILITY OR RATE LANGUAGE. The site seeks
-	employment and does not advertise.
-
-	A template is block markup. It is parsed, not executed, so it cannot call
-	esc_html__() and its literal text is NOT translatable.
--->
 <!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
 <div class="wp-site-blocks">
 	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
@@ -86,13 +63,6 @@
 		</section>
 		<!-- /wp:group -->
 
-		<!--
-			THE FORM SECTION. Heading in place, nothing inside it.
-
-			A form arrives in a later phase. When it does it must post to the
-			site's own endpoint, must not be a mail link, and must state what it
-			does with the data before the visitor submits anything.
-		-->
 		<!-- wp:group {"tagName":"section","className":"section surface-cream-editorial","anchor":"contact-form","ariaLabelledby":"heading-contact-form","layout":{"type":"constrained"}} -->
 		<section class="wp-block-group section surface-cream-editorial" id="contact-form" aria-labelledby="heading-contact-form">
 			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
@@ -141,11 +111,6 @@
 		</section>
 		<!-- /wp:group -->
 
-		<!--
-			ANYTHING THE EDITOR WRITES ON THE PAGE RENDERS HERE, below the
-			structured sections, so page content can never displace the designed
-			structure.
-		-->
 		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","layout":{"type":"constrained"}} -->
 		<section class="wp-block-group section surface-dark-grid">
 			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->

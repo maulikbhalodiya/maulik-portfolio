@@ -1,16 +1,3 @@
-<!--
-	CONDITION: any archive that has no more specific template: category, tag,
-	taxonomy, author and date archives, and post type archives that have not been
-	given their own file.
-
-	The theme's real project archive is /projects/, which is a page and is handled
-	by page-projects.html. This file is the fallback listing, so it uses a query
-	loop rather than a hardcoded grid.
-
-	A template is block markup. It is parsed, not executed, so it cannot call
-	esc_html__(). The query-no-results block is deliberately left empty: literal
-	placeholder text here would ship untranslatable.
--->
 <!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
 <div class="wp-site-blocks">
 	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->

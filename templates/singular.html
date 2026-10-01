@@ -1,17 +1,3 @@
-<!--
-	CONDITION: the single-item fallback for both is_singular() cases, posts and
-	pages alike. WordPress checks singular.html before single.html and page.html,
-	so anything that does not resolve to a more specific file lands here.
-
-	Kept deliberately generic. The specific shapes live in single.html, page.html
-	and the page-{slug}.html family.
-
-	A template is block markup. It is parsed, not executed, so it cannot call
-	esc_html__() and literal text here is NOT translatable. The blocks below are
-	therefore content-derived (post-title, post-content) rather than a hardcoded
-	heading, because an untranslatable placeholder string shipped in a template is
-	permanently wrong for every non-English reader.
--->
 <!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
 <div class="wp-site-blocks">
 	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
