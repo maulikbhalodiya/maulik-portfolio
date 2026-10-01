@@ -1,0 +1,25 @@
+// Site header navigation.
+// The Resume item is amber whether or not it is the current page, because it
+// opens the resume viewer rather than navigating. It needs a class rather than a
+// colour attribute: core/navigation-link declares no color support and never
+// reads textColor from its own attributes, so a textColor attribute parses and
+// is then discarded without a warning. The class is emitted by
+// patterns/header.php.
+// The selectors are scoped to the dark grid surface because that is where the
+// header sits, matching the scope styles/surface-dark-grid.json declared for
+// this rule before block css stopped being emitted. The two class specificity
+// matches the surface rule in components/_texture-dark-grid.scss so the two
+// cannot be separated by a cascade accident.
+
+/* stylelint-disable selector-class-pattern --
+   The double underscore is a BEM element marker, and the class string is fixed
+   by patterns/header.php, which this file cannot change. */
+.wp-block-group.is-style-surface-dark-grid .site-header__nav-resume,
+.wp-block-group.is-style-surface-dark-grid .site-header__nav-resume:visited {
+	color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.is-style-surface-dark-grid .site-header__nav-resume:hover {
+	color: var(--wp--preset--color--accent-hover);
+}
+/* stylelint-enable selector-class-pattern */

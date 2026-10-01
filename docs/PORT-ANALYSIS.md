@@ -383,7 +383,7 @@ to a profile. Either create the repo or relabel the CTA.
 ## 7. BUILD SEQUENCE IMPLIED BY THE ANALYSIS
 
 1. Design tokens into `theme.json`, dark palette, two-yellow WCAG fix
-2. Templates and parts, with i18n content in patterns
+2. Templates and parts, with translatable strings in patterns and in post_content, never in a .html file
 3. Static SVG components as markup, HTML controls as the accessible layer
 4. Project content as nested blocks, no CPT
 5. Résumé modal, vanilla, with `inert` and `document.fonts.ready`

@@ -63,3 +63,28 @@ the inner text of one original comment, in the order it appeared in the file.
 				page h1 comes from post-title in the hero above and appears only
 				once.
 ```
+
+---
+
+## Correction note, 2026-10-01
+
+The archived text above is verbatim and is not rewritten. This note is added because it
+is evidence for a decision, not because it is wrong.
+
+**The claim "the body is a single post-content block on purpose" is the editor first
+architecture, already argued for in the original file.** The reasoning in that paragraph
+is that a resume is edited as a document, and that five template locked sections would
+force the editor to unlock the template before changing a job title. That is precisely
+the argument for moving page copy into `post_content`, and this repository had already
+made it three times, in `page-resume.md`, in `page-portfolio.md` and in `page.md`.
+
+What changed on 2026-10-01 is that the rule is now applied consistently. It used to hold
+for the resume while the rest of the site carried its copy in templates, which meant
+opening the About page in the editor showed almost nothing. The architecture is now
+uniform: `templates/page-resume.html` supplies structure and the WordPress hierarchy,
+while the five document sections and their words live in `content/pages/resume.html`
+loaded into `post_content`.
+
+The translatability paragraph above remains correct: a template is parsed, not executed,
+so it cannot call `esc_html__()`. The page body is translatable because it lives in
+`post_content`. See `docs/ARCHITECTURE.md`.

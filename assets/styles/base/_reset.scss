@@ -67,14 +67,10 @@ svg {
 	}
 
 	// Grid textures are a screen affordance. A printed grid reads as a printing
-	// defect, so all four are dropped for the printed page.
-	.dark-grid,
-	.dark-subgrid,
-	.cream-editorial,
-	.warm-editorial {
-		background-color: Canvas;
-		background-image: none;
-	}
+	// defect, so all four are dropped for the printed page. The resets for the
+	// surface rules themselves live in components/_print-surfaces.scss, because
+	// this block is emitted before the surface rules and so cannot outrank
+	// them at equal specificity.
 
 	// Text on paper must invert too, since the palette custom properties are
 	// still live and would otherwise force cream type onto white.

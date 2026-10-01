@@ -22,6 +22,17 @@
  * the accessible name from the service name when no label is given, so the label
  * attribute here is belt and braces rather than the only source.
  *
+ * ON THE STYLE VOCABULARY: this file carries no surface or rhythm class at all, so
+ * there was no legacy name here to convert. The row is a bare core/social-links
+ * list with one component class, "channel-links", which is a component identifier
+ * and not a surface. It is left alone deliberately. The block inherits the
+ * surface of whatever it is inserted into, which is the header, so hard coding a
+ * texture here would freeze a surface choice that belongs to the placement.
+ *
+ * THE NO EMAIL RULE IS CHECKED IN CI, NOT ONLY ASSERTED HERE. A repo wide grep for
+ * mailto and for anything matching an address pattern runs on pull request, and
+ * this file is where it would fail first if a third channel were ever added back.
+ *
  * @package Maulik_Portfolio
  */
 

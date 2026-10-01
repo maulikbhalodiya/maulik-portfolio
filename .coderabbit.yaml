@@ -92,34 +92,42 @@ path_instructions:
       21. Patterns execute on init, not at render. is_single(), get_post(), the_title()
           and the loop are unavailable inside a pattern. Only esc_html_e(), esc_html(),
           get_theme_file_uri() and iteration over static data work there.
-      22. No custom post types, no taxonomies, no shortcodes, no form handling, no
-          register_block_type() in PHP. Project data lives in block attributes inside
-          post content.
-      23. Never emit a raw email address or a mailto link. Contact is a form with an
+      22. No custom post types, no taxonomies, no shortcodes and no form handling.
+          Project data lives in block attributes inside post content. A custom block
+          is judged by one test: does its render.php read a data model, meaning posts,
+          meta or terms? If yes it belongs in a plugin and is out of scope. If it is
+          presentational only, such as a card, a badge or a flow, it belongs in this
+          theme. Do not propose deleting a presentational block.
+      23. A theme gets NO automatic block registration. Core scans no theme blocks/
+          directory, so every block.json in this theme needs a register_block_type()
+          call in functions.php. Auto registration from blocks/ is a @wordpress/scripts
+          plugin convention, and server side registration is what makes theme.json
+          styles apply to a block at all.
+      24. Never emit a raw email address or a mailto link. Contact is a form with an
           intent dropdown.
-      24. No outbound HTTP requests. should_load_remote_block_patterns must stay
+      25. No outbound HTTP requests. should_load_remote_block_patterns must stay
           filtered to false.
-      25. The Theme Check banned function list: eval, base64_decode, str_rot13,
+      26. The Theme Check banned function list: eval, base64_decode, str_rot13,
           uudecode, system, exec, passthru, shell_exec, popen. None has a legitimate use
           in a block theme portfolio.
-      26. Use get_theme_file_uri() and get_theme_file_path(), never
+      27. Use get_theme_file_uri() and get_theme_file_path(), never
           get_template_directory_uri() or get_template_directory(), which bypass the
           child theme.
-      27. No em dashes and no en dashes anywhere in code, comments or copy. CI greps
+      28. No em dashes and no en dashes anywhere in code, comments or copy. CI greps
           the whole repository for U+2014 and U+2013 and fails on any hit.
-      28. No skill percentage bars, no progress meters, no star ratings in any
+      29. No skill percentage bars, no progress meters, no star ratings in any
           generated output.
 
       STANDARD FOR YOUR OWN SUGGESTIONS
 
-      29. Any code you propose must itself pass phpcs.xml.dist with ZERO errors and
+      30. Any code you propose must itself pass phpcs.xml.dist with ZERO errors and
           ZERO warnings. Write code you would accept in review yourself.
-      30. Never propose adding a `phpcs:ignore` or `phpcs:disable` comment. Suppressing
+      31. Never propose adding a `phpcs:ignore` or `phpcs:disable` comment. Suppressing
           the sniff does not fix the code, it hides the problem, and it teaches the next
           reader that the standard is optional.
-      31. Never propose editing phpcs.xml.dist to weaken or remove a check.
-      32. Never propose weakening or deleting a test or a CI assertion.
-      33. Report only issues you can point at with a file path and a line number, and
+      32. Never propose editing phpcs.xml.dist to weaken or remove a check.
+      33. Never propose weakening or deleting a test or a CI assertion.
+      34. Report only issues you can point at with a file path and a line number, and
           cite the exact sniff name. If you cannot produce both, you do not have a
           finding.
 

@@ -1,0 +1,29 @@
+// Print reset for the page surfaces.
+// Grid textures are a screen affordance. A printed grid reads as a printing
+// defect, so all four are dropped for the printed page. Canvas is used rather
+// than a literal white because it is the system keyword for exactly that, and it
+// keeps this file free of colour literals, so a print fix can never drift from
+// the palette.
+// THIS FILE MUST BE FORWARDED AFTER THE TEXTURE FILES. The base print block in
+// base/_reset.scss is emitted first and would lose the cascade to a screen
+// surface rule of equal specificity. Each selector here repeats the exact class
+// count of the screen rule it overrides so the print rule wins on order alone.
+
+@media print {
+
+	.dark-grid,
+	.dark-subgrid,
+	.cream-editorial,
+	.warm-editorial {
+		background-color: Canvas;
+		background-image: none;
+	}
+
+	.wp-block-group.is-style-surface-dark-grid,
+	.wp-block-group.is-style-surface-dark-subgrid,
+	.wp-block-group.is-style-surface-cream-editorial,
+	.wp-block-group.is-style-surface-warm-editorial {
+		background-color: Canvas;
+		background-image: none;
+	}
+}

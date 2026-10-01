@@ -9,9 +9,11 @@
 // They are the only colour literals permitted in this file, and they exist
 // because a custom property cannot carry the 3.5 percent alpha that makes the
 // grid sit behind the content instead of on top of it.
-// WordPress strips unrecognised placeholder classes from block markup, so
-// .dark-grid is not expected to survive in saved post content. It is a
-// documented hook name, attached through a theme.json style variation.
+// DEPRECATED. The .dark-grid rule below is a legacy hook name that exists only
+// until templates/404.html is migrated to the is-style-* vocabulary. It is not
+// a second canonical name and must not be used in new markup. The canonical
+// selector is .is-style-surface-dark-grid, which is what WordPress emits when an
+// editor applies this block style variation to a core/group.
 
 .dark-grid {
 	background-color: var(--wp--preset--color--base);
@@ -20,3 +22,29 @@
 		linear-gradient(to bottom, rgba(255, 253, 244, 0.035) 1px, transparent 1px);
 	background-size: 48px 48px;
 }
+
+// Texture: surface-dark-grid, the canonical is-style-* selector.
+// A core/group with this variation applied renders as
+// <div class="wp-block-group is-style-surface-dark-grid">, so the two class
+// selector below is what actually matches the element. The second class is in
+// the selector on purpose: it raises specificity above a single-class
+// utility such as .has-base-background-color without relying on stylesheet
+// order, which is not guaranteed between the theme stylesheet and the global
+// stylesheet.
+// Values are copied verbatim from .dark-grid above, plus the text colour
+// declared in styles/surface-dark-grid.json.
+
+.wp-block-group.is-style-surface-dark-grid {
+	background-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--text);
+	background-image:
+		linear-gradient(to right, rgba(255, 253, 244, 0.035) 1px, transparent 1px),
+		linear-gradient(to bottom, rgba(255, 253, 244, 0.035) 1px, transparent 1px);
+	background-size: 48px 48px;
+}
+
+// The amber Resume nav item that styles/surface-dark-grid.json carried inside
+// this variation's block css now lives in components/_site-header.scss. It is
+// separated out because stylelint requires a /* */ directive comment to exempt
+// the BEM class name, and Sass emits those into the compiled stylesheet, which
+// would otherwise split this rule in two.

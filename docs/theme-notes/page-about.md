@@ -44,3 +44,26 @@ the inner text of one original comment, in the order it appeared in the file.
 			structured sections. It is deliberately last so page content can never
 			push the designed structure around.
 ```
+
+---
+
+## Correction note, 2026-10-01
+
+The archived text above is verbatim and is not rewritten. Two claims in it are now out of
+date.
+
+**1. The translatability claim is correct and still load bearing.** A template is block
+markup that is parsed rather than executed, so it cannot call `esc_html__()` and its
+literal text is not translatable. That is unchanged.
+
+**2. "Translatable strings live in patterns/" is now incomplete.** `patterns/*.php` and
+the `post_content` of a page both run PHP, so both are fully translatable. The About
+page body now lives in `content/pages/about.html`, which is loaded into `post_content`,
+and `templates/page-about.html` contributes only the header, the main wrapper, the
+post-content block and the footer. See `docs/ARCHITECTURE.md`.
+
+**3. Comment 2 of 2 below is the editor first decision, already made.** It places
+`core/post-content` last so that page content renders below the structured sections. At
+the time the structure lived in the template and post-content was almost empty, which
+hid the page from the editor. The composition now lives in `post_content` and this
+template supplies the frame around it.

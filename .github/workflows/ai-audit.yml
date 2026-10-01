@@ -57,15 +57,18 @@ jobs:
           audit_create_issues: true
           audit_auto_fix: false
           audit_labels: 'audit'
-          # Shipped code only. docs/ is prose that changes no behaviour and
-          # blocks/ is not used by this theme, it has no custom block types
-          # because those are forbidden in a theme.
+          # Shipped code only. docs/ is prose that changes no behaviour.
+          # content/ holds the canonical page bodies that are loaded into
+          # post_content, so it is shipped authored content and must be audited.
+          # blocks/ is listed so that if a presentational block is ever added it
+          # is covered from the first commit rather than after it ships.
           audit_target_dirs: |
             inc
             patterns
             assets
             templates
             parts
+            content
           max_files_per_batch: 3
           enable_mcp: false
           audit_category: ${{ inputs.audit_category }}
@@ -82,8 +85,29 @@ jobs:
             .github/workflows/, or the comments in this workflow. They are process
             documentation, not shipped code, and reporting findings there produces
             noise that trains people to ignore the audit. Audit the shipped theme:
-            functions.php, inc/, patterns/, assets/, blocks/, templates/, parts/,
-            theme.json and style.css.
+            functions.php, inc/, patterns/, assets/, content/, blocks/, templates/,
+            parts/, theme.json and style.css. blocks/ is listed even though it does
+            not exist yet, so that a presentational block is covered the day it is
+            added rather than after it ships.
+
+            EDITOR FIRST ARCHITECTURE, SO YOU DO NOT REPORT CORRECT CODE
+
+            This theme is editor first. The authored page lives in the WordPress
+            Page's post_content, so that Pages, then a page, then Edit shows the
+            real page. Templates supply page level structure and the WordPress
+            hierarchy, template parts supply global chrome such as header and
+            footer, and the page body comes from post_content. content/pages/*.html
+            is the source of truth for that post_content and the database is
+            generated from it, so a copy that looks duplicated between
+            content/pages/ and templates/ is intentional only where a template
+            carries genuine chrome. The real defect to look for is a substantial
+            page composition left in a template with post_content holding almost
+            nothing, because that hides the page from the editor.
+
+            Surface and rhythm styling uses block style variations whose CSS is
+            compiled into the theme stylesheet and keyed on the is-style-* class
+            WordPress emits, not on the bare variation slug. Reporting a missing
+            is-style-surface-* rule is a false finding.
 
             WORDPRESS CODING STANDARDS, ZERO TOLERANCE
 
@@ -132,9 +156,19 @@ jobs:
             8. block.json "type": "string" is a type assertion, not sanitization.
                Attribute values remain untrusted at render time and must be
                escaped per output context.
-            9. No custom post types, no taxonomies, no shortcodes, no form
-               handling, no register_block_type() in PHP. Project data lives in
-               block attributes inside post content.
+            9. No custom post types, no taxonomies, no shortcodes and no form
+               handling. Project data lives in block attributes inside post
+               content. A custom block is judged by one test: does its render.php
+               read a data model, meaning posts, meta or terms? If it does, it
+               belongs in a plugin and is out of scope. If it is presentational
+               only, such as a card, a badge or a flow, it belongs in this theme.
+               Do not report a presentational block as forbidden.
+            9a. A theme gets NO automatic block registration. Core scans no theme
+               blocks/ directory, so every block.json needs a
+               register_block_type() call in functions.php. Auto registration
+               from blocks/ is a @wordpress/scripts plugin convention. Server
+               side registration is also what makes theme.json styles apply to a
+               block at all.
             10. Never emit a raw email address or a mailto link. Contact is a form
                 with an intent dropdown.
             11. The development noindex helper is gated behind WP_DEBUG AND an

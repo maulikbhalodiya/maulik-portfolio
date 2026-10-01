@@ -36,13 +36,6 @@ svg {
     color: CanvasText;
     box-shadow: none;
   }
-  .dark-grid,
-  .dark-subgrid,
-  .cream-editorial,
-  .warm-editorial {
-    background-color: Canvas;
-    background-image: none;
-  }
   h1,
   h2,
   h3,
@@ -257,13 +250,48 @@ body {
   --font-mono: 'IBM Plex Mono', 'IBM Plex Mono Fallback', 'IBM Plex Mono Fallback Android', system-ui, monospace;
 }
 
+.wp-block-group.is-style-section {
+  padding-block: clamp(4rem, 8vw, 6rem);
+  --wp--style--block-gap: var(--wp--preset--spacing--50);
+}
+
+.wp-block-group.is-style-section-tight {
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+  --wp--style--block-gap: var(--wp--preset--spacing--50);
+}
+
+/* stylelint-disable selector-class-pattern --
+   The double underscore is a BEM element marker, and the class string is fixed
+   by patterns/header.php, which this file cannot change. */
+.wp-block-group.is-style-surface-dark-grid .site-header__nav-resume,
+.wp-block-group.is-style-surface-dark-grid .site-header__nav-resume:visited {
+  color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.is-style-surface-dark-grid .site-header__nav-resume:hover {
+  color: var(--wp--preset--color--accent-hover);
+}
+
+/* stylelint-enable selector-class-pattern */
 .dark-grid {
   background-color: var(--wp--preset--color--base);
   background-image: linear-gradient(to right, rgba(255, 253, 244, 0.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 253, 244, 0.035) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
+.wp-block-group.is-style-surface-dark-grid {
+  background-color: var(--wp--preset--color--base);
+  color: var(--wp--preset--color--text);
+  background-image: linear-gradient(to right, rgba(255, 253, 244, 0.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 253, 244, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
 .dark-subgrid {
+  background-image: radial-gradient(circle at 1px 1px, rgba(250, 204, 21, 0.14) 1px, transparent 0);
+  background-size: 32px 32px;
+}
+
+.wp-block-group.is-style-surface-dark-subgrid {
   background-image: radial-gradient(circle at 1px 1px, rgba(250, 204, 21, 0.14) 1px, transparent 0);
   background-size: 32px 32px;
 }
@@ -275,6 +303,22 @@ body {
   background-size: 96px 96px;
 }
 
+.wp-block-group.is-style-surface-cream-editorial {
+  background-color: var(--wp--preset--color--paper-warm);
+  color: var(--wp--preset--color--text-on-paper);
+  background-image: linear-gradient(to right, rgba(10, 10, 11, 0.04) 1px, transparent 1px);
+  background-size: 96px 96px;
+}
+.wp-block-group.is-style-surface-cream-editorial a,
+.wp-block-group.is-style-surface-cream-editorial a:visited,
+.wp-block-group.is-style-surface-cream-editorial a:hover {
+  color: var(--wp--preset--color--accent-on-paper);
+}
+.wp-block-group.is-style-surface-cream-editorial a:focus-visible {
+  outline: 2px solid var(--wp--preset--color--accent-on-paper);
+  outline-offset: 3px;
+}
+
 .warm-editorial {
   background-color: var(--wp--preset--color--paper);
   color: var(--wp--preset--color--text-on-paper);
@@ -282,6 +326,38 @@ body {
   background-size: 64px 64px;
 }
 
+.wp-block-group.is-style-surface-warm-editorial {
+  background-color: var(--wp--preset--color--paper);
+  color: var(--wp--preset--color--text-on-paper);
+  background-image: linear-gradient(to bottom, rgba(10, 10, 11, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+.wp-block-group.is-style-surface-warm-editorial a,
+.wp-block-group.is-style-surface-warm-editorial a:visited,
+.wp-block-group.is-style-surface-warm-editorial a:hover {
+  color: var(--wp--preset--color--accent-on-paper);
+}
+.wp-block-group.is-style-surface-warm-editorial a:focus-visible {
+  outline: 2px solid var(--wp--preset--color--accent-on-paper);
+  outline-offset: 3px;
+}
+
+@media print {
+  .dark-grid,
+  .dark-subgrid,
+  .cream-editorial,
+  .warm-editorial {
+    background-color: Canvas;
+    background-image: none;
+  }
+  .wp-block-group.is-style-surface-dark-grid,
+  .wp-block-group.is-style-surface-dark-subgrid,
+  .wp-block-group.is-style-surface-cream-editorial,
+  .wp-block-group.is-style-surface-warm-editorial {
+    background-color: Canvas;
+    background-image: none;
+  }
+}
 :root {
   color-scheme: dark;
 }

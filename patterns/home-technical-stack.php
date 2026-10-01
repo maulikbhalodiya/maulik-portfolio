@@ -3,20 +3,29 @@
  * Title: Home Technical Stack Section
  * Slug: maulik-portfolio/home-technical-stack
  * Categories: maulik-portfolio-home
- * Description: Homepage section 03, the seven category technical stack, on the dark-grid surface.
+ * Description: Homepage section 03, the seven verified stack systems as label and paragraph pairs, on the 32px dark subgrid surface.
  * Inserter: yes
  *
- * Section 03 of 08. Dark-grid again, which is the point of the rhythm.
+ * Section 03 of 08. The dark subgrid surface, a 32px dotted field rather than the
+ * 48px grid of sections 01 and 02, so the page visibly changes texture before the
+ * content changes shape.
  *
- * SEVEN CATEGORIES, taken from the design's SYS.01 to SYS.07 vocabulary. The
- * design also enumerates forty one individual skills, but it attaches no level, no
- * weight and no percentage to any of them, and inventing a relevance number for
- * each would put a figure on the page that nothing in the source data supports.
+ * SEVEN SYSTEMS, TAKEN FROM THE SYS.01 TO SYS.07 VOCABULARY. The design also
+ * enumerates forty one individual skills, but it attaches no level, no weight and
+ * no percentage to any of them, and inventing a relevance number for each would
+ * put a figure on the page that nothing in the source data supports.
  *
- * WHAT IS HERE INSTEAD: the verified mechanism behind the categories. Every line
- * below is a concrete WordPress or PHP mechanism named in the verified case study
- * content. That is the pattern the design itself uses, where a skill explains how
- * it is used rather than asserting a level, and it is preserved deliberately.
+ * THE SHAPE CHANGED. The previous version was seven "stack-category" cards, each
+ * with a heading and a bullet list of concrete mechanisms such as
+ * "hash_hmac signing with hash_equals comparison". Those sentences are accurate
+ * and they are good engineering prose, but the approved homepage does not render
+ * them and this pattern is supposed to be the same section the approved homepage
+ * renders. One paragraph per system is what the template carries.
+ *
+ * THE INNER GROUP IS A RHYTHM CLASS, NOT A SURFACE. is-style-section-tight comes
+ * from styles/section-tight.json and only sets padding and block gap, so it can
+ * be combined with the surface class on the outer group without either one
+ * fighting the other.
  *
  * @package Maulik_Portfolio
  */
@@ -24,113 +33,66 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * The seven stack categories with the mechanisms verified against the case studies.
+ * The seven verified stack systems.
  */
-$maulik_portfolio_stack_categories = array(
+$maulik_portfolio_stack_systems = array(
 	array(
-		'id'         => 'SYS.01',
-		'title'      => __( 'WordPress', 'maulik-portfolio' ),
-		'mechanisms' => array(
-			__( 'Custom plugin architecture', 'maulik-portfolio' ),
-			__( 'Hook driven extension', 'maulik-portfolio' ),
-			__( 'Custom roles and capability checks', 'maulik-portfolio' ),
-			__( 'Gutenberg block development', 'maulik-portfolio' ),
-			__( 'Form and entry meta persistence', 'maulik-portfolio' ),
-		),
+		'label' => __( 'SYS.01 · WordPress', 'maulik-portfolio' ),
+		'text'  => __( 'Custom plugins, block and shortcode free structure, custom roles and capabilities, form submission workflows, admin screens and query level work against WordPress data.', 'maulik-portfolio' ),
 	),
 	array(
-		'id'         => 'SYS.02',
-		'title'      => __( 'PHP', 'maulik-portfolio' ),
-		'mechanisms' => array(
-			__( 'Custom REST endpoints with register_rest_route', 'maulik-portfolio' ),
-			__( 'hash_hmac signing with hash_equals comparison', 'maulik-portfolio' ),
-			__( 'Sodium encryption keyed by an external secret', 'maulik-portfolio' ),
-			__( 'Capability gated AJAX handlers', 'maulik-portfolio' ),
-		),
+		'label' => __( 'SYS.02 · PHP', 'maulik-portfolio' ),
+		'text'  => __( 'Backend service layers, typed error handling, the Sodium cryptography extension, HMAC verification with timing safe comparison, and code that a second maintainer can read.', 'maulik-portfolio' ),
 	),
 	array(
-		'id'         => 'SYS.03',
-		'title'      => __( 'APIs', 'maulik-portfolio' ),
-		'mechanisms' => array(
-			__( 'Server to server REST communication', 'maulik-portfolio' ),
-			__( 'Asynchronous webhook delivery and reconciliation', 'maulik-portfolio' ),
-			__( 'Retry idempotency and duplicate callback protection', 'maulik-portfolio' ),
-			__( 'Third party service automation', 'maulik-portfolio' ),
-		),
+		'label' => __( 'SYS.03 · APIs', 'maulik-portfolio' ),
+		'text'  => __( 'REST routes registered in code, signed payloads, asynchronous job polling, webhook receivers and retry safe delivery for third party services.', 'maulik-portfolio' ),
 	),
 	array(
-		'id'         => 'SYS.04',
-		'title'      => __( 'Databases', 'maulik-portfolio' ),
-		'mechanisms' => array(
-			__( 'Server enforced scoping on every query', 'maulik-portfolio' ),
-			__( 'Auditable transaction and state records', 'maulik-portfolio' ),
-			__( 'MySQL for reporting and reconciliation reads', 'maulik-portfolio' ),
-		),
+		'label' => __( 'SYS.04 · Databases', 'maulik-portfolio' ),
+		'text'  => __( 'Schema design for custom tables, form entry metadata, transactional references, audit trails and queries that stay scoped to the current user\'s role.', 'maulik-portfolio' ),
 	),
 	array(
-		'id'         => 'SYS.05',
-		'title'      => __( 'Security', 'maulik-portfolio' ),
-		'mechanisms' => array(
-			__( 'HMAC SHA 256 payload signing', 'maulik-portfolio' ),
-			__( 'Nonce verification on submissions and AJAX actions', 'maulik-portfolio' ),
-			__( 'Context specific output escaping', 'maulik-portfolio' ),
-			__( 'Role based authorization on sensitive views', 'maulik-portfolio' ),
-		),
+		'label' => __( 'SYS.05 · Security', 'maulik-portfolio' ),
+		'text'  => __( 'Payload signing, nonce verification, context specific escaping before render, capability checks on sensitive views and decryption, and key material held outside the database.', 'maulik-portfolio' ),
 	),
 	array(
-		'id'         => 'SYS.06',
-		'title'      => __( 'Integrations', 'maulik-portfolio' ),
-		'mechanisms' => array(
-			__( 'Payment gateway abstraction behind one REST contract', 'maulik-portfolio' ),
-			__( 'Iframe checkout session coordination', 'maulik-portfolio' ),
-			__( 'Document OCR processing pipelines', 'maulik-portfolio' ),
-			__( 'Object storage automation', 'maulik-portfolio' ),
-		),
+		'label' => __( 'SYS.06 · Integrations', 'maulik-portfolio' ),
+		'text'  => __( 'Payment gateways, cloud OCR services, object storage, booking and form systems, marketing automation and marketing APIs, each behind one adapter the rest of the code can call.', 'maulik-portfolio' ),
 	),
 	array(
-		'id'         => 'SYS.07',
-		'title'      => __( 'Tools', 'maulik-portfolio' ),
-		'mechanisms' => array(
-			__( 'Git for versioned, reviewable change', 'maulik-portfolio' ),
-			__( 'Composer for dependency management', 'maulik-portfolio' ),
-			__( 'WordPress Coding Standards and static analysis on every change', 'maulik-portfolio' ),
-		),
+		'label' => __( 'SYS.07 · Tools', 'maulik-portfolio' ),
+		'text'  => __( 'Git for version control, staging environments for verification before anything ships, and browser and server side inspection of the requests that carry the behaviour.', 'maulik-portfolio' ),
 	),
 );
 
 ?>
-<!-- wp:group {"tagName":"section","className":"section section-stack dark-grid","anchor":"technical-skills","ariaLabelledby":"heading-technical-skills","layout":{"type":"constrained"}} -->
-<section class="wp-block-group section section-stack dark-grid" id="technical-skills" aria-labelledby="heading-technical-skills">
+<!-- wp:group {"tagName":"section","className":"is-style-section is-style-surface-dark-subgrid","anchor":"technical-stack","ariaLabelledby":"heading-technical-stack","layout":{"type":"constrained"}} -->
+<section class="wp-block-group is-style-section is-style-surface-dark-subgrid" id="technical-stack" aria-labelledby="heading-technical-stack">
 	<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-	<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text"><?php echo esc_html__( '03 · Interactive Technical Ecosystem', 'maulik-portfolio' ); ?></span></p>
+	<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text"><?php echo esc_html__( '03 · Technical Stack Ecosystem', 'maulik-portfolio' ); ?></span></p>
 	<!-- /wp:paragraph -->
 
-	<!-- wp:heading {"level":2,"anchor":"heading-technical-skills"} -->
-	<h2 class="wp-block-heading" id="heading-technical-skills"><?php echo esc_html__( 'Verified Technical Stack', 'maulik-portfolio' ); ?></h2>
+	<!-- wp:heading {"level":2,"anchor":"heading-technical-stack"} -->
+	<h2 class="wp-block-heading" id="heading-technical-stack"><?php echo esc_html__( 'Verified Technical Stack', 'maulik-portfolio' ); ?></h2>
 	<!-- /wp:heading -->
 
-	<!-- wp:paragraph {"className":"section-lede"} -->
-	<p class="section-lede"><?php echo esc_html__( 'Seven categories. Each entry names a mechanism and how it is used, not a level. A number here would be a claim, and a claim has to be defended.', 'maulik-portfolio' ); ?></p>
+	<!-- wp:paragraph -->
+	<p><?php echo esc_html__( 'Seven systems, grouped by what they do rather than by how popular they are. Every entry describes a concrete use, so nothing here has to be defended with a proficiency number.', 'maulik-portfolio' ); ?></p>
 	<!-- /wp:paragraph -->
 
-	<?php foreach ( $maulik_portfolio_stack_categories as $maulik_portfolio_stack_category ) : ?>
-		<!-- wp:group {"tagName":"article","className":"stack-category","layout":{"type":"constrained"}} -->
-		<article class="wp-block-group stack-category">
-			<!-- wp:heading {"level":3,"className":"stack-category__title"} -->
-			<h3 class="wp-block-heading stack-category__title"><span class="stack-category__id" aria-hidden="true"><?php echo esc_html( $maulik_portfolio_stack_category['id'] ); ?></span> <?php echo esc_html( $maulik_portfolio_stack_category['title'] ); ?></h3>
-			<!-- /wp:heading -->
+	<!-- wp:group {"tagName":"div","className":"is-style-section-tight","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group is-style-section-tight">
+		<?php foreach ( $maulik_portfolio_stack_systems as $maulik_portfolio_stack_system ) : ?>
+			<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p><?php echo esc_html( $maulik_portfolio_stack_system['label'] ); ?></p>
+			<!-- /wp:paragraph -->
 
-			<!-- wp:list {"className":"stack-category__mechanisms"} -->
-			<ul class="wp-block-list stack-category__mechanisms">
-				<?php foreach ( $maulik_portfolio_stack_category['mechanisms'] as $maulik_portfolio_stack_mechanism ) : ?>
-					<!-- wp:list-item -->
-					<li><?php echo esc_html( $maulik_portfolio_stack_mechanism ); ?></li>
-					<!-- /wp:list-item -->
-				<?php endforeach; ?>
-			</ul>
-			<!-- /wp:list -->
-		</article>
-		<!-- /wp:group -->
-	<?php endforeach; ?>
+			<!-- wp:paragraph -->
+			<p><?php echo esc_html( $maulik_portfolio_stack_system['text'] ); ?></p>
+			<!-- /wp:paragraph -->
+		<?php endforeach; ?>
+	</div>
+	<!-- /wp:group -->
 </section>
 <!-- /wp:group -->
