@@ -1,18 +1,3 @@
-<!--
-	CONDITION: search results, for both posts and pages, and for any post type
-	that has not opted out of search.
-
-	search.html is the only template where a core/search block belongs. It is
-	deliberately absent from every other template in this theme: the design has
-	no site-wide search UI, and shipping an unassigned search box on every page
-	would add a layout shift for a feature nobody asked for.
-
-	A template is block markup. It is parsed, not executed, so it cannot call
-	esc_html__() and literal text here is NOT translatable. The core/search block
-	carries its own placeholder and button strings, which the block manages and
-	which are translatable through WordPress core. The query-no-results block is
-	left empty for the same reason index.html leaves it empty.
--->
 <!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
 <div class="wp-site-blocks">
 	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->

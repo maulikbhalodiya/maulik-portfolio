@@ -1,26 +1,3 @@
-<!--
-	CONDITION: a page using the "about" custom template. Registered in
-	theme.json customTemplates under the name "about", so an editor picks it
-	from the Page attributes panel. Served at /about/.
-
-	STRUCTURE IS GROUP BLOCKS WITH STYLE VARIATIONS, exactly as on the
-	homepage. Each section is a core/group whose className carries the surface
-	slug and the rhythm slug, so an editor can change either from the Styles
-	panel without touching this file.
-
-	SECTION ORDER IS SEQUENTIAL AND IS NOT TO BE REPRODUCED FROM THE PROTOTYPE.
-	The prototype concatenates two eyebrows into one reading "06 ... and 08 ..."
-	and renders 07 after 08. Number 01 to 05 in order here.
-
-	FACTS ARE THE VERIFIED RECORD ONLY. WordPress Developer at Qrolic
-	Technologies from July 2025, PHP Developer Intern January to June 2025,
-	Rajkot, Gujarat, B.Tech Computer Engineering at Ganpat University 2021 to
-	2025. No phone number belongs on this site. No metric, no percentage, no
-	client name.
-
-	A template is block markup. It is parsed, not executed, so it cannot call
-	esc_html__() and its literal text is NOT translatable.
--->
 <!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
 <div class="wp-site-blocks">
 	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
@@ -198,11 +175,6 @@
 		</section>
 		<!-- /wp:group -->
 
-		<!--
-			ANYTHING THE EDITOR WRITES ON THE PAGE RENDERS HERE, below the
-			structured sections. It is deliberately last so page content can never
-			push the designed structure around.
-		-->
 		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","layout":{"type":"constrained"}} -->
 		<section class="wp-block-group section surface-dark-grid">
 			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->

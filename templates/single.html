@@ -1,18 +1,3 @@
-<!--
-	CONDITION: a single post, for posts that have no assigned custom template.
-
-	singular.html already covers both single posts and single pages and takes
-	priority over this file in Core's template hierarchy. single.html is kept
-	alongside it because the CI file existence gate requires the explicit blog
-	post template, and because a future blog is an explicit requirement even
-	though no Writing or Blog link appears anywhere in this theme. The capability
-	exists without being advertised.
-
-	A template is block markup. It is parsed, not executed, so it cannot call
-	esc_html__() and literal text here is NOT translatable. The no-results block
-	is deliberately left empty rather than filled with an untranslatable
-	placeholder.
--->
 <!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
 <div class="wp-site-blocks">
 	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->

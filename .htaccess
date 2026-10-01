@@ -1,0 +1,19 @@
+# Deny web access to development files that live inside the theme directory.
+#
+# The deploy copies the repository into this directory, so docs/, tools/,
+# .agents/, package.json and composer.json are otherwise readable over HTTP at
+# /wp-content/themes/maulik-portfolio/<path>, which published the live install
+# path and the deploy mechanics. They are needed on disk, not over HTTP.
+<FilesMatch "\.(md|json|lock|log|neon|dist|xml|yml|yaml|sh|example|distignore)$">
+	Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	# Block dot-directories (.git, .github, .agents, .vscode) and dev folders.
+	RewriteRule (^|/)\.(git|github|agents|cursor|vscode)/ - [F,L]
+	RewriteRule ^docs/ - [F,L]
+	RewriteRule ^tools/ - [F,L]
+	RewriteRule ^node_modules/ - [F,L]
+	RewriteRule ^vendor/ - [F,L]
+</IfModule>

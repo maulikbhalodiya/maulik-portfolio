@@ -1,0 +1,342 @@
+name: Live Deploy
+
+# Auto-deploys the block theme to the live server after a merge to main.
+#
+# This runs AFTER CI has already passed on the pull request, so the full CI
+# suite (phpcs, phpstan, stylelint, eslint, composer validate) is deliberately
+# not repeated here. tools/deploy-theme.sh is the local equivalent of this
+# workflow and is the reference for the gate order.
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+concurrency:
+  # Do not cancel in progress. Cancelling mid rsync leaves a half copied theme
+  # on the server, which is worse than a slower queue. Merges are serialised
+  # instead: one deploy finishes before the next starts.
+  group: live-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy theme to live server
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      # Hardcoded on purpose. This is the only destination this workflow is
+      # ever allowed to touch, and the guard step below refuses to run if it is
+      # changed to anything else. The variable is not a secret and must not be
+      # moved into one, because a secret here could be edited by anyone with
+      # repo settings access to point at /var/www/maulik-dev itself.
+      THEME_SLUG: maulik-portfolio
+      WP_PATH: /var/www/maulik-dev
+      SITE_URL: https://maulik-dev.duckdns.org
+      THEME_DEST: /var/www/maulik-dev/wp-content/themes/maulik-portfolio
+      ROUTES: '/ /about/ /resume/ /projects/ /rankkernel/ /contact/'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # 'start' is the project's own script and runs 'tokens' then 'build:css'.
+      # tokens regenerates the scss token partial from theme.json, so a colour
+      # change in theme.json reaches the stylesheet. The build fails the job on
+      # a scss error, which is the point: a broken stylesheet must not deploy.
+      - name: Build CSS
+        run: npm run start
+
+      # style.css is the WordPress theme header and is NOT a build target. It is
+      # committed as is and rsynced straight through, so the header is never
+      # clobbered by the sass output.
+      - name: Confirm the build produced the stylesheet
+        run: |
+          set -euo pipefail
+          test -s assets/css/theme.css || {
+            echo "FAIL: assets/css/theme.css was not produced by the build." >&2
+            exit 1
+          }
+          echo "assets/css/theme.css: $(wc -c < assets/css/theme.css) bytes"
+
+      - name: Check required secrets are present
+        run: |
+          set -euo pipefail
+          missing=()
+          [ -n "${LIVE_DEPLOY_KEY:-}" ] || missing+=("LIVE_DEPLOY_KEY")
+          [ -n "${LIVE_SERVER_USER:-}" ] || missing+=("LIVE_SERVER_USER")
+          [ -n "${LIVE_SERVER_IP:-}" ] || missing+=("LIVE_SERVER_IP")
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "FAIL: missing required repository secret(s): ${missing[*]}" >&2
+            echo "Create them with:" >&2
+            echo "  gh secret set LIVE_DEPLOY_KEY --repo <owner>/<repo>   # the ssh PRIVATE key, PEM or openssh format" >&2
+            echo "  gh secret set LIVE_SERVER_USER --repo <owner>/<repo>  # ssh user on the server" >&2
+            echo "  gh secret set LIVE_SERVER_IP --repo <owner>/<repo>    # public IP of the server" >&2
+            echo "The matching PUBLIC key must be in the deploy user's ~/.ssh/authorized_keys," >&2
+            echo "and that user needs passwordless sudo limited to the rsync, chown and wp commands." >&2
+            exit 1
+          fi
+          echo "all required secrets are present"
+
+      # The key is written with 600 because ssh refuses a group or world readable
+      # private key. It is added to known_hosts with accept-new rather than
+      # StrictHostKeyChecking=no, so a changed host key fails the deploy instead
+      # of silently trusting a new machine.
+      - name: Write the ssh key
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$LIVE_DEPLOY_KEY" > deploy_key
+          chmod 600 deploy_key
+
+      - name: Confirm ssh connectivity
+        run: |
+          set -euo pipefail
+          ssh -i deploy_key \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=accept-new \
+            -o ConnectTimeout=15 \
+            "${LIVE_SERVER_USER}@${LIVE_SERVER_IP}" \
+            'printf "connected: %s\n" "$(whoami)"; sudo -n true && echo "passwordless sudo: ok"'
+
+      # GUARD. This step exists because the rsync below uses --delete, and
+      # rsync --delete against the WordPress install root would delete
+      # wp-includes, wp-admin and every other theme, taking the site down with
+      # no way back from the workflow. The destination is asserted to be
+      # exactly the theme directory before any delete capable command runs.
+      #
+      # The theme must be a real COPY and never a symlink. A symlink from
+      # wp-content/themes/maulik-portfolio back to the repository renders a zero
+      # byte page: WordPress recognises the theme, wp_is_block_theme() returns
+      # true and file_exists() passes on templates/index.html, so nothing errors
+      # and nothing is logged. The page simply comes back empty. rsync copies
+      # real files, which is why this workflow never links instead of copying.
+      - name: Guard the destination path
+        run: |
+          set -euo pipefail
+          expected="/wp-content/themes/${THEME_SLUG}"
+          case "${THEME_DEST}" in
+            *"${expected}") : ;;
+            *)
+              echo "FAIL: refusing to deploy. THEME_DEST must end in ${expected}" >&2
+              echo "       got: ${THEME_DEST}" >&2
+              echo "Deploying to the install root would delete WordPress core." >&2
+              exit 1
+              ;;
+          esac
+          # A trailing slash or a parent reference would change what --delete
+          # considers the root of the sync.
+          case "${THEME_DEST}" in
+            */|*..*) echo "FAIL: THEME_DEST must not end in a slash and must not contain '..'" >&2; exit 1 ;;
+          esac
+          echo "destination guard passed: ${THEME_DEST}"
+
+      # Dry run first, so the file list and every deletion rsync would perform
+      # is visible in the log before it happens. Deletions are listed too: an
+      # unexpected delete is the visible symptom of a wrong destination.
+      - name: rsync dry run to the live theme directory
+        run: |
+          set -euo pipefail
+          rsync -azn --delete \
+            --itemize-changes \
+            -e "ssh -i deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='node_modules/' \
+            --exclude='vendor/' \
+            --exclude='deploy_key' \
+            --exclude='docs/' \
+            --exclude='tools/' \
+            --exclude='.agents/' \
+            --exclude='.audit-prompts/' \
+            --exclude='*.md' \
+            --exclude='.nvmrc' \
+            --exclude='.editorconfig' \
+            --exclude='.gitattributes' \
+            --exclude='.gitignore' \
+            --exclude='.coderabbit.yaml' \
+            --exclude='.stylelintrc.json' \
+            --exclude='eslint.config.mjs' \
+            --exclude='phpcs.xml.dist' \
+            --exclude='phpstan.neon' \
+            --exclude='composer.json' \
+            --exclude='composer.lock' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='scripts/' \
+            ./ "${LIVE_SERVER_USER}@${LIVE_SERVER_IP}:${THEME_DEST}/"
+
+      - name: rsync the theme to the live theme directory
+        run: |
+          set -euo pipefail
+          # --delete is scoped to the theme directory above and nowhere else.
+          # Nothing in this repository syncs to /var/www/maulik-dev, so
+          # wp-includes, wp-admin and other themes are never in the blast radius.
+          #
+          # The exclude list keeps dev only trees out of the web root. None of
+          # it is needed at runtime, and shipping it would publish internal
+          # documentation and the deploy mechanics over HTTP. The live install
+          # also carries a deny .htaccess inside the theme dir protecting the
+          # same paths. The .htaccess is the first layer and this exclude list
+          # is the second: if the .htaccess is ever lost the files are not on
+          # disk to be served. Keep both.
+          rsync -az --delete \
+            -e "ssh -i deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='node_modules/' \
+            --exclude='vendor/' \
+            --exclude='deploy_key' \
+            --exclude='docs/' \
+            --exclude='tools/' \
+            --exclude='.agents/' \
+            --exclude='.audit-prompts/' \
+            --exclude='*.md' \
+            --exclude='.nvmrc' \
+            --exclude='.editorconfig' \
+            --exclude='.gitattributes' \
+            --exclude='.gitignore' \
+            --exclude='.coderabbit.yaml' \
+            --exclude='.stylelintrc.json' \
+            --exclude='eslint.config.mjs' \
+            --exclude='phpcs.xml.dist' \
+            --exclude='phpstan.neon' \
+            --exclude='composer.json' \
+            --exclude='composer.lock' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='scripts/' \
+            ./ "${LIVE_SERVER_USER}@${LIVE_SERVER_IP}:${THEME_DEST}/"
+
+      - name: Set ownership on the deployed theme
+        run: |
+          set -euo pipefail
+          ssh -i deploy_key \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=accept-new \
+            "${LIVE_SERVER_USER}@${LIVE_SERVER_IP}" \
+            "sudo -n chown -R www-data:www-data '${THEME_DEST}' && echo 'ownership set to www-data:www-data'"
+
+      # Activation runs as www-data rather than with --allow-root, so the theme
+      # is activated in the same user context WordPress runs in. A theme that is
+      # already active is a no-op and must not fail the job.
+      - name: Activate the theme
+        run: |
+          set -euo pipefail
+          ssh -i deploy_key \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=accept-new \
+            "${LIVE_SERVER_USER}@${LIVE_SERVER_IP}" \
+            "sudo -n -u www-data wp theme activate '${THEME_SLUG}' --path='${WP_PATH}' || {
+               echo 'activation returned non zero, checking whether the theme is already active';
+               sudo -n -u www-data wp theme is-active '${THEME_SLUG}' --path='${WP_PATH}';
+             }"
+
+      # Core caches a theme's block patterns in a transient keyed by the theme
+      # Version and only invalidates it when the Version changes. Copying new
+      # files into patterns/ therefore does not register them, and the front end
+      # renders fine while the new patterns stay invisible. Flushing both caches
+      # is what makes the deployed files the ones actually served.
+      - name: Clear transients and object cache
+        run: |
+          set -euo pipefail
+          ssh -i deploy_key \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=accept-new \
+            "${LIVE_SERVER_USER}@${LIVE_SERVER_IP}" \
+            "sudo -n -u www-data wp cache flush --path='${WP_PATH}'; sudo -n -u www-data wp transient delete --all --path='${WP_PATH}'"
+
+      # The verification that matters most. A PHP fatal partway through render
+      # still returns HTTP 200 with a complete <head> and no <body> at all: the
+      # recorded failure was 200 with about 65KB of content and zero body. A
+      # status code check alone passes that. So each route is asserted on the
+      # body itself, and each route must have exactly one <h1> so a template
+      # that fell through to index does not pass as a real page.
+      #
+      # assets/css/theme.css is asserted too, and separately, because a broken
+      # docroot .htaccess 404s every static asset while the HTML renders
+      # perfectly and nothing about the page load looks wrong.
+      - name: Verify the live site
+        run: |
+          set -euo pipefail
+          fail=0
+          for route in ${ROUTES}; do
+            body=$(mktemp)
+            code=$(curl -sS --max-time 30 -o "${body}" -w '%{http_code}' "${SITE_URL}${route}" 2>/dev/null || echo 000)
+            route_fail=0
+            if [ "${code}" != "200" ]; then
+              echo "FAIL ${route} returned HTTP ${code}, expected 200"
+              route_fail=1
+            else
+              if ! grep -q '<body' "${body}"; then
+                echo "FAIL ${route} returned 200 with $(wc -c < "${body}") bytes but no <body>. A PHP fatal during render produces a complete head and no body."
+                route_fail=1
+              fi
+              if ! grep -q '<main' "${body}"; then
+                echo "FAIL ${route} has no <main landmark, so the template did not render"
+                route_fail=1
+              fi
+              h1=$(grep -o '<h1' "${body}" | wc -l | tr -d ' ')
+              if [ "${h1}" != "1" ]; then
+                echo "FAIL ${route} has ${h1} <h1 elements, expected exactly 1"
+                route_fail=1
+              fi
+            fi
+            if [ "${route_fail}" = "0" ]; then
+              echo "ok   ${route} 200  $(wc -c < "${body}") bytes  ${h1:-?} h1"
+            else
+              fail=1
+            fi
+            rm -f "${body}"
+          done
+
+          asset="${SITE_URL}/wp-content/themes/${THEME_SLUG}/assets/css/theme.css"
+          result=$(curl -sS --max-time 30 -o /dev/null -w '%{http_code} %{size_download}' "${asset}" 2>/dev/null || echo "000 0")
+          code=${result%% *}
+          size=${result##* }
+          if [ "${code}" != "200" ] || [ "${size}" -le 1000 ]; then
+            echo "FAIL ${asset} returned HTTP ${code} at ${size} bytes. A broken .htaccess 404s every static asset while the HTML still renders."
+            fail=1
+          else
+            echo "ok   assets/css/theme.css 200 ${size} bytes"
+          fi
+
+          if [ "${fail}" != "0" ]; then
+            echo ""
+            echo "DEPLOY FAILED: the live site did not pass verification. The previous commit on main is still the last known good deploy; roll back with a revert merge."
+            exit 1
+          fi
+          echo ""
+          echo "DEPLOY SUCCEEDED: ${SITE_URL} is serving ${THEME_SLUG} at commit ${GITHUB_SHA}"
+
+      - name: Summary
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "### Live deploy succeeded" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Commit: \`${GITHUB_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Destination: \`${THEME_DEST}\`" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Site: <${SITE_URL}>" >> "$GITHUB_STEP_SUMMARY"
+            echo "- All routes returned 200 with a body, a main landmark and exactly one h1." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### Live deploy failed" >> "$GITHUB_STEP_SUMMARY"
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Commit: \`${GITHUB_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Destination: \`${THEME_DEST}\` (theme directory only, never the install root)" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Check the failing step above. The site may be serving the previous deploy." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Remove the ssh key
+        if: always()
+        run: rm -f deploy_key
