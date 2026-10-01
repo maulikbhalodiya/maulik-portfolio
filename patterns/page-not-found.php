@@ -32,11 +32,11 @@ defined( 'ABSPATH' ) || exit;
 	<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
 	<div class="wp-block-buttons">
 		<!-- wp:button -->
-		<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_home_url( '/' ) ); ?>"><?php echo esc_html__( 'Back to home', 'maulik-portfolio' ); ?></a></div>
+		<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_home_url( null, '/' ) ); ?>"><?php echo esc_html__( 'Back to home', 'maulik-portfolio' ); ?></a></div>
 		<!-- /wp:button -->
 
 		<!-- wp:button {"className":"is-style-outline"} -->
-		<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_home_url( '/projects/' ) ); ?>"><?php echo esc_html__( 'Browse projects', 'maulik-portfolio' ); ?></a></div>
+		<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_home_url( null, '/projects/' ) ); ?>"><?php echo esc_html__( 'Browse projects', 'maulik-portfolio' ); ?></a></div>
 		<!-- /wp:button -->
 	</div>
 	<!-- /wp:buttons -->

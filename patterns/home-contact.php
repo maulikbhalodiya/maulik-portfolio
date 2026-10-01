@@ -38,7 +38,7 @@ defined( 'ABSPATH' ) || exit;
 	<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
 	<div class="wp-block-buttons">
 		<!-- wp:button -->
-		<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_home_url( '/contact/' ) ); ?>"><?php echo esc_html__( 'Start a conversation', 'maulik-portfolio' ); ?></a></div>
+		<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_home_url( null, '/contact/' ) ); ?>"><?php echo esc_html__( 'Start a conversation', 'maulik-portfolio' ); ?></a></div>
 		<!-- /wp:button -->
 	</div>
 	<!-- /wp:buttons -->

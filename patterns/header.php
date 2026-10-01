@@ -87,7 +87,7 @@ $maulik_portfolio_nav_items = array(
 			<?php foreach ( $maulik_portfolio_nav_items as $maulik_portfolio_nav_item ) : ?>
 				<?php
 				$maulik_portfolio_nav_label = $maulik_portfolio_nav_item['label'];
-				$maulik_portfolio_nav_url   = get_home_url( $maulik_portfolio_nav_item['path'] );
+				$maulik_portfolio_nav_url   = get_home_url( null, $maulik_portfolio_nav_item['path'] );
 				?>
 				<!-- wp:navigation-link {"label":"<?php echo esc_html( $maulik_portfolio_nav_label ); ?>","type":"custom","url":"<?php echo esc_url( $maulik_portfolio_nav_url ); ?>","kind":"custom","isTopLevelLink":true} /-->
 			<?php endforeach; ?>

@@ -107,7 +107,7 @@ $maulik_portfolio_footer_columns = array(
 
 				<?php foreach ( $maulik_portfolio_footer_column['links'] as $maulik_portfolio_footer_link ) : ?>
 					<!-- wp:paragraph {"className":"site-footer__link"} -->
-					<p class="site-footer__link"><a href="<?php echo esc_url( get_home_url( $maulik_portfolio_footer_link['path'] ) ); ?>"><?php echo esc_html( $maulik_portfolio_footer_link['label'] ); ?></a></p>
+					<p class="site-footer__link"><a href="<?php echo esc_url( get_home_url( null, $maulik_portfolio_footer_link['path'] ) ); ?>"><?php echo esc_html( $maulik_portfolio_footer_link['label'] ); ?></a></p>
 					<!-- /wp:paragraph -->
 				<?php endforeach; ?>
 			</div>

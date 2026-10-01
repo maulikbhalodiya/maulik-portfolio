@@ -1,9 +1,11 @@
 {
 	"extends": [ "@wordpress/stylelint-config", "stylelint-config-recommended-scss" ],
+	"//rules": "scss/comment-no-empty is disabled deliberately. It targets an empty trailing comment on a declaration, such as a lone // after a property. It also flags the bare // spacer line used inside multi-line comment blocks, and this theme documents the reasoning for its constraints in those blocks. Removing the spacers to satisfy the rule would make the comments harder to read to save a lint preference. The declaration-level case does not arise here.",
 	"rules": {
 		"color-no-hex": null,
 		"at-rule-no-unknown": null,
-		"selector-no-vendor-prefix": null
+		"selector-no-vendor-prefix": null,
+		"scss/comment-no-empty": null
 	},
 	"overrides": [
 		{
