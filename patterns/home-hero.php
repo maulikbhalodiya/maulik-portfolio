@@ -3,8 +3,17 @@
  * Title: Home Hero
  * Slug: maulik-portfolio/home-hero
  * Categories: maulik-portfolio-home, featured
- * Description: Homepage opening section on the dark-grid surface, with the single h1.
+ * Description: Homepage section 01, the opening hero on the dark-grid surface, with the single h1.
  * Inserter: yes
+ *
+ * Section 01 of 08. Dark-grid, the design's default page surface, and the only h1
+ * on the page. There is exactly one h1 across the eight sections, so the page has
+ * one top level heading and no skips below it.
+ *
+ * THE COPY IS VERBATIM FROM THE DESIGN. Subhead, supporting sentence, both CTA
+ * labels and the bottom strip are all taken from the phase checklist rather than
+ * rewritten. Qrolic Technologies is spelled with one c after Qro, which is the
+ * correct spelling and the one the resume gets wrong.
  *
  * @package Maulik_Portfolio
  */

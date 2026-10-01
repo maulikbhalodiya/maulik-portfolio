@@ -47,14 +47,24 @@
 	advertise a blog. See patterns/header.php for the six items that do exist:
 	Home, RankKernel, Projects, About, Resume, Contact.
 -->
-<!-- wp:group {"tagName":"header","className":"site-header","layout":{"type":"constrained"}} -->
-<header class="wp-block-group site-header">
-	<!-- wp:group {"tagName":"div","className":"site-header__inner","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between"}} -->
-	<div class="wp-block-group site-header__inner">
-		<!-- wp:site-title {"level":0,"className":"site-header__title"} /-->
+	THE BRIDGE. This part references maulik-portfolio/header, and that pattern
+	carries every word. An earlier version put an UNASSIGNED core/navigation block
+	here instead, on the reasoning that an empty navigation block costs layout
+	shift. That was wrong in a way that looked right: an unassigned navigation
+	block does not render empty, Core falls back to listing every published page,
+	so the live header silently became an alphabetical auto-list that included
+	the default Sample Page. The nav was not translatable, not ordered as the
+	design specifies, and not limited to six items. A screenshot of it looks like
+	a perfectly reasonable navigation, which is why it survived review.
 
-		<!-- wp:navigation {"className":"site-header__nav","overlayMenu":"mobile","layout":{"type":"flex","justifyContent":"right"}} /-->
-	</div>
-	<!-- /wp:group -->
-</header>
-<!-- /wp:group -->
+	The correct chain is:
+
+	  template  ->  wp:template-part  ->  wp:pattern  ->  words
+
+	Each hop is explicit, and the words stay in PHP where they can be translated.
+
+	NO WRITING OR BLOG LINK. The theme supports posts, but the site does not
+	advertise a blog. See patterns/header.php for the six items that do exist:
+	Home, RankKernel, Projects, About, Resume, Contact.
+-->
+<!-- wp:pattern {"slug":"maulik-portfolio/header"} /-->

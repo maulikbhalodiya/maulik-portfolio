@@ -1,6 +1,18 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/theme.json",
 	"version": 3,
+	"customTemplates": [
+		{ "name": "portfolio", "title": "Case Study", "postTypes": [ "page" ] },
+		{ "name": "projects", "title": "Projects Archive", "postTypes": [ "page" ] },
+		{ "name": "about", "title": "About", "postTypes": [ "page" ] },
+		{ "name": "contact", "title": "Contact", "postTypes": [ "page" ] },
+		{ "name": "resume", "title": "Resume", "postTypes": [ "page" ] },
+		{ "name": "rankkernel", "title": "RankKernel", "postTypes": [ "page" ] }
+	],
+	"templateParts": [
+		{ "name": "header", "title": "Header", "area": "header" },
+		{ "name": "footer", "title": "Footer", "area": "footer" }
+	],
 	"settings": {
 		"appearanceTools": true,
 		"useRootPaddingAwareAlignments": true,

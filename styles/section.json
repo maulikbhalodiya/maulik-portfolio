@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "Section",
+	"slug": "section",
+	"blockTypes": [ "core/group" ],
+	"styles": {
+		"spacing": {
+			"padding": {
+				"top": "clamp(4rem, 8vw, 6rem)",
+				"bottom": "clamp(4rem, 8vw, 6rem)"
+			},
+			"blockGap": "var(--wp--preset--spacing--50)"
+		}
+	}
+}

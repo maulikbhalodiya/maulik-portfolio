@@ -14,14 +14,25 @@
  * text domain, because a template part is parsed rather than executed and cannot
  * translate anything.
  *
- * The copyright year is generated with wp_date( 'Y' ), never hardcoded. A
- * hardcoded year is not a translation bug, it is a correctness bug, and it is
- * the kind of thing that survives for years because nothing breaks visibly.
+ * THE GRID IS 5 / 2 / 3 / 2 AND THAT IS DELIBERATE. Identity takes five columns,
+ * Explore two, Development three, Connect two. Do not balance it to three/three/
+ * three/three. The asymmetry is in the design and it reads better than a balanced
+ * four up, because the identity block genuinely has more to say than a list of
+ * three links and the layout says so before you have read a word.
+ *
+ * Each column below carries its own class, and those classes are what the
+ * asymmetric grid is written against. A loop that emitted four identical columns
+ * would produce a balanced grid with the same markup, which is the specific bug
+ * this array shape exists to prevent.
+ *
+ * THE COPYRIGHT YEAR IS GENERATED, NEVER HARDCODED. A hardcoded year is not a
+ * translation bug, it is a correctness bug, and it is the kind of thing that
+ * survives for years because nothing breaks visibly.
  *
  * PATTERNS RUN ON init. The conditional tags, the queried post accessor and the
  * loop are not available and are not used. Iterating this file's own arrays is.
  *
- * There is no email link, no mailto and no plaintext address, in this pattern or
+ * There is no email link, no mail link and no plaintext address, here or
  * anywhere else in the theme. There is no Writing or Blog link either.
  *
  * @package Maulik_Portfolio
@@ -30,15 +41,14 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Footer columns, each with its own translated heading and its own link list.
+ * Footer columns, each with its own column class, heading and link list.
  *
  * The five/two/three/two split is asymmetric on purpose. Do not balance it to
  * three/three/three/three.
- *
- * @var array<int, array{heading: string, links: array<int, array{label: string, path: string}>}> $maulik_portfolio_footer_columns Footer columns and their links.
  */
 $maulik_portfolio_footer_columns = array(
 	array(
+		'class'   => 'site-footer__col--explore',
 		'heading' => __( 'Explore', 'maulik-portfolio' ),
 		'links'   => array(
 			array(
@@ -46,31 +56,45 @@ $maulik_portfolio_footer_columns = array(
 				'path'  => '/',
 			),
 			array(
-				'label' => __( 'About', 'maulik-portfolio' ),
-				'path'  => '/about/',
+				'label' => __( 'Projects', 'maulik-portfolio' ),
+				'path'  => '/projects/',
 			),
-			array(
-				'label' => __( 'Resume', 'maulik-portfolio' ),
-				'path'  => '/resume/',
-			),
-		),
-	),
-	array(
-		'heading' => __( 'Development', 'maulik-portfolio' ),
-		'links'   => array(
 			array(
 				'label' => __( 'RankKernel', 'maulik-portfolio' ),
 				'path'  => '/rankkernel/',
 			),
 			array(
-				'label' => __( 'Projects', 'maulik-portfolio' ),
+				'label' => __( 'About', 'maulik-portfolio' ),
+				'path'  => '/about/',
+			),
+		),
+	),
+	array(
+		'class'   => 'site-footer__col--development',
+		'heading' => __( 'Development', 'maulik-portfolio' ),
+		'links'   => array(
+			array(
+				'label' => __( 'WordPress Engineering', 'maulik-portfolio' ),
+				'path'  => '/projects/',
+			),
+			array(
+				'label' => __( 'PHP Backend', 'maulik-portfolio' ),
+				'path'  => '/projects/',
+			),
+			array(
+				'label' => __( 'Security', 'maulik-portfolio' ),
 				'path'  => '/projects/',
 			),
 		),
 	),
 	array(
+		'class'   => 'site-footer__col--connect',
 		'heading' => __( 'Connect', 'maulik-portfolio' ),
 		'links'   => array(
+			array(
+				'label' => __( 'Resume', 'maulik-portfolio' ),
+				'path'  => '/resume/',
+			),
 			array(
 				'label' => __( 'Contact', 'maulik-portfolio' ),
 				'path'  => '/contact/',
@@ -89,21 +113,21 @@ $maulik_portfolio_footer_columns = array(
 			<!-- wp:site-title {"level":2,"className":"site-footer__brand"} /-->
 
 			<!-- wp:paragraph {"className":"site-footer__identity-line"} -->
-			<p class="site-footer__identity-line"><?php echo esc_html__( 'WordPress Developer and PHP Engineer', 'maulik-portfolio' ); ?></p>
+			<p class="site-footer__identity-line"><?php echo esc_html__( 'WordPress Developer | PHP Engineer | Custom Plugin Developer', 'maulik-portfolio' ); ?></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph {"className":"site-footer__identity-line"} -->
+			<p class="site-footer__identity-line"><?php echo esc_html__( 'WordPress Developer at Qrolic Technologies', 'maulik-portfolio' ); ?></p>
 			<!-- /wp:paragraph -->
 		</div>
 		<!-- /wp:group -->
 
 		<?php foreach ( $maulik_portfolio_footer_columns as $maulik_portfolio_footer_column ) : ?>
-			<!-- wp:group {"tagName":"div","className":"site-footer__col","layout":{"type":"constrained"}} -->
-			<div class="wp-block-group site-footer__col">
+			<!-- wp:group {"tagName":"div","className":"site-footer__col <?php echo esc_attr( $maulik_portfolio_footer_column['class'] ); ?>","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group site-footer__col <?php echo esc_attr( $maulik_portfolio_footer_column['class'] ); ?>">
 				<!-- wp:heading {"level":2,"className":"site-footer__heading"} -->
 				<h2 class="wp-block-heading site-footer__heading"><?php echo esc_html( $maulik_portfolio_footer_column['heading'] ); ?></h2>
 				<!-- /wp:heading -->
-
-				<!-- wp:paragraph {"className":"site-footer__nav"} -->
-				<p class="site-footer__nav"><?php echo esc_html__( 'Navigation', 'maulik-portfolio' ); ?></p>
-				<!-- /wp:paragraph -->
 
 				<?php foreach ( $maulik_portfolio_footer_column['links'] as $maulik_portfolio_footer_link ) : ?>
 					<!-- wp:paragraph {"className":"site-footer__link"} -->
@@ -121,11 +145,11 @@ $maulik_portfolio_footer_columns = array(
 	<!-- wp:group {"tagName":"div","className":"site-footer__legal","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
 	<div class="wp-block-group site-footer__legal">
 		<!-- wp:paragraph {"className":"site-footer__copyright","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-		<p class="site-footer__copyright"><?php echo esc_html( sprintf( /* translators: %s: the current year. */ __( 'Copyright %s Maulik Bhalodiya', 'maulik-portfolio' ), wp_date( 'Y' ) ) ); ?></p>
+		<p class="site-footer__copyright"><?php echo esc_html( sprintf( /* translators: %s: the current year. */ __( '© %s Maulik Bhalodiya', 'maulik-portfolio' ), wp_date( 'Y' ) ) ); ?></p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:paragraph {"className":"site-footer__technical","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-		<p class="site-footer__technical"><?php echo esc_html__( 'WordPress Block Theme Ready Architecture', 'maulik-portfolio' ); ?></p>
+		<p class="site-footer__technical"><?php echo esc_html__( 'WordPress Block Theme Ready Architecture · Structured Data Prototype', 'maulik-portfolio' ); ?></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->

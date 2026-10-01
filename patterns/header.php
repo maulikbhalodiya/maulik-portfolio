@@ -26,7 +26,7 @@
  * site does not advertise a blog, so the capability exists without being
  * announced.
  *
- * A SUBTLE ONE THAT BITES EVERYONE. The navigation-link labels sit INSIDE the
+ * THE SUBTLE ONE THAT BITES EVERYONE. The navigation-link labels sit INSIDE the
  * JSON in the block comment, so they must not be passed through esc_attr().
  * esc_attr() turns every double quote into &quot;, and &quot; is not valid
  * JSON, so Core silently fails to parse the block and the menu does not render.
@@ -35,6 +35,11 @@
  * to be escaped, which lands straight back in the same trap. Core's own
  * patterns put the PHP between the JSON quotes and let the output be the value.
  * The rendered markup is checked for this in CI rather than assumed.
+ *
+ * get_home_url() TAKES ITS BLOG ID FIRST. get_home_url( '/resume/' ) passes a
+ * path as $blog_id, which is typed int|null, so the path is cast away and every
+ * link silently resolves to the bare homepage. That is a live trap in this
+ * codebase, which is why every call below is get_home_url( null, $path ).
  *
  * @package Maulik_Portfolio
  */
@@ -46,32 +51,45 @@ defined( 'ABSPATH' ) || exit;
  *
  * An own array iterated here is safe. Reaching for the queried object is not.
  *
- * @var array<int, array{label: string, path: string}> $maulik_portfolio_nav_items Header navigation items.
+ * The class column exists for one item only. core/navigation-link has no color
+ * support at all: block.json gives it usesContext for textColor but never reads
+ * it from its own attributes, so a per-item textColor would be parsed and then
+ * discarded, and the Resume item would render in the default grey. A class is
+ * the only thing a navigation-link can actually carry, so that is what it
+ * carries, and the amber lives in the stylesheet.
  */
 $maulik_portfolio_nav_items = array(
 	array(
 		'label' => __( 'Home', 'maulik-portfolio' ),
 		'path'  => '/',
+		'class' => '',
 	),
 	array(
 		'label' => __( 'RankKernel', 'maulik-portfolio' ),
 		'path'  => '/rankkernel/',
+		'class' => '',
 	),
 	array(
 		'label' => __( 'Projects', 'maulik-portfolio' ),
 		'path'  => '/projects/',
+		'class' => '',
 	),
 	array(
 		'label' => __( 'About', 'maulik-portfolio' ),
 		'path'  => '/about/',
+		'class' => '',
 	),
 	array(
+		// Always amber, active or not. It is a different kind of action, not
+		// another destination in the same series.
 		'label' => __( 'Resume', 'maulik-portfolio' ),
 		'path'  => '/resume/',
+		'class' => 'site-header__nav-resume',
 	),
 	array(
 		'label' => __( 'Contact', 'maulik-portfolio' ),
 		'path'  => '/contact/',
+		'class' => '',
 	),
 );
 
@@ -88,8 +106,13 @@ $maulik_portfolio_nav_items = array(
 				<?php
 				$maulik_portfolio_nav_label = $maulik_portfolio_nav_item['label'];
 				$maulik_portfolio_nav_url   = get_home_url( null, $maulik_portfolio_nav_item['path'] );
+				$maulik_portfolio_nav_class = $maulik_portfolio_nav_item['class'];
 				?>
-				<!-- wp:navigation-link {"label":"<?php echo esc_html( $maulik_portfolio_nav_label ); ?>","type":"custom","url":"<?php echo esc_url( $maulik_portfolio_nav_url ); ?>","kind":"custom","isTopLevelLink":true} /-->
+				<!-- wp:navigation-link {"label":"<?php echo esc_html( $maulik_portfolio_nav_label ); ?>","url":"<?php echo esc_url( $maulik_portfolio_nav_url ); ?>","kind":"custom","isTopLevelLink":true
+				<?php
+				if ( '' !== $maulik_portfolio_nav_class ) :
+					?>
+					,"className":"<?php echo esc_attr( $maulik_portfolio_nav_class ); ?>"<?php endif; ?>} /-->
 			<?php endforeach; ?>
 		</nav>
 		<!-- /wp:navigation -->

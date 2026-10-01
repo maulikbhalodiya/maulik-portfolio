@@ -1,0 +1,14 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "Warm Editorial",
+	"slug": "surface-warm-editorial",
+	"blockTypes": [ "core/group" ],
+	"styles": {
+		"color": {
+			"background": "var:preset|color|paper",
+			"text": "var:preset|color|text-on-paper"
+		},
+		"css": "background-image: linear-gradient(to bottom, rgba(10, 10, 11, 0.035) 1px, transparent 1px);\nbackground-size: 64px 64px;\n& a{color: var(--wp--preset--color--accent-on-paper);}\n& a:visited{color: var(--wp--preset--color--accent-on-paper);}\n& a:hover{color: var(--wp--preset--color--accent-on-paper);}\n& a:focus-visible{outline: 2px solid var(--wp--preset--color--accent-on-paper);outline-offset: 3px;}"
+	}
+}

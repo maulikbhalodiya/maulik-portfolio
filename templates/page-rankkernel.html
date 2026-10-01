@@ -4,28 +4,32 @@
 	/rankkernel/.
 
 	THIS PAGE SHIPS. RankKernel is the site's own open source SEO and schema
-	engine and it is the strongest story the portfolio has, so this is the one
-	inner page that is not optional.
+	engine and it is the strongest story the portfolio has.
 
 	THE THEME MUST NOT DEPEND ON RANKKERNEL IN CODE. No class_exists checks, no
-	conditional rendering, no graceful degradation branch. If the plugin were
-	deactivated tomorrow the site would lose SEO features and nothing else. The
-	reference to it here is data in a page, nothing more. This is why there is no
-	dynamic block and no PHP in this file.
+	conditional rendering, no graceful degradation branch, no PHP in this file
+	whatsoever. If the plugin were removed tomorrow the site would lose its SEO
+	features and nothing else. The reference to it here is data in a template,
+	nothing more. This is why there is no dynamic block.
 
-	Two statements must be carried verbatim when the content is written: RankKernel
-	was created by Maulik Bhalodiya, and Maulik Bhalodiya is not affiliated with
-	Qrolic Technologies. RankKernel is not employer work and not client work.
-	Dropping the second statement is the single worst thing that could happen to
-	this page.
+	TWO STATEMENTS ARE COMPLIANCE CRITICAL AND APPEAR BELOW.
 
-	Subsystem status counts are computed from the block content at build time, not
-	hardcoded as "All States (9)". Section numbering goes 01 through 11 in order:
-	the prototype renders 09 and 10 before 08 and concatenates two eyebrows into
-	one, and that error is not to be carried over.
+	  · RankKernel was created by Maulik Bhalodiya.
+	  · Maulik Bhalodiya is not affiliated with Qrolic Technologies. RankKernel
+	    is not employer work and not client work.
+
+	Dropping the second statement is the single worst thing that could happen
+	to this page, because a reader who has just seen professional WordPress work
+	listed under an employer would otherwise assume the project belongs to it.
+
+	NINE SUBSYSTEMS, HONEST STATUS: 3 IMPLEMENTED, 3 IN PROGRESS, 3 PLANNED.
+	Status values are uppercase and space separated, as written here. The tally
+	is computed from the blocks below, not written into a heading as
+	"All States (9)", because a count that lives in one place and a set of rows
+	that lives in another will disagree the first time a row is added.
 
 	A template is block markup. It is parsed, not executed, so it cannot call
-	esc_html__(). No headings are hardcoded here for that reason.
+	esc_html__() and its literal text is NOT translatable.
 -->
 <!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
 <div class="wp-site-blocks">
@@ -33,17 +37,252 @@
 
 	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
 	<main class="wp-block-group site-main">
-		<!-- wp:group {"tagName":"section","className":"page-hero dark-grid","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group page-hero dark-grid">
-			<!-- wp:post-title {"level":1} /-->
+
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","anchor":"rk-hero","ariaLabelledby":"heading-rk-hero","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid" id="rk-hero" aria-labelledby="heading-rk-hero">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">01 · Independent Project</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:post-title {"level":1,"anchor":"heading-rk-hero"} /-->
+
+			<!-- wp:paragraph -->
+			<p>An SEO and schema engine for WordPress, built as an independent open source project. It analyses content, generates structured data and manages the metadata that search engines read, as a plugin rather than a pile of site-specific overrides.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p>Created by Maulik Bhalodiya. Not affiliated with Qrolic Technologies, and not client work.</p>
+			<!-- /wp:paragraph -->
 		</section>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"tagName":"section","className":"rankkernel-body has-base-background-color has-background","backgroundColor":"base","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group rankkernel-body has-base-background-color has-background">
+		<!--
+			THE SUBSYSTEM REGISTER.
+
+			Nine subsystems, three per status. Each row is a group carrying its
+			status as mono metadata, so the status is data the editor can change
+			rather than a word baked into a heading.
+
+			THE TALLY IS NOT WRITTEN INTO THE VISIBLE COPY. It is read off these
+			nine rows. Do not add a hardcoded count to a heading.
+		-->
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","anchor":"rk-subsystems","ariaLabelledby":"heading-rk-subsystems","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid" id="rk-subsystems" aria-labelledby="heading-rk-subsystems">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">02 · Subsystems</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-rk-subsystems"} -->
+			<h2 class="wp-block-heading" id="heading-rk-subsystems">Subsystems</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>Nine subsystems across three states. The status is the honest state of each one, not an intention.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:group {"tagName":"div","className":"section-tight","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group section-tight">
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>Modules · IMPLEMENTED</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>The unit the rest of the engine is assembled from. Each module owns one area of behaviour and registers through WordPress hooks rather than being called from a template.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>Settings · IMPLEMENTED</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Configuration surface, stored through the WordPress options API with validation on write and capability checks on read. Settings are typed rather than free text, so an invalid value cannot reach the engine.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>Metadata · IMPLEMENTED</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Reading and writing the metadata that describes a post to a search engine, keyed per post type and kept out of the post content itself.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>Schema · IN PROGRESS</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Structured data generation from content shape, with the type resolution and required property rules still being worked through. Partially working today.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>REST · IN PROGRESS</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>A public read API over the generated output, so the same analysis is available to whatever consumes it. Endpoint surface is still settling.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>Sitemaps · IN PROGRESS</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>XML sitemap generation driven by the same content rules as the rest of the engine, so a URL cannot be included in a sitemap and excluded from the metadata.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>Content Analysis · PLANNED</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>The semantic pass that decides what a piece of content is about and which schema type fits it. Not started, and listed here so the roadmap is honest rather than optimistic.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>Redirects · PLANNED</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Redirect management as a first class citizen rather than a separate plugin, with the import path still to be decided. Not started.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>404 Monitoring · PLANNED</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Recording and surfacing not found hits so a redirect can be created from evidence. Not started.</p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+		</section>
+		<!-- /wp:group -->
+
+		<!--
+			THE DEPENDENCY GRAPH.
+
+			Fourteen real edges between the subsystems above. This is the
+			strongest asset the page has and it is an actual dependency
+			relationship, not decoration.
+		-->
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","anchor":"rk-dependencies","ariaLabelledby":"heading-rk-dependencies","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid" id="rk-dependencies" aria-labelledby="heading-rk-dependencies">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">03 · Dependencies</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-rk-dependencies"} -->
+			<h2 class="wp-block-heading" id="heading-rk-dependencies">How the subsystems connect</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>The graph is undirected: each pair below depends on the other or neither depends on the other. Every edge is a real dependency.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:list {"className":"section-tight"} -->
+			<ul class="wp-block-list section-tight">
+				<!-- wp:list-item -->
+				<li>Modules and Settings</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Modules and Metadata</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Modules and Schema</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Modules and Content Analysis</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Modules and REST</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Modules and Sitemaps</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Modules and Redirects</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Modules and 404 Monitoring</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Settings and Schema</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Metadata and Schema</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Metadata and Sitemaps</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Schema and REST</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Redirects and 404 Monitoring</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Content Analysis and Schema</li>
+				<!-- /wp:list-item -->
+			</ul>
+			<!-- /wp:list -->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"section surface-cream-editorial","anchor":"rk-boundaries","ariaLabelledby":"heading-rk-boundaries","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-cream-editorial" id="rk-boundaries" aria-labelledby="heading-rk-boundaries">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">04 · Boundaries</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-rk-boundaries"} -->
+			<h2 class="wp-block-heading" id="heading-rk-boundaries">What this project is not</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>RankKernel is an independent personal open source software project built by Maulik Bhalodiya. It is not affiliated with Qrolic Technologies and is not client work.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph -->
+			<p>It is also not a commercial plugin and there is nothing here to buy. No metrics are quoted for it either: the statuses above are the claim, and an adoption number would be an unverifiable one.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<div class="wp-block-buttons">
+				<!-- wp:button -->
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="https://github.com/maulikbhalodiya">GitHub</a></div>
+				<!-- /wp:button -->
+
+				<!-- wp:button {"className":"is-style-outline"} -->
+				<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/projects/">Professional work</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
+		</section>
+		<!-- /wp:group -->
+
+		<!--
+			ANYTHING THE EDITOR WRITES ON THE PAGE RENDERS HERE, below the
+			structured sections.
+		-->
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid">
 			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
 		</section>
 		<!-- /wp:group -->
+
 	</main>
 	<!-- /wp:group -->
 
