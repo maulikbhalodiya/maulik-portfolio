@@ -1,6 +1,6 @@
 # Performance and efficiency
 
-Review target: the `maulik-dev` WordPress **block theme**. Performance here is not a
+Review target: the `maulik-portfolio` WordPress **block theme**. Performance here is not a
 nice-to-have. It is the reason this theme exists in the shape it does, and the budgets
 below are hard targets that CI and the audit both check.
 
@@ -73,7 +73,7 @@ stylesheet, the handle must have a known path. That is what this does in
 `inc/assets.php`:
 
 ```php
-wp_style_add_data( 'maulik-dev-style', 'path', get_parent_theme_file_path( 'style.css' ) );
+wp_style_add_data( 'maulik-portfolio-style', 'path', get_parent_theme_file_path( 'style.css' ) );
 ```
 
 Core uses that path to build per-block style dependencies. Without it, Core cannot see
@@ -288,10 +288,10 @@ Other font rules:
 
 Target: **TTFB under 400ms at p75**.
 
-- **Version assets with `filemtime()`.** See `maulik_dev_asset_version()` in
+- **Version assets with `filemtime()`.** See `maulik_portfolio_asset_version()` in
   `inc/assets.php` for the reference implementation. It checks `is_readable()`,
   checks that `filemtime()` did not return `false`, and falls back to
-  `MAULIK_DEV_VERSION` when the file is missing, which is the common case in a
+  `MAULIK_PORTFOLIO_VERSION` when the file is missing, which is the common case in a
   distributed ZIP.
 
   The reason for `filemtime()` rather than the theme version alone: bumping a version
@@ -302,7 +302,7 @@ Target: **TTFB under 400ms at p75**.
 - **Never generate cache keys from `time()`, `microtime()`, `rand()`, or
   `uniqid()`.** That defeats the cache entirely and is a common way to discover that
   "the page cache is not working" when in fact nothing is cacheable.
-- `MAULIK_DEV_VERSION` is defined once in `functions.php` and used as the fallback, not
+- `MAULIK_PORTFOLIO_VERSION` is defined once in `functions.php` and used as the fallback, not
   recomputed per call.
 
 ---

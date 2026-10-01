@@ -16,7 +16,7 @@ path_filters:
 path_instructions:
   - path: '**/*.php'
     instructions: |
-      This repository is the `maulik-dev` WordPress block theme. WordPress Coding
+      This repository is the `maulik-portfolio` WordPress block theme. WordPress Coding
       Standards are enforced with ZERO tolerance. This repository treats warnings as
       failures, so a diff that produces even one warning does not pass. Review against
       phpcs.xml.dist and report anything it would flag.
@@ -50,10 +50,10 @@ path_instructions:
           its docblock. The one exception is a namespaced file, where `namespace X;`
           must come first because PHP requires it to be the very first statement, as in
           inc/helpers.php.
-      11. Prefixing is strict: `maulik_dev` for functions and globals, `MAULIK_DEV` for
-          constants, `maulik-dev` for the text domain, enqueue handles and CSS classes.
-          Internal helpers that are never hooked move into `namespace Maulik_Dev;`.
-      12. The text domain is exactly `maulik-dev`. Not maulik_dev, not MaulikDev,
+      11. Prefixing is strict: `maulik_portfolio` for functions and globals, `MAULIK_PORTFOLIO` for
+          constants, `maulik-portfolio` for the text domain, enqueue handles and CSS classes.
+          Internal helpers that are never hooked move into `namespace Maulik_Portfolio;`.
+      12. The text domain is exactly `maulik-portfolio`. Not maulik_portfolio, not MaulikPortfolio,
           not maulikdev.
       13. Escaping happens LATE, per output context: esc_html() for HTML text,
           esc_attr() for HTML attributes, esc_url() for URLs in href and src,

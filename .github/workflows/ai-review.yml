@@ -63,11 +63,11 @@ jobs:
             !package-lock.json
             !composer.lock
           project_context: |
-            You are reviewing a WordPress BLOCK THEME repository named maulik-dev.
+            You are reviewing a WordPress BLOCK THEME repository named maulik-portfolio.
             It is the personal developer portfolio theme of Maulik Bhalodiya, a
             WordPress and PHP developer. The theme slug, text domain, asset handle
-            prefix and function prefix all use the string maulik-dev (functions
-            maulik_dev, constants MAULIK_DEV).
+            prefix and function prefix all use the string maulik-portfolio (functions
+            maulik_portfolio, constants MAULIK_PORTFOLIO).
 
             The theme targets WordPress 6.7 minimum, tested to 6.9, and PHP 7.4
             minimum.
@@ -239,9 +239,9 @@ jobs:
             !composer.lock
           project_context: |
             You are fixing review findings in a WordPress BLOCK THEME repository
-            named maulik-dev, the personal developer portfolio theme of Maulik
+            named maulik-portfolio, the personal developer portfolio theme of Maulik
             Bhalodiya. The theme slug, text domain and asset handle prefix all use
-            maulik-dev (functions maulik_dev, constants MAULIK_DEV).
+            maulik-portfolio (functions maulik_portfolio, constants MAULIK_PORTFOLIO).
 
             Fix findings. Do not redesign, do not add features, and do not change
             behaviour that was not the subject of a finding.
@@ -343,7 +343,9 @@ jobs:
             | xargs -0 -n1 -P4 php -l
 
       - name: PHP_CodeSniffer
-        run: vendor/bin/phpcs --standard=phpcs.xml.dist --report=checkstyle | cs2pr
+        run: |
+          set -o pipefail
+          vendor/bin/phpcs --standard=phpcs.xml.dist --report=checkstyle -q | cs2pr
 
       - name: PHPStan
         run: composer stan

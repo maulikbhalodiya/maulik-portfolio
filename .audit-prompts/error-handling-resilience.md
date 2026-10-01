@@ -1,6 +1,6 @@
 # Error handling and resilience
 
-Review target: the `maulik-dev` WordPress **block theme**. A theme that fails loudly
+Review target: the `maulik-portfolio` WordPress **block theme**. A theme that fails loudly
 and locally is fixable. A theme that fails quietly produces a blank page, a white
 footer, or a silent data problem that someone notices months later.
 
@@ -36,7 +36,7 @@ whatever the file `return`s. So:
 /**
  * Render callback.
  *
- * @package Maulik_Dev
+ * @package Maulik_Portfolio
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -211,7 +211,7 @@ was not careful about it.
   function that returns `false` or `null` on failure needs the check.
 - `file_exists()` before `filemtime()` is not enough, because the file can exist and be
   unreadable. `is_readable()` is the correct predicate. See
-  `maulik_dev_asset_version()` in `inc/assets.php` for the pattern: check
+  `maulik_portfolio_asset_version()` in `inc/assets.php` for the pattern: check
   `is_readable()`, check that `filemtime()` did not return `false`, fall back to the
   theme version. That function is the reference implementation for this pattern.
 - `mkdir()` and `mkdir()` failure: check the return, and remember `mkdir()` returning
@@ -243,8 +243,8 @@ failure.
 **both** conditions hold:
 
 1. `WP_DEBUG` is true, which WordPress sets only on development installs
-2. `MAULIK_DEV_NOINDEX` is explicitly defined and true, **or** the
-   `maulik_dev_noindex` option is truthy
+2. `MAULIK_PORTFOLIO_NOINDEX` is explicitly defined and true, **or** the
+   `maulik_portfolio_noindex` option is truthy
 
 The point of the double gate is that no single stray constant or option can deindex a
 production site. The trap being defended against is a leftover `define()` in a

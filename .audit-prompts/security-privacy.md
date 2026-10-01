@@ -1,6 +1,6 @@
 # Security and privacy
 
-Review target: the `maulik-dev` WordPress **block theme**. This theme is a public
+Review target: the `maulik-portfolio` WordPress **block theme**. This theme is a public
 portfolio with a public contact form. There is no user data to store, no accounts to
 protect, and no custom database schema, which means the entire security surface is a
 short list that can be held to a high standard.
@@ -148,18 +148,18 @@ Either one alone is insufficient:
   control and have that browser submit the request.
 
 ```php
-if ( ! isset( $_POST['maulik_dev_nonce'] )
-	|| ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['maulik_dev_nonce'] ) ), 'maulik_dev_save' )
+if ( ! isset( $_POST['maulik_portfolio_nonce'] )
+	|| ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['maulik_portfolio_nonce'] ) ), 'maulik_portfolio_save' )
 ) {
-	wp_die( esc_html__( 'Security check failed.', 'maulik-dev' ), 403 );
+	wp_die( esc_html__( 'Security check failed.', 'maulik-portfolio' ), 403 );
 }
 
 if ( ! current_user_can( 'edit_posts' ) ) {
-	wp_die( esc_html__( 'You are not allowed to do that.', 'maulik-dev' ), 403 );
+	wp_die( esc_html__( 'You are not allowed to do that.', 'maulik-portfolio' ), 403 );
 }
 ```
 
-Nonce actions must be **specific**. `wp_create_nonce( 'maulik_dev_save' )`, never
+Nonce actions must be **specific**. `wp_create_nonce( 'maulik_portfolio_save' )`, never
 `wp_create_nonce( 'nonce' )` and never a nonce name that is reused across unrelated
 actions. A shared nonce means a CSRF token from one form is valid on another.
 
@@ -264,7 +264,7 @@ rather than telling you the input was wrong.
 $raw = isset( $_POST['field'] ) ? wp_unslash( $_POST['field'] ) : '';
 
 if ( ! is_string( $raw ) ) {
-	return new WP_Error( 'maulik_dev_invalid', __( 'Invalid input.', 'maulik-dev' ) );
+	return new WP_Error( 'maulik_portfolio_invalid', __( 'Invalid input.', 'maulik-portfolio' ) );
 }
 ```
 
@@ -350,7 +350,7 @@ and this repository runs its rules by discipline even though it is not submittin
 - **Readme header fields complete** in `style.css`: `Requires at least`, `Tested up to`,
   `Requires PHP`, `License`, `License URI`, `Text Domain`, `Tags`. Theme Check fails on
   missing or malformed ones. Current values: WordPress 6.7 and up, tested to 6.9, PHP
-  7.4, GPL-2.0-or-later, `maulik-dev`.
+  7.4, GPL-2.0-or-later, `maulik-portfolio`.
 - **No `screenshot.png` placeholder hacks.** `screenshot.png` must be 1200x900. The file
   is intentionally absent from the scaffold and is a release blocker, documented in
   `README.md`. Do not commit a fake or a stock image to satisfy a checker.
@@ -377,7 +377,7 @@ These are cheap to satisfy and worth stating so they are not violated accidental
 
 ## 11. Output formatting rules worth being strict about
 
-- Text domain is exactly `maulik-dev`. Not `maulik_dev`, not `MaulikDev`.
+- Text domain is exactly `maulik-portfolio`. Not `maulik_portfolio`, not `MaulikPortfolio`.
 - Every user-facing string goes through `esc_html_e()`, `esc_attr_e()`, `esc_html__()`,
   `esc_attr__()`, `translate()`, or `_x()` with context.
 - Every string carries a `/* translators: */` comment when a translator could plausibly
@@ -388,7 +388,7 @@ These are cheap to satisfy and worth stating so they are not violated accidental
 - **Palette entries in `theme.json` must be appended to, never reordered.** Translation
   of theme.json names uses the JSON key path as the gettext context, so reordering an
   entry silently detaches its translations. This is documented in
-  `languages/maulik-dev.pot`.
+  `languages/maulik-portfolio.pot`.
 - WordPress.org review requires **no gendered language** in user-facing copy. Use "they"
   or restructure. Applies to the site copy and to the portfolio content.
 

@@ -10,12 +10,12 @@
  * This pattern exists only to prove the patterns directory is wired up. It will
  * be replaced by real content patterns once the design is approved.
  *
- * @package Maulik_Dev
+ * @package Maulik_Portfolio
  */
 
 defined( 'ABSPATH' ) || exit;
 
 ?>
 <!-- wp:paragraph -->
-<p><?php esc_html_e( 'Maulik Dev', 'maulik-dev' ); ?></p>
+<p><?php esc_html_e( 'Maulik Portfolio', 'maulik-portfolio' ); ?></p>
 <!-- /wp:paragraph -->

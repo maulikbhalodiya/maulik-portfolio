@@ -1,11 +1,11 @@
-# Maulik Dev
+# Maulik Portfolio
 
 A dark, performance-obsessed WordPress **block theme** for the personal developer
 portfolio of Maulik Bhalodiya, a WordPress and PHP developer.
 
-Text domain: `maulik-dev`  
-Function prefix: `maulik_dev`  
-Constant prefix: `MAULIK_DEV`  
+Text domain: `maulik-portfolio`  
+Function prefix: `maulik_portfolio`  
+Constant prefix: `MAULIK_PORTFOLIO`  
 Licence: GPL-2.0-or-later
 
 ---
@@ -45,7 +45,7 @@ template behaviour that settled there.
 ## Layout
 
 ```
-maulik-dev/
+maulik-portfolio/
 ├── assets/
 │   └── styles/
 │       ├── main.scss               # single Sass entry point
@@ -56,11 +56,11 @@ maulik-dev/
 │       └── generated/              # generated from theme.json, never edit
 ├── inc/
 │   ├── assets.php                  # style enqueue
-│   ├── helpers.php                 # Maulik_Dev namespace convention
+│   ├── helpers.php                 # Maulik_Portfolio namespace convention
 │   ├── seo.php                     # development noindex gate
 │   └── setup.php                   # theme support and global filters
 ├── languages/
-│   ├── maulik-dev.pot
+│   ├── maulik-portfolio.pot
 │   └── .gitkeep
 ├── parts/
 │   ├── footer.html                 # template parts, block markup only
@@ -141,13 +141,13 @@ order. Never accept a phpcbf run as evidence that code is safe. Read the diff.
 ## Translation
 
 ```bash
-wp i18n make-pot . languages/maulik-dev.pot --domain=maulik-dev
+wp i18n make-pot . languages/maulik-portfolio.pot --domain=maulik-portfolio
 ```
 
 **Palette entries in `theme.json` must be appended to, never reordered.** WordPress
 translates theme.json names using the JSON key path as the gettext context, so
 reordering or renaming an entry silently detaches every translation attached to it. This
-is recorded in `languages/maulik-dev.pot` as well as here.
+is recorded in `languages/maulik-portfolio.pot` as well as here.
 
 ---
 
@@ -199,7 +199,7 @@ either. Any note about its contents lives here, not inline.
 
 WordPress stopped auto-enqueueing the parent stylesheet when it introduced block
 themes. `style.css` is not loaded unless something asks for it. `inc/assets.php`
-enqueues the `maulik-dev-style` handle and calls `wp_style_add_data( ..., 'path', ... )`
+enqueues the `maulik-portfolio-style` handle and calls `wp_style_add_data( ..., 'path', ... )`
 so that Core can build per-block style dependencies, which is what makes
 `should_load_separate_core_block_assets` work for this theme.
 
@@ -240,9 +240,9 @@ means a leftover `define()` in a `wp-config.php` cannot deindex a production sit
 
 PHP requires a `namespace` declaration to be the very first statement in a file, ahead
 of everything including the guard. This is the only shape a namespaced theme file can
-take, and `inc/helpers.php` demonstrates it. Hooked functions keep the `maulik_dev`
+take, and `inc/helpers.php` demonstrates it. Hooked functions keep the `maulik_portfolio`
 prefix so phpcs `PrefixAllGlobals` recognises them as theme globals; internal helpers
-that are never hooked move into `namespace Maulik_Dev;`.
+that are never hooked move into `namespace Maulik_Portfolio;`.
 
 ### Why the stylelint config is shipped in the repository
 

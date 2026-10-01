@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Maulik Dev">
-	<description>PHP_CodeSniffer ruleset for the Maulik Dev block theme.</description>
+<ruleset name="Maulik Portfolio">
+	<description>PHP_CodeSniffer ruleset for the Maulik Portfolio block theme.</description>
 
 	<!--
 		WordPress-Extra already pulls in WordPress-Core, so Core is not listed
@@ -49,19 +49,19 @@
 	<rule ref="PHPCompatibilityWP"/>
 
 	<config name="text_domain">
-		<element name="maulik-dev"/>
+		<element name="maulik-portfolio"/>
 	</config>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="maulik-dev"/>
+				<element value="maulik-portfolio"/>
 			</property>
 		</properties>
 	</rule>
 
 	<!--
-		The hyphenated maulik-dev is deliberately absent from this list. It is
+		The hyphenated maulik-portfolio is deliberately absent from this list. It is
 		the text domain and the asset handle prefix, but a hyphen is not a legal
 		character in a PHP namespace, function, class, variable or constant name,
 		and PrefixAllGlobals raises InvalidPrefixPassed as a warning if it is
@@ -73,8 +73,8 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="maulik_dev"/>
-				<element value="MAULIK_DEV"/>
+				<element value="maulik_portfolio"/>
+				<element value="MAULIK_PORTFOLIO"/>
 			</property>
 		</properties>
 	</rule>

@@ -58,11 +58,11 @@ jobs:
           enable_mcp: false
           audit_category: ${{ inputs.audit_category }}
           project_context: |
-            You are auditing a WordPress BLOCK THEME repository named maulik-dev.
+            You are auditing a WordPress BLOCK THEME repository named maulik-portfolio.
             It is the personal developer portfolio theme of Maulik Bhalodiya, a
             WordPress and PHP developer. The theme slug, text domain, asset handle
-            prefix and function prefix all use maulik-dev (functions maulik_dev,
-            constants MAULIK_DEV). WordPress 6.7 minimum, tested to 6.9, PHP 7.4
+            prefix and function prefix all use maulik-portfolio (functions maulik_portfolio,
+            constants MAULIK_PORTFOLIO). WordPress 6.7 minimum, tested to 6.9, PHP 7.4
             minimum.
 
             The repository's own documentation is INTERNAL and OUT OF SCOPE. Do not

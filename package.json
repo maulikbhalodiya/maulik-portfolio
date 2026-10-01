@@ -1,7 +1,7 @@
 {
-	"name": "maulik-dev",
+	"name": "maulik-portfolio",
 	"version": "0.1.0",
-	"description": "Maulik Dev, a dark block theme for the personal developer portfolio of Maulik Bhalodiya.",
+	"description": "Maulik Portfolio, a dark block theme for the personal developer portfolio of Maulik Bhalodiya.",
 	"private": true,
 	"license": "GPL-2.0-or-later",
 	"engines": {

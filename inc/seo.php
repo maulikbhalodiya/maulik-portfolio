@@ -2,12 +2,12 @@
 /**
  * Search engine exposure controls.
  *
- * @package Maulik_Dev
+ * @package Maulik_Portfolio
  */
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'maulik_dev_is_development' ) ) {
+if ( ! function_exists( 'maulik_portfolio_is_development' ) ) {
 	/**
 	 * Determine whether the theme considers itself to be in development.
 	 *
@@ -18,29 +18,29 @@ if ( ! function_exists( 'maulik_dev_is_development' ) ) {
 	 * 1. WP_DEBUG is true. WordPress sets this to true only on development
 	 *    installs. A production install running a cached config file will have
 	 *    it false.
-	 * 2. Either MAULIK_DEV_NOINDEX is explicitly defined and true, or the
-	 *    maulik_dev_noindex option has been set to a truthy value.
+	 * 2. Either MAULIK_PORTFOLIO_NOINDEX is explicitly defined and true, or the
+	 *    maulik_portfolio_noindex option has been set to a truthy value.
 	 *
 	 * The trap this guards against is leaving a single boolean flag in wp-config
 	 * and shipping it. Because condition 1 is WP_DEBUG, defining only
-	 * MAULIK_DEV_NOINDEX on a production site does nothing at all. There is no
+	 * MAULIK_PORTFOLIO_NOINDEX on a production site does nothing at all. There is no
 	 * single constant or option that turns this on by itself, so forgetting to
 	 * clean up cannot de index a production site.
 	 *
 	 * If you genuinely need noindex on a non debug production install, set both
-	 * WP_DEBUG and MAULIK_DEV_NOINDEX and read this function's documentation
+	 * WP_DEBUG and MAULIK_PORTFOLIO_NOINDEX and read this function's documentation
 	 * again afterwards.
 	 *
 	 * @since 0.1.0
 	 *
 	 * @return bool True when noindex output is enabled.
 	 */
-	function maulik_dev_is_development() {
+	function maulik_portfolio_is_development() {
 		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
 			return false;
 		}
 
-		if ( defined( 'MAULIK_DEV_NOINDEX' ) && MAULIK_DEV_NOINDEX ) {
+		if ( defined( 'MAULIK_PORTFOLIO_NOINDEX' ) && MAULIK_PORTFOLIO_NOINDEX ) {
 			return true;
 		}
 
@@ -54,11 +54,11 @@ if ( ! function_exists( 'maulik_dev_is_development' ) ) {
 		 *
 		 * @param bool $enabled Whether noindex is enabled.
 		 */
-		return (bool) apply_filters( 'maulik_dev_noindex', (bool) get_option( 'maulik_dev_noindex', false ) );
+		return (bool) apply_filters( 'maulik_portfolio_noindex', (bool) get_option( 'maulik_portfolio_noindex', false ) );
 	}
 }
 
-if ( ! function_exists( 'maulik_dev_noindex' ) ) {
+if ( ! function_exists( 'maulik_portfolio_noindex' ) ) {
 	/**
 	 * Emit a noindex, nofollow robots meta tag while in development.
 	 *
@@ -70,8 +70,8 @@ if ( ! function_exists( 'maulik_dev_noindex' ) ) {
 	 *
 	 * @return void
 	 */
-	function maulik_dev_noindex() {
-		if ( ! maulik_dev_is_development() ) {
+	function maulik_portfolio_noindex() {
+		if ( ! maulik_portfolio_is_development() ) {
 			return;
 		}
 

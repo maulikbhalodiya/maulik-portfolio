@@ -1,6 +1,6 @@
 # Code quality and WordPress conventions
 
-Review target: the `maulik-dev` WordPress **block theme**. Everything below is a hard
+Review target: the `maulik-portfolio` WordPress **block theme**. Everything below is a hard
 requirement of this repository, not a preference. Treat any violation as a blocking
 finding.
 
@@ -103,7 +103,7 @@ Flag any query conditional or loop function called from `patterns/`.
 /**
  * One line on what this file is for.
  *
- * @package Maulik_Dev
+ * @package Maulik_Portfolio
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -167,7 +167,7 @@ blocking finding.
 
 ### 2.12 `noindex` while in development
 
-`inc/seo.php` provides `maulik_dev_is_development()` and `maulik_dev_noindex()`. The
+`inc/seo.php` provides `maulik_portfolio_is_development()` and `maulik_portfolio_noindex()`. The
 flag is gated behind `WP_DEBUG` **and** an explicit opt-in, deliberately, so that a
 stray constant cannot deindex production. Do not weaken that gate, do not remove the
 `WP_DEBUG` check, and do not move the logic somewhere the gate is easy to forget.
@@ -223,7 +223,7 @@ WordPress style is `if ( $x )`, not `if($x)` and not `if( $x )`. This applies to
 One space between the function name and the open paren, and one space after each comma:
 
 ```php
-wp_enqueue_style( 'maulik-dev-style', $uri, array(), $version ); // correct
+wp_enqueue_style( 'maulik-portfolio-style', $uri, array(), $version ); // correct
 ```
 
 ### 3.4 Yoda conditions
@@ -276,15 +276,15 @@ Every class, method, property, function, and constant gets a docblock with
 
 | Thing | Prefix |
 |---|---|
-| Functions, globals, variables | `maulik_dev` |
-| Constants | `MAULIK_DEV` |
-| Text domain, enqueue handles, CSS classes | `maulik-dev` |
-| Internal namespaced helpers | `namespace Maulik_Dev;` |
+| Functions, globals, variables | `maulik_portfolio` |
+| Constants | `MAULIK_PORTFOLIO` |
+| Text domain, enqueue handles, CSS classes | `maulik-portfolio` |
+| Internal namespaced helpers | `namespace Maulik_Portfolio;` |
 
-The text domain is exactly `maulik-dev`. Not `maulik_dev`, not `MaulikDev`, not
+The text domain is exactly `maulik-portfolio`. Not `maulik_portfolio`, not `MaulikPortfolio`, not
 `maulikdev`. `WordPress.WP.I18n` is configured to enforce this and it is checked in CI.
 
-Note that `maulik-dev` is **not** in the `PrefixAllGlobals` array, because a hyphen is
+Note that `maulik-portfolio` is **not** in the `PrefixAllGlobals` array, because a hyphen is
 not legal in a PHP symbol name and the sniff warns on it. That is deliberate.
 
 ### 3.9 Escaping happens late, per context
@@ -319,7 +319,7 @@ Do not accept "I ran phpcbf" as evidence that code is safe. Read the diff.
 
 ## 4. i18n
 
-- Text domain is `maulik-dev`, exactly.
+- Text domain is `maulik-portfolio`, exactly.
 - Every user-facing string goes through `esc_html_e()`, `esc_attr_e()`, `esc_html__()`,
   `esc_attr__()`, `translate()`, or `_x()` when context is needed.
 - Add a translator comment for any string a translator could plausibly get wrong,
@@ -331,12 +331,12 @@ Do not accept "I ran phpcbf" as evidence that code is safe. Read the diff.
 - **Palette entries in `theme.json` must be appended to, never reordered.** Translation
   of theme.json names uses the JSON key path as the gettext context, so reordering or
   renaming an entry silently detaches its translations. This is documented in
-  `languages/maulik-dev.pot`.
+  `languages/maulik-portfolio.pot`.
 
 Regenerate the POT with:
 
 ```
-wp i18n make-pot . languages/maulik-dev.pot --domain=maulik-dev
+wp i18n make-pot . languages/maulik-portfolio.pot --domain=maulik-portfolio
 ```
 
 ---

@@ -2,22 +2,22 @@
 /**
  * Shared helper functions.
  *
- * @package Maulik_Dev
+ * @package Maulik_Portfolio
  */
 
-namespace Maulik_Dev;
+namespace Maulik_Portfolio;
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'Maulik_Dev\theme_version' ) ) {
+if ( ! function_exists( 'Maulik_Portfolio\theme_version' ) ) {
 	/**
 	 * Return the theme version.
 	 *
 	 * This file exists mainly to establish the namespacing convention for the
 	 * theme. Functions that are hooked to WordPress actions keep the
-	 * maulik_dev_ prefix so that phpcs PrefixAllGlobals recognises them as
+	 * maulik_portfolio_ prefix so that phpcs PrefixAllGlobals recognises them as
 	 * theme globals. Internal helpers that are never hooked move into the
-	 * Maulik_Dev namespace so that they cannot collide with another theme.
+	 * Maulik_Portfolio namespace so that they cannot collide with another theme.
 	 *
 	 * Note the ordering constraint that this file demonstrates. The namespace
 	 * declaration has to come before any other statement in the file, including
@@ -32,6 +32,6 @@ if ( ! function_exists( 'Maulik_Dev\theme_version' ) ) {
 	 * @return string Theme version string.
 	 */
 	function theme_version() {
-		return defined( 'MAULIK_DEV_VERSION' ) ? (string) MAULIK_DEV_VERSION : '0.0.0';
+		return defined( 'MAULIK_PORTFOLIO_VERSION' ) ? (string) MAULIK_PORTFOLIO_VERSION : '0.0.0';
 	}
 }

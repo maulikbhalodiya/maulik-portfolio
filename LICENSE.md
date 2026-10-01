@@ -1,6 +1,6 @@
 # Licence
 
-## Maulik Dev
+## Maulik Portfolio
 
 Copyright (C) 2026 Maulik Bhalodiya
 

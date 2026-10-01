@@ -90,8 +90,22 @@ jobs:
           find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -print0 \
             | xargs -0 -n1 -P4 php -l
 
+      # Two defects lived on this line, both of them silent.
+      #
+      # 1. phpcs writes its progress dots to STDOUT ahead of the checkstyle XML.
+      #    cs2pr then tries to parse "....... 7 / 7 (100%)" as XML and dies with
+      #    "Start tag expected, '<' not found on line 1". It failed on a clean
+      #    tree, which is a confusing way to discover the gate works at all.
+      #    -q silences the progress output and leaves only the XML.
+      #
+      # 2. Without pipefail, the exit status of a pipeline is the status of its
+      #    LAST command. cs2pr succeeds, so the step passed even when phpcs
+      #    reported violations. The gate looked green and enforced nothing.
+      #    set -o pipefail makes a phpcs failure fail the step.
       - name: PHP_CodeSniffer
-        run: vendor/bin/phpcs --standard=phpcs.xml.dist --report=checkstyle | cs2pr
+        run: |
+          set -o pipefail
+          vendor/bin/phpcs --standard=phpcs.xml.dist --report=checkstyle -q | cs2pr
 
       - name: PHPStan
         run: composer stan

@@ -8,7 +8,7 @@
  * get_theme_file_uri() work. Anything that depends on the current query has to
  * be a template part or a block render callback instead.
  *
- * @package Maulik_Dev
+ * @package Maulik_Portfolio
  */
 
 defined( 'ABSPATH' ) || exit;

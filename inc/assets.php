@@ -2,12 +2,12 @@
 /**
  * Front end asset registration.
  *
- * @package Maulik_Dev
+ * @package Maulik_Portfolio
  */
 
 defined( 'ABSPATH' ) || exit;
 
-if ( ! function_exists( 'maulik_dev_enqueue_styles' ) ) {
+if ( ! function_exists( 'maulik_portfolio_enqueue_styles' ) ) {
 	/**
 	 * Enqueue the theme stylesheet.
 	 *
@@ -24,7 +24,7 @@ if ( ! function_exists( 'maulik_dev_enqueue_styles' ) ) {
 	 *
 	 * @return void
 	 */
-	function maulik_dev_enqueue_styles() {
+	function maulik_portfolio_enqueue_styles() {
 		$suffix = SCRIPT_DEBUG ? '.min' : '';
 
 		/*
@@ -33,17 +33,17 @@ if ( ! function_exists( 'maulik_dev_enqueue_styles' ) ) {
 		 * and have that override take effect.
 		 */
 		wp_enqueue_style(
-			'maulik-dev-style',
+			'maulik-portfolio-style',
 			get_parent_theme_file_uri( 'style' . $suffix . '.css' ),
 			array(),
-			maulik_dev_asset_version( 'style' . $suffix . '.css' )
+			maulik_portfolio_asset_version( 'style' . $suffix . '.css' )
 		);
 
-		wp_style_add_data( 'maulik-dev-style', 'path', get_parent_theme_file_path( 'style' . $suffix . '.css' ) );
+		wp_style_add_data( 'maulik-portfolio-style', 'path', get_parent_theme_file_path( 'style' . $suffix . '.css' ) );
 	}
 }
 
-if ( ! function_exists( 'maulik_dev_asset_version' ) ) {
+if ( ! function_exists( 'maulik_portfolio_asset_version' ) ) {
 	/**
 	 * Build a cache busting version string for an asset.
 	 *
@@ -58,17 +58,17 @@ if ( ! function_exists( 'maulik_dev_asset_version' ) ) {
 	 * @param string $relative_path Path relative to the theme root.
 	 * @return string Version string.
 	 */
-	function maulik_dev_asset_version( $relative_path ) {
+	function maulik_portfolio_asset_version( $relative_path ) {
 		$path = get_parent_theme_file_path( $relative_path );
 
 		if ( is_readable( $path ) ) {
 			$mtime = filemtime( $path );
 
 			if ( false !== $mtime ) {
-				return MAULIK_DEV_VERSION . '.' . (string) $mtime;
+				return MAULIK_PORTFOLIO_VERSION . '.' . (string) $mtime;
 			}
 		}
 
-		return MAULIK_DEV_VERSION;
+		return MAULIK_PORTFOLIO_VERSION;
 	}
 }
