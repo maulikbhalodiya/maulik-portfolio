@@ -180,6 +180,7 @@ jobs:
       LIVE_DEPLOY_KEY: ${{ secrets.LIVE_DEPLOY_KEY }}
       LIVE_SERVER_USER: ${{ secrets.LIVE_SERVER_USER }}
       LIVE_SERVER_IP: ${{ secrets.LIVE_SERVER_IP }}
+      DEPLOY_KEY_FINGERPRINT: ${{ vars.DEPLOY_KEY_FINGERPRINT }}
 
     steps:
       - name: Checkout
@@ -239,8 +240,48 @@ jobs:
       - name: Write the ssh key
         run: |
           set -euo pipefail
-          printf '%s\n' "$LIVE_DEPLOY_KEY" > deploy_key
+          # The secret is base64 of the private key, not the key itself.
+          #
+          # An ssh private key is a multi-line PEM block. Stored raw, it reaches
+          # the runner as a multi-line env var, and the run log showed that env
+          # block coming out mangled, which produced a deploy_key file ssh would
+          # not accept and a bare "Permission denied (publickey)" with nothing
+          # useful in the log. base64 collapses it to one line, so there is no
+          # newline or quoting ambiguity anywhere in the path.
+          #
+          # To rotate this secret:
+          #   base64 -w0 ~/.ssh/gh_actions_deploy | gh secret set LIVE_DEPLOY_KEY
+          printf '%s' "$LIVE_DEPLOY_KEY" | base64 -d > deploy_key
           chmod 600 deploy_key
+
+      - name: Verify the deploy key fingerprint matches the server
+        run: |
+          set -euo pipefail
+          # A fingerprint is derived from the public half and is public
+          # information, so logging it reveals nothing about the private key.
+          # Logging it is what turns the next failure from a guess into one line
+          # of evidence: if this prints a fingerprint, the key arrived intact and
+          # any later publickey error is a server side problem instead.
+          got="$(ssh-keygen -y -f deploy_key | ssh-keygen -lf - | awk '{print $2}')"
+          echo "deploy key fingerprint on this runner: ${got}"
+
+          # Expected fingerprint of the public key in the deploy user's
+          # authorized_keys. If these differ the runner holds a different key
+          # from the one the server trusts, which is a deployment configuration
+          # error rather than a code error.
+          expected="${DEPLOY_KEY_FINGERPRINT}"
+          if [ -n "${expected}" ]; then
+            echo "fingerprint expected by the server   : ${expected}"
+            if [ "${got}" != "${expected}" ]; then
+              echo "FAIL: the key on this runner is not the key the server trusts." >&2
+              echo "      Re-set the secret with:" >&2
+              echo "        base64 -w0 ~/.ssh/gh_actions_deploy | gh secret set LIVE_DEPLOY_KEY" >&2
+              exit 1
+            fi
+            echo "fingerprints match"
+          else
+            echo "no expected fingerprint configured, skipping comparison"
+          fi
 
       - name: Confirm ssh connectivity
         run: |
