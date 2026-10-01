@@ -1,0 +1,9 @@
+// Compile-time-only values.
+// This file is for values that Sass genuinely needs in order to do its job:
+// breakpoints, content widths, and similar. It must NOT contain colours, font
+// families or spacing scale values. Those live in theme.json and arrive as
+// --wp--preset--* custom properties. Putting a hex value here creates a second
+// source of truth for a design token and the two will drift.
+// Generated breakpoints and layout widths are forwarded from
+// abstracts/_index.scss, which pulls in generated/_theme-json-tokens.scss.
+@use '../generated/theme-json-tokens' as tokens;

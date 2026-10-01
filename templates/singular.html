@@ -1,0 +1,19 @@
+<!--
+	Single post template. Required by the CI file existence gate so that the
+	theme has a valid post shape before any design work starts.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group">
+		<!-- wp:post-title {"level":1} /-->
+		<!-- wp:post-date /-->
+		<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

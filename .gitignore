@@ -1,0 +1,19 @@
+# Dependencies. Installed from composer.json and package-lock.json.
+/vendor/
+/node_modules/
+/.wp-env/
+
+# Logs and local noise.
+*.log
+.DS_Store
+Thumbs.db
+
+# Compiled assets are deliberately NOT ignored.
+/build/ and /assets/css/ are committed on purpose so that any checkout of this
+# repository can produce the release ZIP with nothing but git clone and a
+# release script, and so that every change to compiled output shows up as a
+# reviewable diff instead of appearing from nowhere on the next build.
+#
+# The trade is deliberate: generated files add diff noise. In exchange the
+# build is reproducible from the repository alone, which is what the WordPress
+# theme directory and the release ZIP both require.

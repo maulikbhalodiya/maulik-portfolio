@@ -1,0 +1,22 @@
+{
+	"extends": [ "@wordpress/stylelint-config", "stylelint-config-recommended-scss" ],
+	"rules": {
+		"color-no-hex": null,
+		"at-rule-no-unknown": null,
+		"selector-no-vendor-prefix": null
+	},
+	"overrides": [
+		{
+			"files": [ "**/*.scss" ],
+			"customSyntax": "postcss-scss"
+		}
+	],
+	"ignoreFiles": [
+		"build/**",
+		"node_modules/**",
+		"vendor/**",
+		"assets/styles/generated/**",
+		"style.css",
+		"style.min.css"
+	]
+}

@@ -1,0 +1,19 @@
+// Single entry point for the theme stylesheet.
+// Compile with: npm run build:css
+// There is exactly one entry file. Nothing else is compiled directly, and no
+// PHP file enqueues a .scss file (CI asserts this), because the browser cannot
+// execute Sass.
+// Colours, fonts and spacing sizes are NOT defined here as SCSS variables.
+// They belong in theme.json and reach the stylesheet at runtime as
+// --wp--preset--* custom properties. Duplicating them in Sass creates two
+// sources of truth that drift the first time a palette value is tweaked in the
+// site editor.
+
+@use 'abstracts';
+@use 'base';
+@use 'components';
+@use 'utilities';
+
+:root {
+	color-scheme: dark;
+}

@@ -1,0 +1,45 @@
+{
+	"name": "maulik-dev/maulik-dev",
+	"description": "Maulik Dev, a dark block theme for the personal developer portfolio of Maulik Bhalodiya.",
+	"type": "wordpress-theme",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress",
+		"theme",
+		"block-theme"
+	],
+	"authors": [
+		{
+			"name": "Maulik Bhalodiya"
+		}
+	],
+	"require": {
+		"php": ">=7.4"
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"szepeviktor/phpstan-wordpress": "^2.0",
+		"wp-coding-standards/wpcs": "^3.4.1",
+		"phpstan/phpstan": "^2.2"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"lock": false
+	},
+	"scripts": {
+		"lint": "phpcs",
+		"lint:fix": "phpcbf",
+		"stan": "phpstan analyse --memory-limit=1G",
+		"format": "phpcbf"
+	},
+	"scripts-descriptions": {
+		"lint": "Run PHP_CodeSniffer against phpcs.xml.dist. Must report zero errors and zero warnings.",
+		"lint:fix": "Run PHP_CodeSniffer auto-fixer. Note that phpcbf cannot fix escaping, sanitizing, nonce, i18n or prepared SQL issues.",
+		"stan": "Run PHPStan static analysis at level 5.",
+		"format": "Alias of lint:fix."
+	},
+	"_comment": "PHPUnit is deliberately omitted. The theme is declarative: templates are .html and carry no executable logic, patterns run on init with no meaningful inputs to assert against, and there are no custom post types, taxonomies, shortcodes or form handlers in the initial scaffold to test. The gates that carry real signal here are phpcs, phpcs WordPress-Docs, PHPCompatibilityWP, PHPStan, the CI content rules and the token drift check. Revisit this the moment the theme gains a render.php callback or any PHP with observable behaviour."
+}

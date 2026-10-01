@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<ruleset name="Maulik Dev">
+	<description>PHP_CodeSniffer ruleset for the Maulik Dev block theme.</description>
+
+	<!--
+		WordPress-Extra already pulls in WordPress-Core, so Core is not listed
+		separately. WordPress-Docs is added on top because this theme treats
+		docblocks as part of the contract rather than as decoration:
+		every class, method, property and constant needs one.
+
+		PHPCompatibilityWP with testVersion 7.4- is what enforces the stated
+		minimum PHP requirement in CI rather than discovering it on a user's host.
+	-->
+	<file>.</file>
+
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/build/*</exclude-pattern>
+	<exclude-pattern>*/languages/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg name="basepath" value="."/>
+	<arg value="ps"/>
+
+	<config name="testVersion" value="7.4-"/>
+	<config name="minimum_wp_version" value="6.7"/>
+
+	<rule ref="WordPress-Extra"/>
+	<rule ref="WordPress-Docs"/>
+	<rule ref="Generic.Commenting.Todo"/>
+
+	<!--
+		WordPress.WP.YodaConditions is deliberately left enabled and is
+		deliberately NOT registered as auto-fixable. phpcbf will not rewrite
+		condition operand order, because doing so mechanically can change
+		evaluation order and side effects. Yoda conditions in this theme are
+		written by hand and reviewed by a human.
+
+		More broadly, and recorded here because it saves people a wasted hour:
+		phpcbf CANNOT fix escaping, sanitizing, missing nonces, i18n problems
+		or unprepared SQL. It only fixes whitespace, indentation, brace and
+		parenthesis placement, and a handful of naming and spacing sniffs. Any
+		security or i18n finding from a run of phpcbf still needs to be read and
+		fixed manually. Never accept a phpcbf run as evidence that the code is
+		safe.
+	-->
+
+	<rule ref="PHPCompatibilityWP"/>
+
+	<config name="text_domain">
+		<element name="maulik-dev"/>
+	</config>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="maulik-dev"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!--
+		The hyphenated maulik-dev is deliberately absent from this list. It is
+		the text domain and the asset handle prefix, but a hyphen is not a legal
+		character in a PHP namespace, function, class, variable or constant name,
+		and PrefixAllGlobals raises InvalidPrefixPassed as a warning if it is
+		supplied. Including it would make a clean run impossible, since this
+		repository treats warnings as failures. The handle and text domain
+		rules are enforced separately by WordPress.WP.I18n above and by the
+		conventions documented in CONTRIBUTING.md.
+	-->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="maulik_dev"/>
+				<element value="MAULIK_DEV"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.Files.FileName">
+		<properties>
+			<property name="is_theme" type="true"/>
+		</properties>
+	</rule>
+</ruleset>

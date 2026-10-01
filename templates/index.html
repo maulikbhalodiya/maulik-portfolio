@@ -1,0 +1,43 @@
+<!--
+	The presence of templates/index.html is what tells WordPress this is a block
+	theme. Together with style.css at the theme root it is the required pair.
+	If either is missing Core falls back to treating the theme as a classic theme
+	and every other file in templates/ stops being used.
+
+	This is deliberately the smallest template that is still valid. It exists to
+	prove block theme detection works, not to be a finished homepage. Build the
+	real homepage as a pattern instead.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group">
+		<!-- wp:query {"queryId":0,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":true}} -->
+		<div class="wp-block-query">
+			<!-- wp:post-template -->
+				<!-- wp:post-title {"isLink":true} /-->
+				<!-- wp:post-date /-->
+				<!-- wp:post-excerpt /-->
+			<!-- /wp:post-template -->
+
+			<!-- wp:query-pagination -->
+			<!-- wp:query-pagination-previous /-->
+			<!-- wp:query-pagination-numbers /-->
+			<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
+
+			<!-- wp:query-no-results -->
+				<!-- wp:paragraph -->
+				<p>Nothing found.</p>
+				<!-- /wp:paragraph -->
+			<!-- /wp:query-no-results -->
+		</div>
+		<!-- /wp:query -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

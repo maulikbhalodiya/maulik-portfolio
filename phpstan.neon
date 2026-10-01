@@ -1,0 +1,19 @@
+includes:
+	- vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+	level: 5
+	paths:
+		- functions.php
+		- inc
+		- patterns
+	treatPhpDocTypesAsCertain: false
+
+# Level 5 is deliberate. At level 6 and above PHPStan starts generating false
+# positives around wpdb, because wpdb methods have loosely typed returns and
+# because WordPress populates dynamic properties on core objects at runtime. The
+# extra reports from level 6+ are noise that trains people to ignore the tool,
+# which is worse than staying at level 5 and reading the output properly.
+#
+# Raise the level only in the same commit that fixes the resulting false
+# positives, never as a standalone bump.

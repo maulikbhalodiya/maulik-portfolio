@@ -1,0 +1,21 @@
+# Normalise line endings so the repository produces identical files on every
+# platform, regardless of a contributor's core.autocrlf setting.
+* text=auto eol=lf
+
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+
+# Generated files. Marking these keeps them out of GitHub language statistics
+# and out of diff review noise. They are still committed and still reviewed,
+# just not counted as hand written code.
+build/ linguist-generated=true
+assets/styles/generated/ linguist-generated=true
+*.mo linguist-generated=true
+*.po linguist-generated=true
+package-lock.json linguist-generated=true
+composer.lock linguist-generated=true

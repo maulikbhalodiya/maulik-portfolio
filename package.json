@@ -1,0 +1,25 @@
+{
+	"name": "maulik-dev",
+	"version": "0.1.0",
+	"description": "Maulik Dev, a dark block theme for the personal developer portfolio of Maulik Bhalodiya.",
+	"private": true,
+	"license": "GPL-2.0-or-later",
+	"engines": {
+		"node": "^22.22.2 || ^24.15.0 || >=26.0.0"
+	},
+	"scripts": {
+		"tokens": "node scripts/generate-scss-tokens.mjs",
+		"build:css": "sass --load-path=assets/styles assets/styles/main.scss:style.css --style=expanded --no-source-map",
+		"build:css:min": "sass --load-path=assets/styles assets/styles/main.scss:style.min.css --style=compressed --no-source-map",
+		"start": "npm run tokens && npm run build:css",
+		"lint:css": "stylelint \"assets/**/*.scss\"",
+		"lint:js": "eslint \"scripts/**/*.mjs\"",
+		"lint:md": "wp-scripts format-check \"**/*.md\"",
+		"format": "wp-scripts format \"**/*.{js,mjs,md}\""
+	},
+	"devDependencies": {
+		"@axe-core/cli": "^4.13.0",
+		"@wordpress/scripts": "^36.0.0",
+		"sass": "^1.105.0"
+	}
+}

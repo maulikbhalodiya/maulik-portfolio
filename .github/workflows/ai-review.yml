@@ -1,0 +1,412 @@
+name: AI Review
+
+# Runs an automated code review on every pull request, and can run an opt-in fix
+# pass when a maintainer asks for one with a slash command or a label.
+
+on:
+  pull_request:
+    types: [ opened, synchronize, ready_for_review, reopened ]
+  issue_comment:
+    types: [ created ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: AI review
+    # Never run on a draft. WIP pull requests generate noise and waste quota.
+    if: github.event.action != 'commented' || ! github.event.issue.pull_request.draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Resolve PR ref
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "issue_comment" ]; then
+            number="${{ github.event.issue.number }}"
+          else
+            number="${{ github.event.pull_request.number }}"
+          fi
+          # headRefOid is the exact commit the review should look at. Without it
+          # the action defaults to a branch name, which can resolve to a newer
+          # commit than the one that triggered the event.
+          oid="$(gh pr view "${number}" --json headRefOid --jq .headRefOid)"
+          echo "oid=${oid}" >> "$GITHUB_OUTPUT"
+          echo "Reviewing pull request ${number} at ${oid}"
+
+      - name: AI review
+        uses: nilesh32236/opencode-ai-reviewer@103082c963f64cb2cf979ae14b729ec41d40866e # v1.22.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          model: anthropic/claude-sonnet-4-5
+          opencode_version: 'v1.18.31'
+          require_opencode_checksum: 'false'
+          pr_number: ${{ steps.pr.outputs.oid }}
+          base_url: ${{ github.server_url }}
+          max_comments: 10
+          path_filters: |
+            !node_modules/**
+            !vendor/**
+            !build/**
+            !package-lock.json
+            !composer.lock
+          project_context: |
+            You are reviewing a WordPress BLOCK THEME repository named maulik-dev.
+            It is the personal developer portfolio theme of Maulik Bhalodiya, a
+            WordPress and PHP developer. The theme slug, text domain, asset handle
+            prefix and function prefix all use the string maulik-dev (functions
+            maulik_dev, constants MAULIK_DEV).
+
+            The theme targets WordPress 6.7 minimum, tested to 6.9, and PHP 7.4
+            minimum.
+
+            CRITICAL ARCHITECTURE RULES
+
+            1. WordPress Coding Standards 3.4.1 or later is mandatory. At or below
+               3.4.0 it is vulnerable to GHSA-3pwp-g2mj-5p3v, a remote code
+               execution issue that fires when PHP_CodeSniffer lints untrusted code.
+               CI lints fork pull requests, which is the exact trigger condition.
+
+            2. should_load_separate_core_block_assets and
+               should_load_block_assets_on_demand must both be filtered to true in
+               inc/setup.php. This is the single biggest performance lever a block
+               theme has.
+
+            3. style.css and templates/index.html must both exist or WordPress will
+               not recognise this as a block theme.
+
+            4. Never create block-templates/ or block-template-parts/. Core checks
+               file_exists() on the stylesheet directory and switches to legacy
+               handling if EITHER exists, which silently breaks templates/.
+
+            5. Theme template parts are .html and cannot contain PHP. Any header or
+               footer content needing i18n or a dynamic value belongs in
+               patterns/*.php instead.
+
+            6. Patterns execute on init, not at render. is_single(), get_post(),
+               the_title() and the loop are unavailable inside a pattern. Only
+               esc_html_e(), esc_html(), get_theme_file_uri() and iteration over
+               static data work there.
+
+            7. Every PHP file starts with defined( 'ABSPATH' ) || exit; and has a
+               WordPress docblock. A namespaced file puts namespace X; first, because
+               PHP requires it to be the very first statement.
+
+            8. render.php must be side-effect free. It is included once per block
+               instance, so declaring a function or class inside it causes a fatal
+               redeclaration error. require_once from inc/ instead.
+
+            9. block.json "type": "string" is a type assertion, not sanitization.
+               Attribute values remain untrusted at render time and must be escaped
+               per output context.
+
+            10. No custom post types, no taxonomies, no shortcodes, no form
+                handling, no register_block_type() in PHP. Project data lives in
+                block attributes inside post content.
+
+            11. Never emit a raw email address or a mailto link. Contact is a form
+                with an intent dropdown.
+
+            12. The site must be noindex while in development. The helper in
+                inc/seo.php is gated behind WP_DEBUG AND an explicit opt-in, so a
+                stray constant cannot deindex production. Do not weaken that gate.
+
+            13. No em dashes and no en dashes anywhere in shipped code or copy. This
+                is a hard content rule and CI greps for U+2014 and U+2013. It
+                applies to your own review comments too.
+
+            14. No skill percentage bars, no progress meters, no star ratings in any
+                generated output.
+
+            15. No outbound HTTP requests from the theme.
+                should_load_remote_block_patterns must stay filtered to false.
+
+            PERFORMANCE BUDGET
+
+            Lighthouse Performance 95 or better mobile and 98 or better desktop.
+            LCP under 1.8s. INP under 150ms. CLS 0.05 or lower. TTFB under 400ms at
+            p75. TBT 100ms or lower. Front end JS 150KB compressed or less. CSS
+            50KB compressed or less. Maximum 2 web fonts, self-hosted WOFF2, each
+            with metric-matched fallback @font-face declarations using size-adjust,
+            ascent-override, descent-override and line-gap-override. Multiple
+            fallbacks are required, because Arial does not exist on Android, so a
+            stack relying on it silently re-flows the page on Android and destroys
+            CLS. No jQuery anywhere.
+
+            BUILD TOOLING
+
+            @wordpress/scripts is used for stylelint, eslint and formatting only,
+            never to compile SCSS. CSS is compiled with the Dart Sass CLI and
+            --load-path. Write @use and @forward only, never @import, which is
+            deprecated in Dart Sass 1.80.0 and removed in 3.0.0. Colours, fonts and
+            spacing sizes are consumed at runtime as --wp--preset--* custom
+            properties, never duplicated as SCSS variables. Only compile-time-only
+            values, so breakpoints, content width and mixin parameters, go in
+            generated SCSS.
+
+            REVIEWER CONSTRAINTS
+
+            Report only issues you can point at with a file path and a line number.
+            Cite the exact sniff name where one applies. Never propose adding a
+            phpcs:ignore or phpcs:disable comment. Never propose editing
+            phpcs.xml.dist to weaken or remove a check. Never propose weakening or
+            deleting a test or a CI assertion. Never propose code that would itself
+            fail the gates, because your suggestions must pass phpcs.xml.dist with
+            zero errors and zero warnings. Never use an em dash or an en dash in
+            your output. Never propose a raw email address or a mailto link. Never
+            propose adding a custom post type, a shortcode or form handling.
+
+  fix:
+    name: AI fix
+    # Opt-in only. Triggered by a /fix comment from the repository owner, or by an
+    # ai-fix label applied by the owner.
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '/fix') &&
+      github.event.comment.user.type == 'OWNER'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # SECURITY: this job has contents: write. It must refuse to run against a
+      # pull request whose head lives in a different repository. Without this check
+      # an external contributor could open a pull request from a fork, add the
+      # ai-fix label through a maintainer who reviewed the title, and have the
+      # workflow execute attacker-controlled code with write access to this
+      # repository. The head owner must match the repository owner exactly.
+      - name: Refuse fork pull requests
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.owner.login }}
+          BASE_REPO: ${{ github.repository_owner }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          echo "Head repository owner: ${HEAD_REPO}"
+          echo "Base repository owner: ${BASE_REPO}"
+          if [ "${HEAD_REPO}" != "${BASE_REPO}" ]; then
+            echo "::error::This job has contents: write and will not run on fork pull requests."
+            echo "A maintainer must run /fix from a branch in this repository."
+            exit 1
+          fi
+          echo "OK: pull request ${PR_NUMBER} is from a branch in this repository."
+
+      - name: Resolve PR ref
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          oid="$(gh pr view "${{ github.event.issue.number }}" --json headRefOid --jq .headRefOid)"
+          echo "oid=${oid}" >> "$GITHUB_OUTPUT"
+          echo "Working on pull request at ${oid}"
+
+      - name: AI fix
+        uses: nilesh32236/opencode-ai-reviewer@103082c963f64cb2cf979ae14b729ec41d40866e # v1.22.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          model: anthropic/claude-sonnet-4-5
+          opencode_version: 'v1.18.31'
+          require_opencode_checksum: 'false'
+          pr_number: ${{ steps.pr.outputs.oid }}
+          base_url: ${{ github.server_url }}
+          auto_fix: true
+          max_comments: 10
+          path_filters: |
+            !node_modules/**
+            !vendor/**
+            !build/**
+            !package-lock.json
+            !composer.lock
+          project_context: |
+            You are fixing review findings in a WordPress BLOCK THEME repository
+            named maulik-dev, the personal developer portfolio theme of Maulik
+            Bhalodiya. The theme slug, text domain and asset handle prefix all use
+            maulik-dev (functions maulik_dev, constants MAULIK_DEV).
+
+            Fix findings. Do not redesign, do not add features, and do not change
+            behaviour that was not the subject of a finding.
+
+            NON NEGOTIABLE CONSTRAINTS
+
+            1. WordPress Coding Standards 3.4.1 or later. Never lower the constraint.
+            2. Your fix must pass phpcs.xml.dist with zero errors AND zero warnings.
+            3. Never add phpcs:ignore or phpcs:disable.
+            4. Never edit phpcs.xml.dist to weaken or remove a check.
+            5. Never weaken or delete a test or a CI assertion.
+            6. Never use an em dash or an en dash anywhere, including in comments
+               and commit messages.
+            7. Never emit a raw email address or a mailto link.
+            8. Never add a custom post type, a taxonomy, a shortcode, form
+               handling, or register_block_type() in PHP.
+            9. Never create block-templates/ or block-template-parts/. Block themes
+               use templates/ and parts/.
+            10. Every PHP file keeps defined( 'ABSPATH' ) || exit; after its
+                docblock, except namespaced files where namespace X; comes first.
+            11. render.php stays side-effect free. Declare nothing in it and require_once
+                from inc/ instead.
+            12. Never add an outbound HTTP request.
+            13. Colours, fonts and spacing come from theme.json as --wp--preset--*
+                properties. Never duplicate a hex value in SCSS.
+            14. Use @use and @forward in SCSS, never @import.
+            15. Indentation is one real tab in PHP, YAML and JSON, and two spaces in
+                CSS and SCSS. Yoda conditions, elseif not else if, single quotes
+                without interpolation, docblocks with @param and @return on every
+                function and method.
+            16. Escaping happens late and per context: esc_html, esc_attr, esc_url,
+                esc_url_raw, wp_json_encode, $wpdb->prepare.
+            17. Every write path needs a nonce AND a capability check, never one
+                alone, and capabilities are checked by name and never by role.
+            18. wp_unslash() always comes before sanitizing.
+
+            PERFORMANCE BUDGET
+
+            Lighthouse Performance 95 or better mobile and 98 or better desktop.
+            LCP under 1.8s. INP under 150ms. CLS 0.05 or lower. TTFB under 400ms at
+            p75. TBT 100ms or lower. Front end JS 150KB compressed or less. CSS
+            50KB compressed or less. Maximum 2 self-hosted WOFF2 web fonts with
+            metric-matched fallbacks using size-adjust, ascent-override,
+            descent-override and line-gap-override, and multiple fallbacks are
+            required because Arial does not exist on Android. No jQuery.
+
+      # The full gate suite runs after the fix. An AI-applied patch is not
+      # reviewed code until it has been through the same checks as a human one.
+      # These are the same gates as the CI workflow, deliberately duplicated
+      # rather than reused, so that this job is self-contained and cannot be
+      # silently weakened by editing the CI workflow.
+      - name: Set up PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2, cs2pr
+          extensions: filter, libxml, tokenizer, xmlreader, iconv, mbstring
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-fix-${{ hashFiles('composer.json') }}
+          restore-keys: composer-fix-
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Install PHP dependencies
+        run: composer install --no-progress --no-interaction
+
+      - name: Assert WPCS is at least 3.4.1
+        run: |
+          set -euo pipefail
+          installed="$(composer show wp-coding-standards/wpcs --format=json | php -r '$d=json_decode(stream_get_contents(STDIN), true); echo $d["versions"][0];')"
+          echo "Installed wp-coding-standards/wpcs version: ${installed}"
+          php -r '
+            $v = $argv[1];
+            if ( version_compare( ltrim( $v, "v" ), "3.4.1", "<" ) ) {
+              fwrite( STDERR, "FATAL: wp-coding-standards/wpcs ${v} is vulnerable to GHSA-3pwp-g2mj-5p3v.\n" );
+              exit( 1 );
+            }
+          ' "${installed}"
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: PHP lint
+        run: |
+          set -euo pipefail
+          find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -print0 \
+            | xargs -0 -n1 -P4 php -l
+
+      - name: PHP_CodeSniffer
+        run: vendor/bin/phpcs --standard=phpcs.xml.dist --report=checkstyle | cs2pr
+
+      - name: PHPStan
+        run: composer stan
+
+      - name: Stylelint
+        run: npm run lint:css
+
+      - name: ESLint
+        run: npm run lint:js
+
+      - name: Check generated SCSS tokens are in sync with theme.json
+        run: |
+          set -euo pipefail
+          npm run tokens
+          git diff --exit-code -- assets/styles/generated/
+
+      - name: Build CSS
+        run: |
+          set -euo pipefail
+          npm run build:css
+          test -f style.css
+
+      - name: Assert no em dashes or en dashes
+        run: |
+          set -euo pipefail
+          if git grep -nI -P '[\x{2014}\x{2013}]' -- . \
+            ':(exclude)node_modules' \
+            ':(exclude)vendor' \
+            ':(exclude)package-lock.json'; then
+            echo "::error::An em dash (U+2014) or an en dash (U+2013) was found."
+            exit 1
+          fi
+
+      - name: Assert no mailto links or raw email addresses
+        run: |
+          set -euo pipefail
+          pattern="mail$(printf 'to')"':'
+          if git grep -nI -F "${pattern}" -- . ':(exclude)node_modules' ':(exclude)vendor'; then
+            echo "::error::A mailto link was found. Contact is a form with an intent dropdown."
+            exit 1
+          fi
+          if git grep -nI -P '[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
+            ':(exclude)node_modules' ':(exclude)vendor' ':(exclude)languages/*.pot'; then
+            echo "::error::A raw email address was found in the repository."
+            exit 1
+          fi
+
+      - name: Assert no legacy block theme directories
+        run: |
+          set -euo pipefail
+          for d in block-templates block-template-parts; do
+            if [ -d "$d" ]; then
+              echo "::error::Forbidden legacy directory exists: ${d}/"
+              exit 1
+            fi
+          done
+
+      - name: Assert required theme files exist
+        run: |
+          set -euo pipefail
+          for f in style.css theme.json templates/index.html templates/singular.html templates/404.html functions.php; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Required theme file is missing: ${f}"
+              exit 1
+            fi
+          done

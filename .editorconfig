@@ -1,0 +1,36 @@
+# EditorConfig, https://editorconfig.org
+# Indentation is tabs for PHP, YAML and JSON because WordPress core, phpcs
+# WordPress-Extra and wp-scripts all assume tabs for those languages. Spaces
+# for CSS and SCSS because the Dart Sass and stylelint ecosystems both emit and
+# expect two-space indentation.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{php,yaml,yml,json}]
+indent_style = tab
+indent_size = 4
+
+[*.{css,scss}]
+indent_style = space
+indent_size = 2
+
+[*.{js,mjs,jsonc}]
+indent_style = tab
+
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+
+[*.{txt,pot,po}]
+indent_style = tab
+trim_trailing_whitespace = false
+
+[*.{html,yml}]
+indent_style = tab

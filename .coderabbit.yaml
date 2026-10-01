@@ -1,0 +1,164 @@
+language: en-US
+
+reviews:
+  profile: assertive
+  auto_review:
+    enabled: true
+  drafts: false
+
+path_filters:
+  - '!node_modules/**'
+  - '!vendor/**'
+  - '!build/**'
+  - '!package-lock.json'
+  - '!composer.lock'
+
+path_instructions:
+  - path: '**/*.php'
+    instructions: |
+      This repository is the `maulik-dev` WordPress block theme. WordPress Coding
+      Standards are enforced with ZERO tolerance. This repository treats warnings as
+      failures, so a diff that produces even one warning does not pass. Review against
+      phpcs.xml.dist and report anything it would flag.
+
+      WORDPRESS CODING STANDARDS, IN FULL
+
+      1. Indentation is ONE REAL TAB per indent level. Not spaces pretending to be a
+         tab, not a tab plus spaces, not two spaces.
+      2. Spacing inside control structures: `if ( $value ) {`, `foreach ( $items as $i ) {`,
+         `switch ( $x ) {`, `catch ( Exception $e ) {`. Always a space after the opening
+         paren and before the closing paren.
+      3. Spacing inside function calls: `wp_enqueue_style( 'handle', $uri, array(), $v );`.
+         One space between function name and open paren, one space after each comma.
+      4. Yoda conditions: constants and literals go on the LEFT. `if ( 42 === $count )`,
+         `if ( null === $result )`, `if ( true === $flag )`. phpcbf deliberately does not
+         fix this, because mechanically swapping operands can change evaluation order
+         and side effects, so it must be written correctly by hand.
+      5. `elseif`, never `else if`. They are not interchangeable. `else if` is a nested if
+         inside the else block and can silently change control flow.
+      6. Single quotes unless interpolating or needing an escape. Full `array()`
+         syntax, never `[]`.
+      7. No trailing whitespace on any line. One newline at end of file.
+      8. Aligned `=>` in array literals, whole array realigned when any value changes.
+      9. A docblock with `@param`, `@return` and `@var` on EVERY class, method,
+         property, function and constant. This repository enables WordPress-Docs on
+         purpose. A missing @param tag is a blocking finding, not a nit.
+
+      THEME-SPECIFIC ARCHITECTURE RULES
+
+      10. Every PHP file starts with `defined( 'ABSPATH' ) || exit;` immediately after
+          its docblock. The one exception is a namespaced file, where `namespace X;`
+          must come first because PHP requires it to be the very first statement, as in
+          inc/helpers.php.
+      11. Prefixing is strict: `maulik_dev` for functions and globals, `MAULIK_DEV` for
+          constants, `maulik-dev` for the text domain, enqueue handles and CSS classes.
+          Internal helpers that are never hooked move into `namespace Maulik_Dev;`.
+      12. The text domain is exactly `maulik-dev`. Not maulik_dev, not MaulikDev,
+          not maulikdev.
+      13. Escaping happens LATE, per output context: esc_html() for HTML text,
+          esc_attr() for HTML attributes, esc_url() for URLs in href and src,
+          esc_url_raw() for URLs in queries, wp_json_encode() for JSON and script
+          blocks, $wpdb->prepare() for SQL, translate() then escape for translated text.
+          Sanitize on the way in, escape on the way out, at the point of output.
+          Sanitizing once at storage time and trusting it later is a security bug.
+      14. Every write path checks a NONCE and a CAPABILITY. Never one alone. A nonce
+          proves the request came from a page the user loaded, a capability proves the
+          user may do the thing. Check capabilities with current_user_can() using a
+          capability name, never a role name.
+      15. wp_unslash() always, BEFORE sanitizing. WordPress slashes superglobals, so
+          sanitizing before unslashing feeds the sanitizer backslashes it does not expect.
+      16. block.json `"type": "string"` is a TYPE ASSERTION, not sanitization. Attribute
+          values remain fully untrusted at render time and must be escaped per context.
+      17. render.php must be side-effect free. It is included once per block instance, so
+          declaring a function or class inside it causes a fatal redeclaration error on
+          the second instance. require_once from inc/ instead. Also, render.php must
+          return a string and never echo, so that emitted whitespace never becomes
+          visible DOM output.
+      18. Never create block-templates/ or block-template-parts/ directories. Core
+          checks file_exists() on the stylesheet directory and switches to legacy
+          handling if EITHER exists, which silently breaks templates/.
+      19. style.css and templates/index.html must both exist or WordPress will not
+          recognise this as a block theme.
+      20. Theme template parts are .html and cannot contain PHP. Any header or footer
+          content needing i18n or a dynamic value belongs in patterns/*.php instead.
+      21. Patterns execute on init, not at render. is_single(), get_post(), the_title()
+          and the loop are unavailable inside a pattern. Only esc_html_e(), esc_html(),
+          get_theme_file_uri() and iteration over static data work there.
+      22. No custom post types, no taxonomies, no shortcodes, no form handling, no
+          register_block_type() in PHP. Project data lives in block attributes inside
+          post content.
+      23. Never emit a raw email address or a mailto link. Contact is a form with an
+          intent dropdown.
+      24. No outbound HTTP requests. should_load_remote_block_patterns must stay
+          filtered to false.
+      25. The Theme Check banned function list: eval, base64_decode, str_rot13,
+          uudecode, system, exec, passthru, shell_exec, popen. None has a legitimate use
+          in a block theme portfolio.
+      26. Use get_theme_file_uri() and get_theme_file_path(), never
+          get_template_directory_uri() or get_template_directory(), which bypass the
+          child theme.
+      27. No em dashes and no en dashes anywhere in code, comments or copy. CI greps
+          the whole repository for U+2014 and U+2013 and fails on any hit.
+      28. No skill percentage bars, no progress meters, no star ratings in any
+          generated output.
+
+      STANDARD FOR YOUR OWN SUGGESTIONS
+
+      29. Any code you propose must itself pass phpcs.xml.dist with ZERO errors and
+          ZERO warnings. Write code you would accept in review yourself.
+      30. Never propose adding a `phpcs:ignore` or `phpcs:disable` comment. Suppressing
+          the sniff does not fix the code, it hides the problem, and it teaches the next
+          reader that the standard is optional.
+      31. Never propose editing phpcs.xml.dist to weaken or remove a check.
+      32. Never propose weakening or deleting a test or a CI assertion.
+      33. Report only issues you can point at with a file path and a line number, and
+          cite the exact sniff name. If you cannot produce both, you do not have a
+          finding.
+
+  - path: '**/*.scss'
+    instructions: |
+      SCSS RULES FOR THE MAULIK DEV THEME
+
+      1. Use `@use` and `@forward` ONLY. Never `@import`. `@import` was deprecated in
+         Dart Sass 1.80.0 and is removed in Dart Sass 3.0.0. Each directory is a partial
+         with an `_index.scss` that forwards its own partials.
+      2. Never hand-write a hex colour in a .scss file when the value belongs in
+         theme.json. The palette lives in theme.json and reaches the stylesheet at
+         runtime as --wp--preset--color--* custom properties. A hex value in Sass is a
+         second source of truth for a design token and it drifts the first time anyone
+         tweaks the palette in the site editor. Same for font families and spacing sizes.
+      3. Only compile-time-only values belong in SCSS variables: breakpoints, content
+         width, wide width, mixin parameters. Those come from
+         assets/styles/generated/_theme-json-tokens.scss, which is generated from
+         theme.json. Never edit the generated file by hand. Run `npm run tokens` and
+         commit the result. CI regenerates it and fails on drift.
+      4. assets/styles/main.scss is the single entry point. Nothing else is compiled
+         directly.
+      5. No .scss file may ever be enqueued from PHP. The browser cannot execute Sass.
+         CI asserts this.
+      6. Web fonts: 2 maximum, self-hosted WOFF2. Font fallbacks must be metric-matched
+         with size-adjust, ascent-override, descent-override and line-gap-override, and
+         MULTIPLE fallbacks are required because Arial does not exist on Android, so a
+         stack that relies on it silently re-flows the page on Android and destroys CLS.
+      7. Never fetch fonts or any other asset from a third party. No Google Fonts, no
+         CDN. Self-host.
+      8. CSS budget is 50KB compressed. Prefer deleting a rule to adding a framework.
+      9. Two spaces per indent level, not tabs. Tabs are for PHP, YAML and JSON.
+      10. No em dashes and no en dashes in comments. CI greps for U+2014 and U+2013.
+      11. Never propose adding a utility class or an abstraction that only has one or
+          two call sites. In a theme this small, indirection costs more than the
+          duplication it saves.
+
+  - path: '**/*.css'
+    instructions: |
+      CSS RULES FOR THE MAULIK DEV THEME
+
+      1. Only files under style.css and style.min.css are hand written CSS here, and
+         style.css must contain theme headers only. It is NOT auto-enqueued in a block
+         theme and must be enqueued explicitly in inc/assets.php, which is why that
+         happens.
+      2. Do not add hand-written hex colours. All colours, fonts and spacing sizes come
+         from theme.json as --wp--preset--* custom properties at runtime.
+      3. Follow the same no-em-dash and no-en-dash rule as SCSS.
+      4. Any CSS you propose must pass stylelint with the repository config, and must
+         respect the 50KB compressed budget.

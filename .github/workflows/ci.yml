@@ -1,0 +1,284 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Weekly, Monday 06:00 UTC. Catches advisories published after the last push.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  standards:
+    name: Standards (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '8.3', '8.4' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2, cs2pr
+          extensions: filter, libxml, tokenizer, xmlreader, iconv, mbstring
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ matrix.php }}-${{ hashFiles('composer.json') }}
+          restore-keys: composer-${{ matrix.php }}-
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --no-progress --no-interaction
+
+      # GHSA-3pwp-g2mj-5p3v is a remote code execution vulnerability in
+      # wp-coding-standards/wpcs at versions 3.4.0 and below. It fires when
+      # PHP_CodeSniffer lints untrusted code, which is exactly what this workflow
+      # does, because it runs against pull requests including those from forks.
+      # The composer.json constraint of ^3.4.1 is the primary defence. This
+      # assertion is the second one, so that a future constraint edit, a manual
+      # lockfile change or a resolution surprise cannot silently reintroduce a
+      # vulnerable version.
+      - name: Assert WPCS is at least 3.4.1
+        run: |
+          set -euo pipefail
+          installed="$(composer show wp-coding-standards/wpcs --format=json | php -r '$d=json_decode(stream_get_contents(STDIN), true); echo $d["versions"][0];')"
+          echo "Installed wp-coding-standards/wpcs version: ${installed}"
+          php -r '
+            $v = $argv[1];
+            if ( version_compare( ltrim( $v, "v" ), "3.4.1", "<" ) ) {
+              fwrite( STDERR, "FATAL: wp-coding-standards/wpcs ${v} is vulnerable to GHSA-3pwp-g2mj-5p3v (RCE when linting untrusted code).\n" );
+              fwrite( STDERR, "CI lints fork pull requests, which is the exact trigger condition. Minimum required version is 3.4.1.\n" );
+              exit( 1 );
+            }
+            fwrite( STDOUT, "OK: ${v} is at or above the required 3.4.1.\n" );
+          ' "${installed}"
+
+      # PHPUnit is deliberately absent from this workflow and from composer.json.
+      # The theme is declarative: templates are .html with no executable logic,
+      # patterns run on init with no meaningful inputs to assert against, and there
+      # are no custom post types, taxonomies, shortcodes or form handlers to test.
+      # The gates that carry real signal here are phpcs, WordPress-Docs,
+      # PHPCompatibilityWP, PHPStan, the content rules job and the token drift
+      # check. A green PHPUnit badge over zero tests would be actively misleading.
+      # This comment exists so the next person does not read the omission as an
+      # oversight and reintroduce an empty test harness.
+
+      - name: PHP lint
+        run: |
+          set -euo pipefail
+          find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -print0 \
+            | xargs -0 -n1 -P4 php -l
+
+      - name: PHP_CodeSniffer
+        run: vendor/bin/phpcs --standard=phpcs.xml.dist --report=checkstyle | cs2pr
+
+      - name: PHPStan
+        run: composer stan
+
+  assets:
+    name: Assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Stylelint
+        run: npm run lint:css
+
+      - name: ESLint
+        run: npm run lint:js
+
+      # The generated SCSS token file is committed so that a fresh checkout can
+      # compile the stylesheet with no Node toolchain at all. That only stays true
+      # if it is regenerated whenever theme.json changes, so drift is a build
+      # failure rather than a stale file that nobody notices.
+      - name: Check generated SCSS tokens are in sync with theme.json
+        run: |
+          set -euo pipefail
+          npm run tokens
+          if ! git diff --exit-code -- assets/styles/generated/; then
+            echo "::error::assets/styles/generated/_theme-json-tokens.scss is out of date with theme.json."
+            echo "Run 'npm run tokens' and commit the result."
+            exit 1
+          fi
+
+      # A .scss file in an enqueue call would ship raw Sass to the browser, which
+      # cannot execute it. The page would render unstyled with no obvious cause,
+      # because the handle resolves and the request returns 200.
+      - name: Assert no SCSS is enqueued from PHP
+        run: |
+          set -euo pipefail
+          if grep -rn --include='*.php' -E "wp_enqueue_style\([^)]*\.scss" -- \
+            --exclude-dir=vendor --exclude-dir=node_modules . ; then
+            echo "::error::A .scss file is being enqueued from PHP. The browser cannot execute Sass."
+            echo "Enqueue the compiled CSS in style.css and compile it with 'npm run build:css'."
+            exit 1
+          fi
+          echo "OK: no .scss file is enqueued from PHP."
+
+      - name: Build CSS
+        run: |
+          set -euo pipefail
+          npm run build:css
+          if [ ! -f style.css ]; then
+            echo "::error::style.css was not produced by the build."
+            exit 1
+          fi
+          echo "OK: style.css exists after build."
+
+  content-rules:
+    name: Content rules
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Hard content rule for this project. No em dashes, no en dashes, anywhere:
+      # not in code, not in comments, not in user-facing copy, not in docs, not in
+      # commit messages. This is enforced mechanically because it is the kind of
+      # rule that everyone agrees to and nobody remembers.
+      - name: Assert no em dashes or en dashes
+        run: |
+          set -euo pipefail
+          if git grep -nI -P '[\x{2014}\x{2013}]' -- . \
+            ':(exclude)node_modules' \
+            ':(exclude)vendor' \
+            ':(exclude)package-lock.json'; then
+            echo "::error::An em dash (U+2014) or an en dash (U+2013) was found in this repository."
+            echo "Use a comma, a colon, a semicolon, a full stop, or parentheses instead."
+            exit 1
+          fi
+          echo "OK: no em dashes or en dashes found."
+
+      # The grep pattern is assembled from a variable rather than written
+      # literally. A literal pattern inside this workflow file would match itself
+      # and fail the build forever, which is a confusing way to discover the check
+      # works.
+      - name: Assert no mailto links
+        run: |
+          set -euo pipefail
+          pattern="mail$(printf 'to')"':'
+          if git grep -nI -F "${pattern}" -- . \
+            ':(exclude)node_modules' \
+            ':(exclude)vendor' \
+            ':(exclude)package-lock.json'; then
+            echo "::error::A mailto link was found in this repository."
+            echo "Contact is a form with an intent dropdown, not an email link."
+            exit 1
+          fi
+          echo "OK: no mailto links found."
+
+      # The .pot header carries the standard gettext translator placeholder, which
+      # is what upstream wp i18n make-pot emits, so the POT file is excluded here
+      # to avoid matching on a string that has to be there.
+      - name: Assert no raw email addresses
+        run: |
+          set -euo pipefail
+          if git grep -nI -P '[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
+            ':(exclude)node_modules' \
+            ':(exclude)vendor' \
+            ':(exclude)package-lock.json' \
+            ':(exclude)languages/*.pot'; then
+            echo "::error::A raw email address was found in the repository."
+            echo "Raw addresses are scraped by automated bots within hours of a site going live."
+            echo "Contact is a form with an intent dropdown."
+            exit 1
+          fi
+          echo "OK: no raw email addresses found."
+
+  wordpress-standards:
+    name: WordPress standards
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # style.css and templates/index.html are the pair that makes WordPress
+      # recognise a block theme. If either is missing, Core falls back to classic
+      # theme handling and every other file in templates/ silently stops being
+      # used, with no error message anywhere.
+      - name: Assert required theme files exist
+        run: |
+          set -euo pipefail
+          missing=0
+          for f in style.css theme.json templates/index.html templates/singular.html templates/404.html functions.php; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Required theme file is missing: ${f}"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+          echo "OK: all required theme files exist."
+
+      # Core checks file_exists() on the stylesheet directory and switches to legacy
+      # block theme handling if EITHER block-templates/ or block-template-parts/
+      # exists. The failure is silent and it breaks templates/ entirely, so these
+      # directories must never exist. Block themes use templates/ and parts/.
+      - name: Assert forbidden legacy directories do not exist
+        run: |
+          set -euo pipefail
+          found=0
+          for d in block-templates block-template-parts; do
+            if [ -d "$d" ]; then
+              echo "::error::Forbidden legacy directory exists: ${d}/"
+              echo "Core checks file_exists() on the stylesheet directory and switches to legacy"
+              echo "handling if either exists, which silently breaks templates/. Block themes use"
+              echo "templates/ and parts/."
+              found=1
+            fi
+          done
+          if [ "$found" -ne 0 ]; then
+            exit 1
+          fi
+          echo "OK: no legacy block-templates or block-template-parts directories."
+
+      - name: Assert no legacy classic theme files
+        run: |
+          set -euo pipefail
+          found=0
+          for f in index.php header.php footer.php sidebar.php single.php page.php archive.php search.php comments.php 404.php; do
+            if [ -f "$f" ]; then
+              echo "::error::Classic theme file exists: ${f}"
+              echo "A block theme does not need index.php, and the other files belong in templates/."
+              found=1
+            fi
+          done
+          if [ "$found" -ne 0 ]; then
+            exit 1
+          fi
+          echo "OK: no classic theme PHP files."
