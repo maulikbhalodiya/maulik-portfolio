@@ -1,0 +1,22 @@
+// Texture: dark-subgrid.
+// A 32px dotted grid in amber at 14 percent, behind the skills ecosystem. Dots
+// only, never lines. The 32px cell and the amber tint are load-bearing: they are
+// what separates this from the 48px cream dark-grid at a glance.
+// No background-color is declared here on purpose. This texture sits on top of a
+// dark parent and must inherit that parent's surface step rather than resetting
+// it, otherwise it would punch a hole in whatever surface it is layered over.
+// The amber rgba() stop is a colour literal because a texture is a raw
+// background-image on a page surface rather than a theme token, and a custom
+// property cannot carry the 14 percent alpha the dot needs.
+// WordPress strips unrecognised placeholder classes from block markup, so
+// .dark-subgrid is a documented hook name, attached through a theme.json style
+// variation rather than hand applied in the editor.
+
+.dark-subgrid {
+	background-image: radial-gradient(
+		circle at 1px 1px,
+		rgba(250, 204, 21, 0.14) 1px,
+		transparent 0
+	);
+	background-size: 32px 32px;
+}

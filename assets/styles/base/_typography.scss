@@ -1,4 +1,51 @@
 // Typography.
 // Font family and font size are set from theme.json via
 // --wp--preset--font-family--* and --wp--preset--font-size--*. Do not repeat
-// those values here.
+// those values here. This layer carries only the three typographic behaviours
+// that are easy to lose and that the identity depends on.
+
+// 1. Every heading balances its line breaks. At display sizes an unbalanced
+// heading strands one short word on a line of its own, and text-wrap: balance is
+// the only thing that prevents it. Applied to the element as well as the size
+// classes so a heading keeps it when a new font size is added.
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.wp-block-heading {
+	text-wrap: balance;
+}
+
+.has-hero-font-size,
+.has-x-large-font-size {
+	text-wrap: balance;
+}
+
+// 2. Display headings run at 1.08. That is far tighter than the 1.625 body base
+// and the difference is most of the display type's character. Headings at body
+// sizes are left alone so the rhythm of the reading column does not change.
+.has-hero-font-size,
+.has-x-large-font-size,
+h1,
+h2 {
+	line-height: 1.08;
+}
+
+// 3. All mono text uses tabular figures. Timestamps, version strings and counts
+// have to line up in a column, and the default proportional figures in the mono
+// face break that alignment.
+code,
+kbd,
+samp,
+pre,
+.has-mono-font-family {
+	font-variant-numeric: tabular-nums;
+}
+
+// Body copy keeps the 1.625 base from theme.json. It is restated here only so the
+// contrast with the 1.08 display figure above is visible in one place.
+body {
+	line-height: 1.625;
+}

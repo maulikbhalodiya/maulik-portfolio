@@ -1,0 +1,36 @@
+<!--
+	CONDITION: a page using the "contact" custom template. Registered in
+	theme.json customTemplates under the name "contact". Served at /contact/.
+
+	THERE IS NO EMAIL ADDRESS ON THIS SITE. No mailto link, no plaintext address,
+	no obfuscated address, in this template, in any pattern, or anywhere else in
+	the theme. The prototype had seven plaintext occurrences and nine mailto links
+	and all of them were removed on purpose. Channel links to LinkedIn and GitHub
+	are the whole of the contact surface until the form arrives in a later phase.
+
+	A template is block markup. It is parsed, not executed, so it cannot call
+	esc_html__(). Headings come from the page content.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+		<!-- wp:group {"tagName":"section","className":"page-hero dark-grid","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group page-hero dark-grid">
+			<!-- wp:post-title {"level":1} /-->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"contact-body has-base-background-color has-background","backgroundColor":"base","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group contact-body has-base-background-color has-background">
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</section>
+		<!-- /wp:group -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

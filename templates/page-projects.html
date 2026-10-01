@@ -1,0 +1,57 @@
+<!--
+	CONDITION: a page using the "projects" custom template. Registered in
+	theme.json customTemplates under the name "projects". Served at /projects/.
+
+	The archive listing for case studies. It queries the post type rather than
+	reading a client-side filter state, because server-side filtering is what
+	works without JavaScript and costs nothing in layout shift.
+
+	THE FILTER IS A LATER PHASE. When it arrives it must be server-side filter
+	links with query parameters, not client state. The reconciliation problems in
+	the prototype filter, where the button vocabulary and the tag vocabulary are
+	different word sets, have to be resolved at that point rather than carried
+	over.
+
+	A template is block markup. It is parsed, not executed, so it cannot call
+	esc_html__(). The query is non-inheriting and unfiltered here because the
+	custom post type does not exist yet; tighten it when the CPT lands.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+		<!-- wp:group {"tagName":"section","className":"projects-hero dark-grid","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group projects-hero dark-grid">
+			<!-- wp:post-title {"level":1} /-->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"projects-archive has-base-background-color has-background","backgroundColor":"base","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group projects-archive has-base-background-color has-background">
+			<!-- wp:query {"queryId":4,"query":{"perPage":12,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","exclude":[],"sticky":"","inherit":false},"className":"is-layout-flow"} -->
+			<div class="wp-block-query is-layout-flow">
+				<!-- wp:post-template -->
+					<!-- wp:post-featured-image {"isLink":true} /-->
+					<!-- wp:post-title {"level":2,"isLink":true} /-->
+					<!-- wp:post-excerpt /-->
+				<!-- /wp:post-template -->
+
+				<!-- wp:query-no-results /-->
+
+				<!-- wp:query-pagination {"className":"is-layout-flex","layout":{"type":"flex","justifyContent":"space-between"}} -->
+					<!-- wp:query-pagination-previous /-->
+					<!-- wp:query-pagination-numbers /-->
+					<!-- wp:query-pagination-next /-->
+				<!-- /wp:query-pagination -->
+			</div>
+			<!-- /wp:query -->
+		</section>
+		<!-- /wp:group -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

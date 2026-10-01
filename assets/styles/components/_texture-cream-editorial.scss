@@ -1,0 +1,25 @@
+// Texture: cream-editorial.
+// The light rhythm section. 96px vertical hairlines in near-black at 4 percent on
+// the cream editorial ground, breaking up a long run of dark surfaces.
+// Vertical lines only. The 96px cell is the widest of the four textures and must
+// not be brought in line with warm-editorial, its mirror image at 64px with
+// horizontal lines. The size and the opposite orientation are the only things
+// that make the two light surfaces tellable apart, so neither is decorative.
+// The near-black rgba() stop is a colour literal because a texture is a raw
+// background-image on a page surface rather than a theme token, and a custom
+// property cannot carry the 4 percent alpha that keeps the hairlines behind the
+// type.
+// WordPress strips unrecognised placeholder classes from block markup, so
+// .cream-editorial is a documented hook name, attached through a theme.json
+// style variation rather than hand applied in the editor.
+
+.cream-editorial {
+	background-color: var(--wp--preset--color--paper-warm);
+	color: var(--wp--preset--color--text-on-paper);
+	background-image: linear-gradient(
+		to right,
+		rgba(10, 10, 11, 0.04) 1px,
+		transparent 1px
+	);
+	background-size: 96px 96px;
+}

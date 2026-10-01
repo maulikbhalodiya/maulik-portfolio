@@ -1,0 +1,42 @@
+<!--
+	CONDITION: a page using the "portfolio" custom template. Registered in
+	theme.json customTemplates under the name "portfolio", so an editor picks it
+	from the Page attributes panel.
+
+	Used for case study pages, which the design serves at /projects/{slug}/. The
+	archive that lists them is page-projects.html.
+
+	Case study copy is a later phase. Nothing here asserts a client name, a
+	domain, a metric, a percentage or a testimonial, because inventing any of
+	those would put an unverified claim on the public site.
+
+	A template is block markup. It is parsed, not executed, so it cannot call
+	esc_html__(). The headings are content-derived from the page itself (post
+	title) rather than hardcoded, and the section eyebrows are omitted for that
+	reason rather than shipped as untranslatable English.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+		<!-- wp:group {"tagName":"section","className":"case-study-hero dark-grid","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group case-study-hero dark-grid">
+			<!-- wp:post-title {"level":1} /-->
+
+			<!-- wp:post-date /-->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"case-study-body has-base-background-color has-background","backgroundColor":"base","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group case-study-body has-base-background-color has-background">
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</section>
+		<!-- /wp:group -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

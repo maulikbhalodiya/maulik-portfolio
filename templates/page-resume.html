@@ -1,0 +1,44 @@
+<!--
+	CONDITION: a page using the "resume" custom template. Registered in
+	theme.json customTemplates under the name "resume". Served at /resume/.
+
+	PRINT IS THE PRIMARY USE CASE FOR THIS PAGE. The chrome carries no-print so
+	the print view is the document alone, and the print styles invert to a white
+	background with black text.
+
+	ONE h1 ONLY. The prototype renders two, because the hero emits one and the
+	document content emits another. This file emits a single h1 from post-title
+	and leaves the second heading to be avoided when the content is written. Do
+	not add a second one here.
+
+	Five document sections: Professional Summary, Technical Skills, Professional
+	Experience, Selected Development Work, Education. All five arrive as page
+	content in a later phase, written from the verified record. The download
+	button is also a later phase.
+
+	A template is block markup. It is parsed, not executed, so it cannot call
+	esc_html__(). No section headings are hardcoded here for that reason.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+		<!-- wp:group {"tagName":"section","className":"page-hero dark-grid no-print","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group page-hero dark-grid no-print">
+			<!-- wp:post-title {"level":1} /-->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"resume-body has-paper-background-color has-background","backgroundColor":"paper","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group resume-body has-paper-background-color has-background">
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</section>
+		<!-- /wp:group -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

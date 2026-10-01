@@ -1,0 +1,257 @@
+// Self-hosted web fonts with metric-matched fallbacks.
+// @use only. Never @import.
+//
+// The theme ships the font binaries in assets/fonts/ and loads them from the
+// compiled stylesheet. There is no request to fonts.googleapis.com or
+// fonts.gstatic.com anywhere in the theme, so there is no third party DNS
+// lookup, TLS handshake or render blocking stylesheet on the critical path.
+//
+// Two weights per family is a deliberate cap, not an oversight. Each additional
+// weight is another file competing for the same bandwidth as the LCP element,
+// and this theme has no text that needs a third weight.
+//
+// Syne and Plus Jakarta Sans are variable fonts. Google's css2 endpoint returns
+// a single latin subset file whose wght axis spans both requested weights, so
+// each family is one @font-face declaring a weight range rather than two rules
+// pointing at the same bytes. IBM Plex Mono ships as static per-weight files
+// from the same endpoint, so it gets one rule per weight.
+
+// --- Display: Syne, 700 and 800 ------------------------------------------
+// Used by all h1 h2 h3 per theme.json.
+@font-face {
+	font-family: 'Syne';
+	src: url('../fonts/syne-latin-700-800.woff2') format('woff2');
+	font-weight: 700 800;
+	font-style: normal;
+	font-display: swap;
+}
+
+// --- Body: Plus Jakarta Sans, 400 and 600 -------------------------------
+// Used by all prose per theme.json.
+@font-face {
+	font-family: 'Plus Jakarta Sans';
+	src: url('../fonts/plus-jakarta-sans-latin-400-600.woff2') format('woff2');
+	font-weight: 400 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+// --- Technical metadata: IBM Plex Mono, 400 and 600 ----------------------
+@font-face {
+	font-family: 'IBM Plex Mono';
+	src: url('../fonts/ibm-plex-mono-latin-400.woff2') format('woff2');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'IBM Plex Mono';
+	src: url('../fonts/ibm-plex-mono-latin-600.woff2') format('woff2');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+// ---------------------------------------------------------------------------
+// Metric-matched fallbacks.
+//
+// These are declared on the FALLBACK face but carry the WEB FONT's metrics.
+// Overriding ascent, descent, line gap AND size-adjust means the fallback
+// occupies the same vertical box and advances at the same average width as the
+// web font, so when the real font arrives and font-display: swap repaints,
+// nothing moves. Matching only the vertical metrics is the common shortcut and
+// it still rewraps every line, because the horizontal advance is untouched.
+//
+// Every value below is measured, not estimated. For each pair:
+//
+//   size-adjust       = avgCharWidth(webfont) / avgCharWidth(fallback)
+//   ascent-override   = webfontAscent  / (webfontUPM * size-adjust)
+//   descent-override  = webfontDescent / (webfontUPM * size-adjust)
+//   line-gap-override = webfontLineGap / (webfontUPM * size-adjust)
+//
+// avgCharWidth is the unweighted mean advance width of the 26 lowercase ASCII
+// letters plus a space, read from hmtx with fontTools 4.66.1. Vertical metrics
+// are OS/2 sTypoAscender / sTypoDescender / sTypoLineGap, because all three web
+// fonts set fsSelection bit 7 (USE_TYPO_METRICS), which is what the browser
+// honours. For these fonts the sTypo and hhea values are identical, so that
+// choice does not move any number here. All three web fonts have a lineGap of
+// 0, hence line-gap-override: 0% rather than an omitted property.
+//
+// One override set per fallback face, because the ratio depends on the
+// fallback's own metrics. Arial and Roboto are different fonts and Android has
+// no Arial at all, so a single set could not be correct for both.
+
+// Syne 700 against Arial Bold.
+// Syne 700 avg advance 618.8889/1000upm; Arial Bold 1083.1852/2048upm.
+@font-face {
+	font-family: 'Syne Fallback';
+	src: local('Arial Bold'), local('Arial-BoldMT');
+	font-weight: 700;
+	font-style: normal;
+	size-adjust: 117.0146%;
+	ascent-override: 79.05%;
+	descent-override: 23.501%;
+	line-gap-override: 0%;
+}
+
+// Syne 800 against Arial Bold.
+// Syne 800 avg advance 899.4074/1000upm. Syne widens sharply between 700 and
+// 800 (a 45% jump in mean advance, against about 8% per 100 elsewhere on the
+// axis), so this override is far larger than the 700 one. That is the real
+// metric of the real font, and it is what keeps an 800 heading from rewrapping
+// when Syne swaps in.
+@font-face {
+	font-family: 'Syne Fallback';
+	src: local('Arial Bold'), local('Arial-BoldMT');
+	font-weight: 800;
+	font-style: normal;
+	size-adjust: 170.0527%;
+	ascent-override: 54.395%;
+	descent-override: 16.171%;
+	line-gap-override: 0%;
+}
+
+// Syne 700 against Roboto Bold, for platforms with no Arial.
+// Roboto Bold avg advance 1019.5185/2048upm.
+@font-face {
+	font-family: 'Syne Fallback Android';
+	src: local('Roboto Bold');
+	font-weight: 700;
+	font-style: normal;
+	size-adjust: 124.3218%;
+	ascent-override: 74.404%;
+	descent-override: 22.12%;
+	line-gap-override: 0%;
+}
+
+// Syne 800 against Roboto Bold.
+@font-face {
+	font-family: 'Syne Fallback Android';
+	src: local('Roboto Bold');
+	font-weight: 800;
+	font-style: normal;
+	size-adjust: 180.672%;
+	ascent-override: 51.198%;
+	descent-override: 15.221%;
+	line-gap-override: 0%;
+}
+
+// Plus Jakarta Sans 400 against Arial.
+// PJS 400 avg advance 526.5926/1000upm; Arial 986.5185/2048upm.
+@font-face {
+	font-family: 'Plus Jakarta Sans Fallback';
+	src: local('Arial'), local('Helvetica');
+	font-weight: 400;
+	font-style: normal;
+	size-adjust: 109.3202%;
+	ascent-override: 94.95%;
+	descent-override: 20.307%;
+	line-gap-override: 0%;
+}
+
+// Plus Jakarta Sans 600 against Arial Bold.
+// PJS 600 avg advance 540.7407/1000upm; Arial Bold 1083.1852/2048upm.
+@font-face {
+	font-family: 'Plus Jakarta Sans Fallback';
+	src: local('Arial Bold'), local('Arial-BoldMT');
+	font-weight: 600;
+	font-style: normal;
+	size-adjust: 102.239%;
+	ascent-override: 101.527%;
+	descent-override: 21.714%;
+	line-gap-override: 0%;
+}
+
+// Plus Jakarta Sans 400 against Roboto.
+// Roboto 400 avg advance 1003.3333/2048upm.
+@font-face {
+	font-family: 'Plus Jakarta Sans Fallback Android';
+	src: local('Roboto');
+	font-weight: 400;
+	font-style: normal;
+	size-adjust: 107.4879%;
+	ascent-override: 96.569%;
+	descent-override: 20.653%;
+	line-gap-override: 0%;
+}
+
+// Plus Jakarta Sans 600 against Roboto Bold.
+// Roboto Bold avg advance 1019.5185/2048upm.
+@font-face {
+	font-family: 'Plus Jakarta Sans Fallback Android';
+	src: local('Roboto Bold');
+	font-weight: 600;
+	font-style: normal;
+	size-adjust: 108.6235%;
+	ascent-override: 95.559%;
+	descent-override: 20.438%;
+	line-gap-override: 0%;
+}
+
+// IBM Plex Mono against Menlo, the macOS system monospace.
+// Measured against DejaVu Sans Mono, which is Menlo's own ancestor (Menlo is a
+// Bitstream Vera Sans Mono derivative) and shares its 1233/2048upm advance.
+// Both weights share one override set because every glyph in a monospace face
+// has the same advance, so the ratio cannot differ between 400 and 600.
+// Plex Mono 400 and 600 avg advance 600/1000upm; Menlo 1233/2048upm.
+@font-face {
+	font-family: 'IBM Plex Mono Fallback';
+	src: local('Menlo'), local('DejaVu Sans Mono'), local('Consolas');
+	font-weight: 400;
+	font-style: normal;
+	size-adjust: 99.6593%;
+	ascent-override: 102.85%;
+	descent-override: 27.594%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: 'IBM Plex Mono Fallback';
+	src: local('Menlo Bold'), local('DejaVu Sans Mono Bold'), local('Consolas Bold');
+	font-weight: 600;
+	font-style: normal;
+	size-adjust: 99.6593%;
+	ascent-override: 102.85%;
+	descent-override: 27.594%;
+	line-gap-override: 0%;
+}
+
+// IBM Plex Mono against Roboto Mono, for platforms with no Menlo.
+// Roboto Mono avg advance 1229/2048upm. As above, the ratio is weight
+// independent in a monospace face.
+@font-face {
+	font-family: 'IBM Plex Mono Fallback Android';
+	src: local('Roboto Mono');
+	font-weight: 400;
+	font-style: normal;
+	size-adjust: 99.9837%;
+	ascent-override: 102.517%;
+	descent-override: 27.504%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: 'IBM Plex Mono Fallback Android';
+	src: local('Roboto Mono Medium'), local('Roboto Mono');
+	font-weight: 600;
+	font-style: normal;
+	size-adjust: 99.9837%;
+	ascent-override: 102.517%;
+	descent-override: 27.504%;
+	line-gap-override: 0%;
+}
+
+// The family stacks. Each lists the real family first, then the metric-matched
+// fallback for the platform's likely system face, then the generic, so a
+// platform with neither Arial nor Roboto still renders in something sane.
+//
+// These three names are the contract with theme.json and the design spec.
+// theme.json references its own presets rather than these properties, so
+// --font-display and friends are for hand authored CSS and for any future
+// stylesheet that wants the matched fallback without repeating the stack.
+:root {
+	--font-display: 'Syne', 'Syne Fallback', 'Syne Fallback Android', system-ui, sans-serif;
+	--font-sans: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', 'Plus Jakarta Sans Fallback Android', system-ui, sans-serif;
+	--font-mono: 'IBM Plex Mono', 'IBM Plex Mono Fallback', 'IBM Plex Mono Fallback Android', system-ui, monospace;
+}

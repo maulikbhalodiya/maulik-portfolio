@@ -1,0 +1,22 @@
+// Texture: dark-grid.
+// The default page surface. A 48px square grid in cream at 3.5 percent, drawn on
+// both axes, so it reads as graph paper. Used on the homepage hero and every inner
+// page hero.
+// The 48px cell and the cream tint are load-bearing. Do not align this size with
+// the other three textures and do not tint it amber.
+// A texture is a raw background-image on a page surface, not a theme token, so
+// the two rgba() stops below cannot be a --wp--preset--color--* custom property.
+// They are the only colour literals permitted in this file, and they exist
+// because a custom property cannot carry the 3.5 percent alpha that makes the
+// grid sit behind the content instead of on top of it.
+// WordPress strips unrecognised placeholder classes from block markup, so
+// .dark-grid is not expected to survive in saved post content. It is a
+// documented hook name, attached through a theme.json style variation.
+
+.dark-grid {
+	background-color: var(--wp--preset--color--base);
+	background-image:
+		linear-gradient(to right, rgba(255, 253, 244, 0.035) 1px, transparent 1px),
+		linear-gradient(to bottom, rgba(255, 253, 244, 0.035) 1px, transparent 1px);
+	background-size: 48px 48px;
+}

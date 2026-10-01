@@ -3,3 +3,107 @@
 // layer and Core already normalises a great deal, so duplicating a full reset
 // here mostly adds bytes. Add rules only for something actually seen to be
 // wrong.
+// The one thing this layer does assert loudly is the shape system. The design
+// has no rounded corners and no shadows anywhere, and that is stated here as an
+// explicit rule rather than left as an inherited default that a later block
+// style could quietly override. Depth in this theme comes only from the surface
+// step from base to surface to surface-2 plus the line hairline.
+
+*,
+*::before,
+*::after {
+	border-radius: 0;
+	box-shadow: none;
+}
+
+// Reassert after Core and plugin rules, which ship with their own radii and
+// elevation. A blanket universal selector is the only way to cover a shadow that
+// arrives from a component the theme does not own.
+:where(body) *,
+:where(body) *::before,
+:where(body) *::after {
+	border-radius: 0;
+	box-shadow: none;
+}
+
+// Images never get rounded or lifted either.
+img,
+video,
+canvas,
+svg {
+	border-radius: 0;
+}
+
+// Motion preferences are handled in a later phase. This layer is concerned only
+// with shape and print.
+
+@media print {
+	// Print is a white page with black text. The dark palette exists to be
+	// inverted, and a dark surface wastes toner while a light font on white is
+	// unreadable.
+	// Canvas and CanvasText are used rather than literal white and black because
+	// they are the system keywords for exactly this, printing the page in the
+	// colours a sheet of paper actually is. They also keep this file free of
+	// colour literals, so a print fix can never drift from the palette.
+	// color-scheme is forced to light for the same reason. The page sets
+	// color-scheme: dark globally, which would otherwise make the UA paint the
+	// printed sheet dark regardless of what these rules say.
+	:root {
+		color-scheme: light;
+	}
+
+	body,
+	body.page,
+	body.single,
+	body.archive,
+	body.home,
+	.site,
+	.page,
+	.entry,
+	.entry-content {
+		background: Canvas;
+		color: CanvasText;
+		box-shadow: none;
+	}
+
+	// Grid textures are a screen affordance. A printed grid reads as a printing
+	// defect, so all four are dropped for the printed page.
+	.dark-grid,
+	.dark-subgrid,
+	.cream-editorial,
+	.warm-editorial {
+		background-color: Canvas;
+		background-image: none;
+	}
+
+	// Text on paper must invert too, since the palette custom properties are
+	// still live and would otherwise force cream type onto white.
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	li,
+	dt,
+	dd,
+	figcaption,
+	blockquote,
+	table,
+	th,
+	td,
+	code,
+	pre,
+	kbd,
+	samp,
+	a {
+		color: CanvasText;
+	}
+
+	// Expose links, which are otherwise indistinguishable from body text on a
+	// white page.
+	a {
+		text-decoration: underline;
+	}
+}

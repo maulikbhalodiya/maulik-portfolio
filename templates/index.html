@@ -4,35 +4,38 @@
 	If either is missing Core falls back to treating the theme as a classic theme
 	and every other file in templates/ stops being used.
 
-	This is deliberately the smallest template that is still valid. It exists to
-	prove block theme detection works, not to be a finished homepage. Build the
-	real homepage as a pattern instead.
+	CONDITION: the fallback. WordPress uses this template when nothing more
+	specific matches, so it has to be the most generic reasonable layout in the
+	theme rather than the homepage. The homepage lives in front-page.html, which
+	takes precedence over this file whenever a static front page is assigned.
+
+	NOTE ON LANGUAGE: a template is block markup. It is parsed, not executed, so
+	it cannot call esc_html__() and its literal text is NOT translatable. The
+	headings and eyebrows here are the theme's own structural fallback copy. The
+	translatable versions of every string in this theme live in patterns/, where
+	esc_html__() is actually available.
 -->
 <!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
 <div class="wp-site-blocks">
 	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 
-	<!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
-	<main class="wp-block-group">
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
 		<!-- wp:query {"queryId":0,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":true}} -->
 		<div class="wp-block-query">
 			<!-- wp:post-template -->
-				<!-- wp:post-title {"isLink":true} /-->
+				<!-- wp:post-title {"level":2,"isLink":true} /-->
 				<!-- wp:post-date /-->
 				<!-- wp:post-excerpt /-->
 			<!-- /wp:post-template -->
 
-			<!-- wp:query-pagination -->
-			<!-- wp:query-pagination-previous /-->
-			<!-- wp:query-pagination-numbers /-->
-			<!-- wp:query-pagination-next /-->
-			<!-- /wp:query-pagination -->
+			<!-- wp:query-no-results /-->
 
-			<!-- wp:query-no-results -->
-				<!-- wp:paragraph -->
-				<p>Nothing found.</p>
-				<!-- /wp:paragraph -->
-			<!-- /wp:query-no-results -->
+			<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"space-between"}} -->
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
 		</div>
 		<!-- /wp:query -->
 	</main>

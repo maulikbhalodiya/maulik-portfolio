@@ -1,0 +1,25 @@
+// Texture: warm-editorial.
+// The second light section. 64px horizontal lines in near-black at 3.5 percent
+// on the deeper editorial ground.
+// Horizontal lines only. This is the mirror of cream-editorial: warmer ground,
+// narrower 64px cell, and the opposite line orientation. Those three differences
+// are the whole identity of this texture, so the size must not be unified with
+// the 96px cream grid and the gradient must not be switched to the vertical.
+// The near-black rgba() stop is a colour literal because a texture is a raw
+// background-image on a page surface rather than a theme token, and a custom
+// property cannot carry the 3.5 percent alpha that keeps the lines behind the
+// type.
+// WordPress strips unrecognised placeholder classes from block markup, so
+// .warm-editorial is a documented hook name, attached through a theme.json style
+// variation rather than hand applied in the editor.
+
+.warm-editorial {
+	background-color: var(--wp--preset--color--paper);
+	color: var(--wp--preset--color--text-on-paper);
+	background-image: linear-gradient(
+		to bottom,
+		rgba(10, 10, 11, 0.035) 1px,
+		transparent 1px
+	);
+	background-size: 64px 64px;
+}

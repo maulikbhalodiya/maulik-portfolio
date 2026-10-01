@@ -9,22 +9,19 @@ defined( 'ABSPATH' ) || exit;
 
 if ( ! function_exists( 'maulik_portfolio_setup' ) ) {
 	/**
-	 * Register theme support and the global performance filters.
+	 * Register theme support and the global filters.
 	 *
-	 * The two asset filters below are the single biggest performance lever a
-	 * block theme has. Without them Core ships every core block stylesheet and
-	 * every core block script to every page, including the ones that never use
-	 * the block. Together they let Core queue only what the current template
-	 * actually renders.
+	 * The two conditional block asset filters that used to live here now live
+	 * in inc/performance.php, where the reasoning behind them can be recorded
+	 * properly. They are not duplicated here, because a filter registered
+	 * twice in two files makes it impossible to tell which copy a future
+	 * change is meant to edit.
 	 *
 	 * @since 0.1.0
 	 *
 	 * @return void
 	 */
 	function maulik_portfolio_setup() {
-		add_filter( 'should_load_separate_core_block_assets', '__return_true' );
-		add_filter( 'should_load_block_assets_on_demand', '__return_true' );
-
 		// This theme makes no outbound HTTP requests, and remote patterns would
 		// block Core from rendering on a slow or filtered network.
 		add_filter( 'should_load_remote_block_patterns', '__return_false' );

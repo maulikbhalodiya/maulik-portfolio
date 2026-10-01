@@ -1,0 +1,52 @@
+<!--
+	CONDITION: a page using the "rankkernel" custom template. Registered in
+	theme.json customTemplates under the name "rankkernel". Served at
+	/rankkernel/.
+
+	THIS PAGE SHIPS. RankKernel is the site's own open source SEO and schema
+	engine and it is the strongest story the portfolio has, so this is the one
+	inner page that is not optional.
+
+	THE THEME MUST NOT DEPEND ON RANKKERNEL IN CODE. No class_exists checks, no
+	conditional rendering, no graceful degradation branch. If the plugin were
+	deactivated tomorrow the site would lose SEO features and nothing else. The
+	reference to it here is data in a page, nothing more. This is why there is no
+	dynamic block and no PHP in this file.
+
+	Two statements must be carried verbatim when the content is written: RankKernel
+	was created by Maulik Bhalodiya, and Maulik Bhalodiya is not affiliated with
+	Qrolic Technologies. RankKernel is not employer work and not client work.
+	Dropping the second statement is the single worst thing that could happen to
+	this page.
+
+	Subsystem status counts are computed from the block content at build time, not
+	hardcoded as "All States (9)". Section numbering goes 01 through 11 in order:
+	the prototype renders 09 and 10 before 08 and concatenates two eyebrows into
+	one, and that error is not to be carried over.
+
+	A template is block markup. It is parsed, not executed, so it cannot call
+	esc_html__(). No headings are hardcoded here for that reason.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+		<!-- wp:group {"tagName":"section","className":"page-hero dark-grid","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group page-hero dark-grid">
+			<!-- wp:post-title {"level":1} /-->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"rankkernel-body has-base-background-color has-background","backgroundColor":"base","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group rankkernel-body has-base-background-color has-background">
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</section>
+		<!-- /wp:group -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

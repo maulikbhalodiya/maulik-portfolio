@@ -1,17 +1,87 @@
 <!--
-	Footer template part.
+	FOOTER TEMPLATE PART.
 
-	Same constraint as the header part: this file is block markup only, it cannot
-	contain PHP, and it cannot translate its own strings. The copyright line with
-	the site name and the year belongs in patterns/footer.php, where esc_html_e()
-	is actually available.
+	WHY THERE ARE NO WORDS IN THIS FILE. Same rule as the header part, and it is
+	worth restating because the footer is where the temptation is strongest: a
+	copyright line, four column headings and eight links all feel like markup.
 
-	Deliberately no social icon block and no outbound links here yet. Those
-	belong in a pattern so that the URLs can be filtered and so that nothing can
-	accidentally emit a mailto address.
+	A block theme template part is .html and is PARSED, not executed. It cannot
+	contain PHP. esc_html_e() cannot be called here, the year cannot be generated
+	here, and get_bloginfo() cannot be called here. A literal "Copyright 2026
+	Maulik Bhalodiya" written here would ship to every visitor of every language,
+	untranslatable, and would also be wrong next year.
+
+	THE SPLIT, THEREFORE:
+
+	  parts/    STRUCTURE ONLY. Pure block markup. Zero PHP. Zero user-facing
+	            words. The 5/2/3/2 grid exists here as columns.
+	  patterns/ WORDS. Every translatable string, wrapped in
+	            esc_html__( 'Text', 'maulik-portfolio' ). patterns/footer.php
+	            carries the four group headings, the links and the copyright row
+	            with wp_date( 'Y' ) for the year, generated rather than hardcoded.
+
+	            patterns/footer.php must open with Title:, Slug: and Categories:.
+	            Without the Slug line Core silently does not register the pattern
+	            and the translatable footer never reaches the site editor. No error
+	            appears anywhere obvious. Verified by counting what
+	            get_block_patterns() returns.
+
+	FLAT DIRECTORY. /parts cannot be nested, for the same reason the header is a
+	single file: Core resolves part slugs in one flat namespace and there is no
+	nested part lookup.
+
+	NO EMAIL LINK, NO MAILTO, NO PLAINTEXT ADDRESS. Anywhere. The prototype had
+	nine mailto links and seven plaintext occurrences and all of them were
+	removed deliberately. Contact runs through the contact page.
+
+	NO WRITING OR BLOG LINK. Posts are supported, the blog is not advertised.
 -->
-<!-- wp:group {"tagName":"footer","className":"site-footer","layout":{"type":"constrained"}} -->
-<footer class="wp-block-group site-footer">
-	<!-- wp:site-tagline /-->
+<!-- wp:group {"tagName":"footer","className":"site-footer no-print has-black-background-color has-background","backgroundColor":"black","layout":{"type":"constrained"}} -->
+<footer class="wp-block-group site-footer no-print has-black-background-color has-background">
+	<!-- wp:group {"tagName":"div","className":"site-footer__grid","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group site-footer__grid">
+		<!-- wp:group {"tagName":"div","className":"site-footer__col site-footer__col--identity","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group site-footer__col site-footer__col--identity">
+			<!-- wp:site-title {"level":2,"className":"site-footer__brand"} /-->
+
+			<!-- wp:paragraph {"className":"site-footer__identity-line"} -->
+			<p class="site-footer__identity-line"></p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"div","className":"site-footer__col site-footer__col--explore","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group site-footer__col site-footer__col--explore">
+			<!-- wp:navigation {"className":"site-footer__nav","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"}} /-->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"div","className":"site-footer__col site-footer__col--development","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group site-footer__col site-footer__col--development">
+			<!-- wp:navigation {"className":"site-footer__nav","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"}} /-->
+		</div>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"div","className":"site-footer__col site-footer__col--connect","layout":{"type":"constrained"}} -->
+		<div class="wp-block-group site-footer__col site-footer__col--connect">
+			<!-- wp:navigation {"className":"site-footer__nav","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"}} /-->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+
+	<!-- wp:separator {"className":"site-footer__rule"} /-->
+
+	<!-- wp:group {"tagName":"div","className":"site-footer__legal","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
+	<div class="wp-block-group site-footer__legal">
+		<!-- wp:paragraph {"className":"site-footer__copyright","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+		<p class="site-footer__copyright"></p>
+		<!-- /wp:paragraph -->
+
+		<!-- wp:paragraph {"className":"site-footer__technical","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+		<p class="site-footer__technical"></p>
+		<!-- /wp:paragraph -->
+	</div>
+	<!-- /wp:group -->
 </footer>
 <!-- /wp:group -->

@@ -33,4 +33,6 @@ define( 'MAULIK_PORTFOLIO_URI', trailingslashit( get_parent_theme_file_uri() ) )
 require_once MAULIK_PORTFOLIO_DIR . 'inc/helpers.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/setup.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/assets.php';
+require_once MAULIK_PORTFOLIO_DIR . 'inc/fonts.php';
+require_once MAULIK_PORTFOLIO_DIR . 'inc/performance.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/seo.php';

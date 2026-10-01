@@ -1,0 +1,248 @@
+<!--
+	THE HOMEPAGE.
+
+	CONDITION: front page. WordPress uses this file whenever a static page is set
+	as the front page in Reading settings. It takes precedence over both
+	front-page.php and home.html, and over index.html. Because of that, the
+	generic listing lives in index.html and the blog listing in home.html, and
+	this file can safely assume it is the homepage.
+
+	THE 8-SECTION RHYTHM IS LOAD-BEARING.
+
+	Background surfaces, in order:
+	  01 dark-grid        02 solid base       03 dark-grid
+	  04 split (solid base then dark-grid)
+	  05 solid base       06 dark-grid        07 solid base
+	  08 pure black
+
+	The alternation is deliberate. It is the difference between a page that reads
+	as designed and a page that reads as a wall of dark boxes, so do not flatten
+	it, do not reorder the sections, and do not make 02 or 05 dark-grid to make
+	the pattern look more regular. Section 08 is the only pure black section in
+	the theme and that is intentional too.
+
+	NOTE ON LANGUAGE: a template is block markup. It is parsed, not executed, so
+	it cannot call esc_html__() and its literal text is NOT translatable. The
+	headings and eyebrows here are the theme's own structural copy, kept minimal
+	on purpose. Every translatable version of these strings lives in patterns/,
+	where esc_html__() is actually available. Nothing invented: no case study
+	prose, no metrics, no percentages, no testimonials, no client names.
+
+	Heading order is clean: one h1 in section 01, h2 in every later section, h3
+	never used, so there are no skipped levels. Every section carries an
+	aria-labelledby pointing at its own heading.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+
+		<!-- wp:group {"tagName":"section","className":"hero dark-grid","anchor":"hero","ariaLabel":"Software Engineering Portfolio, WordPress and PHP","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group hero dark-grid" id="hero" aria-label="Software Engineering Portfolio, WordPress and PHP">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">Software Engineering Portfolio · WordPress and PHP</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":1} -->
+			<h1 class="wp-block-heading">Maulik Bhalodiya</h1>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"className":"hero-subhead"} -->
+			<p class="hero-subhead">WordPress Developer | PHP Engineer | Custom Plugin Developer</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph {"className":"hero-supporting"} -->
+			<p class="hero-supporting">I build custom WordPress solutions, backend systems, plugins and API integrations for complex technical requirements.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons {"className":"hero-actions","layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<div class="wp-block-buttons hero-actions">
+				<!-- wp:button -->
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="#selected-work">Explore My Work</a></div>
+				<!-- /wp:button -->
+
+				<!-- wp:button {"className":"is-style-outline"} -->
+				<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/resume/">View Resume</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
+
+			<!-- wp:paragraph {"className":"hero-meta","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="hero-meta">Role: WordPress Developer at Qrolic Technologies</p>
+			<!-- /wp:paragraph -->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"section section-capabilities has-base-background-color has-background","anchor":"what-i-build","ariaLabelledby":"heading-what-i-build","backgroundColor":"base","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section section-capabilities has-base-background-color has-background" id="what-i-build" aria-labelledby="heading-what-i-build">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">02 · Core Engineering Capabilities</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-what-i-build"} -->
+			<h2 class="wp-block-heading" id="heading-what-i-build">I build systems, not just websites.</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>Capability areas are described here in a later phase.</p>
+			<!-- /wp:paragraph -->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"section section-stack dark-grid","anchor":"technical-skills","ariaLabelledby":"heading-technical-skills","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section section-stack dark-grid" id="technical-skills" aria-labelledby="heading-technical-skills">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">03 · Interactive Technical Ecosystem</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-technical-skills"} -->
+			<h2 class="wp-block-heading" id="heading-technical-skills">Verified Technical Stack</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>The interactive ecosystem panel arrives in a later phase.</p>
+			<!-- /wp:paragraph -->
+		</section>
+		<!-- /wp:group -->
+
+		<!--
+			SECTION 04 IS THE SPLIT ONE.
+
+			Internally divided: the RankKernel block sits on solid base, the
+			featured project cards sit on dark-grid. Preserving the division is the
+			point of the section. No project names, domains or outcomes are
+			invented here.
+		-->
+		<!-- wp:group {"tagName":"section","className":"section section-selected-work has-base-background-color has-background","anchor":"selected-work","ariaLabelledby":"heading-selected-work","backgroundColor":"base","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section section-selected-work has-base-background-color has-background" id="selected-work" aria-labelledby="heading-selected-work">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">04 · Selected Development Work</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-selected-work"} -->
+			<h2 class="wp-block-heading" id="heading-selected-work">Selected Development Work</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:group {"tagName":"div","className":"work-split","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group work-split">
+				<!-- wp:group {"tagName":"div","className":"work-split-primary has-base-background-color has-background","backgroundColor":"base","layout":{"type":"constrained"}} -->
+				<div class="wp-block-group work-split-primary has-base-background-color has-background">
+					<!-- wp:heading {"level":3} -->
+					<h3 class="wp-block-heading">RankKernel</h3>
+					<!-- /wp:heading -->
+
+					<!-- wp:paragraph -->
+					<p>Open source SEO and schema engine work. Subsystem detail arrives in a later phase.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
+
+				<!-- wp:group {"tagName":"div","className":"work-split-secondary dark-grid","layout":{"type":"constrained"}} -->
+				<div class="wp-block-group work-split-secondary dark-grid">
+					<!-- wp:heading {"level":3} -->
+					<h3 class="wp-block-heading">Development work</h3>
+					<!-- /wp:heading -->
+
+					<!-- wp:paragraph -->
+					<p>Featured project cards arrive in a later phase. No case study claims are asserted until they are written.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
+			</div>
+			<!-- /wp:group -->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"section section-experience has-base-background-color has-background","anchor":"experience","ariaLabelledby":"heading-experience","backgroundColor":"base","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section section-experience has-base-background-color has-background" id="experience" aria-labelledby="heading-experience">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">05 · Career Progression and Responsibilities</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-experience"} -->
+			<h2 class="wp-block-heading" id="heading-experience">Professional Experience</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>Roles and dates are added in a later phase, from the verified record rather than from memory.</p>
+			<!-- /wp:paragraph -->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"section section-approach dark-grid","anchor":"engineering-approach","ariaLabelledby":"heading-engineering-approach","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section section-approach dark-grid" id="engineering-approach" aria-labelledby="heading-engineering-approach">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">06 · Methodology and System Discipline</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-engineering-approach"} -->
+			<h2 class="wp-block-heading" id="heading-engineering-approach">How I approach engineering</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>The five stage panel: Understand, Design, Build, Verify, Improve. The deep dive arrives in a later phase.</p>
+			<!-- /wp:paragraph -->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"section section-about has-base-background-color has-background","anchor":"about","ariaLabelledby":"heading-about","backgroundColor":"base","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section section-about has-base-background-color has-background" id="about" aria-labelledby="heading-about">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">07 · Engineering Profile</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-about"} -->
+			<h2 class="wp-block-heading" id="heading-about">About Me</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>Background and focus areas arrive in a later phase.</p>
+			<!-- /wp:paragraph -->
+		</section>
+		<!-- /wp:group -->
+
+		<!--
+			SECTION 08 IS THE COMPLIANCE-CRITICAL ONE AND IT IS CORRECT AS WRITTEN.
+
+			"Looking for a WordPress or PHP developer?" is a recruiter speaking.
+			That is seeking employment, which is the opposite of the pattern this
+			theme bans. Do not soften the heading, and do not add recruitment agency,
+			commission, service, availability or rate language anywhere in this
+			section. The
+			prototype's "Email Me" CTA became a link to the contact page, because
+			there is no mailto and no plaintext address anywhere in this theme.
+
+			Pure black, the only #000000 section in the theme.
+		-->
+		<!-- wp:group {"tagName":"section","className":"section section-contact has-black-background-color has-background","anchor":"hiring-cta","ariaLabelledby":"heading-hiring-cta","backgroundColor":"black","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section section-contact has-black-background-color has-background" id="hiring-cta" aria-labelledby="heading-hiring-cta">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">08 · Employment Opportunities and Technical Evaluation</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-hiring-cta"} -->
+			<h2 class="wp-block-heading" id="heading-hiring-cta">Looking for a WordPress or PHP developer?</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>Technical evaluation details arrive in a later phase.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<div class="wp-block-buttons">
+				<!-- wp:button -->
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/contact/">Start a conversation</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
+		</section>
+		<!-- /wp:group -->
+
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->
