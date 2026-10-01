@@ -88,7 +88,7 @@ both `ci.yml` and `ai-review.yml`.
 
 ### 4. A real Gmail address in git history
 
-The first commit carried `maulikbhalodiya@gmail.com` as the author. Pushing a
+The first commit carried a real Gmail address as the author. Pushing a
 public repo publishes commit metadata permanently, and research established this
 address is spam-listed within 48 hours of appearing on a site.
 
