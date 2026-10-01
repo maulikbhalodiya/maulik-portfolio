@@ -35,4 +35,4 @@ require_once MAULIK_PORTFOLIO_DIR . 'inc/setup.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/assets.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/fonts.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/performance.php';
-require_once MAULIK_PORTFOLIO_DIR . 'inc/seo.php';
+require_once MAULIK_PORTFOLIO_DIR . 'inc/patterns-category.php';

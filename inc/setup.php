@@ -28,7 +28,26 @@ if ( ! function_exists( 'maulik_portfolio_setup' ) ) {
 
 		add_action( 'after_setup_theme', 'maulik_portfolio_content_width' );
 		add_action( 'wp_enqueue_scripts', 'maulik_portfolio_enqueue_styles' );
-		add_action( 'wp_head', 'maulik_portfolio_noindex' );
+
+		/*
+		 * Deliberately NOT registering a wp_head callback here.
+		 *
+		 * RankKernel owns the document head on this site: titles, meta
+		 * descriptions, canonical URLs, Open Graph, Twitter cards, JSON-LD and
+		 * robots directives, including the staging noindex. A theme callback
+		 * competing with the active SEO plugin emits duplicate tags, and a
+		 * duplicate canonical is actively harmful.
+		 *
+		 * A previous version of this file hooked maulik_portfolio_noindex() to
+		 * wp_head from inc/seo.php. Deleting that file without removing the hook
+		 * left wp_head calling a function that no longer existed, which is a
+		 * fatal error part way through render_head(). The visible symptom was a
+		 * page with a complete head and no body at all, returning HTTP 200.
+		 *
+		 * If a head callback is ever needed here again, check first that the
+		 * function actually exists, and prefer a filter over an action so it
+		 * participates in the existing output rather than appending to it.
+		 */
 	}
 	add_action( 'after_setup_theme', 'maulik_portfolio_setup' );
 }

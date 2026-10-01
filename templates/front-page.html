@@ -2,35 +2,60 @@
 	THE HOMEPAGE.
 
 	CONDITION: front page. WordPress uses this file whenever a static page is set
-	as the front page in Reading settings. It takes precedence over both
-	front-page.php and home.html, and over index.html. Because of that, the
-	generic listing lives in index.html and the blog listing in home.html, and
-	this file can safely assume it is the homepage.
+	as the front page in Reading settings. It takes precedence over home.html and
+	over index.html, and index.html carries the generic listing instead.
 
-	THE 8-SECTION RHYTHM IS LOAD-BEARING.
+	STRUCTURE IS A GROUP BLOCK, NOT A TEMPLATE.
 
-	Background surfaces, in order:
-	  01 dark-grid        02 solid base       03 dark-grid
-	  04 split (solid base then dark-grid)
-	  05 solid base       06 dark-grid        07 solid base
-	  08 pure black
+	A block theme has no "section" block, so there is nothing in the inserter
+	that says "put a surface here". Two custom block types would solve it and
+	custom blocks are forbidden in a theme, so each surface below is a
+	core/group carrying a registered block style variation slug in its
+	className:
 
-	The alternation is deliberate. It is the difference between a page that reads
-	as designed and a page that reads as a wall of dark boxes, so do not flatten
-	it, do not reorder the sections, and do not make 02 or 05 dark-grid to make
-	the pattern look more regular. Section 08 is the only pure black section in
-	the theme and that is intentional too.
+		{"className":"section surface-dark-grid"}
 
-	NOTE ON LANGUAGE: a template is block markup. It is parsed, not executed, so
-	it cannot call esc_html__() and its literal text is NOT translatable. The
-	headings and eyebrows here are the theme's own structural copy, kept minimal
-	on purpose. Every translatable version of these strings lives in patterns/,
-	where esc_html__() is actually available. Nothing invented: no case study
-	prose, no metrics, no percentages, no testimonials, no client names.
+	"section" is the default vertical rhythm, py-16 rising to md:py-24.
+	"section-tight" is the tighter rhythm, used where a section directly
+	follows its predecessor without a surface change, and on the inner wrapper
+	groups inside a section.
 
-	Heading order is clean: one h1 in section 01, h2 in every later section, h3
-	never used, so there are no skipped levels. Every section carries an
-	aria-labelledby pointing at its own heading.
+	surface-dark-grid        hero and most dark sections
+	surface-dark-subgrid     the denser dotted field, section 03 ONLY, because
+                         that is the skills ecosystem
+	surface-cream-editorial  the first light section
+	surface-warm-editorial   the second light section
+
+	THE SURFACE RHYTHM IS LOAD BEARING. In order:
+
+	  01 dark-grid    02 dark-subgrid  03 dark-grid   04 dark-grid
+	  05 cream        06 warm          07 dark-grid   08 pure black
+
+	Do not flatten it, do not reorder the sections, do not make 05 or 06 dark,
+	and do not use surface-dark-subgrid anywhere except section 03, which is
+	the only place the denser field appears. Section 08
+	is pure black, applied with backgroundColor rather than a variation, because
+	black is a palette colour and not a surface.
+
+	THE AMBER SQUARE. Every section opens with a mono eyebrow preceded by an
+	8x8 pixel amber square. That motif appears in all eight sections and it is
+	what makes the page read as one designed surface rather than eight stacked
+	boxes. It is a span inside the eyebrow paragraph rather than a spacer,
+	because core/spacer supports no background and the span carries
+	aria-hidden="true" so a decorative shape never reaches a screen reader.
+
+	HEADINGS. One h1 in section 01. h2 in every later section. No skipped
+	levels anywhere. Every section carries aria-labelledby pointing at its own
+	heading id.
+
+	A template is block markup. It is parsed, not executed, so it cannot call
+	esc_html__() and its literal text is NOT translatable. The translatable
+	versions of these strings live in patterns/, which is PHP. Nothing here is
+	invented: no metrics, no percentages, no testimonials, no client names, no
+	client domains, no skill ratings. Where the record is thin the line says so.
+
+	NO HIRING OR SERVICE LANGUAGE. Section 08 asks to be contacted, it does not
+	advertise. This site seeks employment.
 -->
 <!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
 <div class="wp-site-blocks">
@@ -39,22 +64,22 @@
 	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
 	<main class="wp-block-group site-main">
 
-		<!-- wp:group {"tagName":"section","className":"hero dark-grid","anchor":"hero","ariaLabel":"Software Engineering Portfolio, WordPress and PHP","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group hero dark-grid" id="hero" aria-label="Software Engineering Portfolio, WordPress and PHP">
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","anchor":"hero","ariaLabelledby":"heading-hero","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid" id="hero" aria-labelledby="heading-hero">
 			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">Software Engineering Portfolio · WordPress and PHP</span></p>
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">01 · Identity and Focus</span></p>
 			<!-- /wp:paragraph -->
 
-			<!-- wp:heading {"level":1} -->
-			<h1 class="wp-block-heading">Maulik Bhalodiya</h1>
+			<!-- wp:heading {"level":1,"anchor":"heading-hero"} -->
+			<h1 class="wp-block-heading" id="heading-hero">Maulik Bhalodiya</h1>
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph {"className":"hero-subhead"} -->
 			<p class="hero-subhead">WordPress Developer | PHP Engineer | Custom Plugin Developer</p>
 			<!-- /wp:paragraph -->
 
-			<!-- wp:paragraph {"className":"hero-supporting"} -->
-			<p class="hero-supporting">I build custom WordPress solutions, backend systems, plugins and API integrations for complex technical requirements.</p>
+			<!-- wp:paragraph -->
+			<p>I work on WordPress as an engineer rather than as a page builder. That means custom plugins, backend systems, integrations and the decisions behind them, built to hold up when the requirement is technical rather than visual.</p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:buttons {"className":"hero-actions","layout":{"type":"flex","flexWrap":"wrap"}} -->
@@ -69,54 +94,140 @@
 			</div>
 			<!-- /wp:buttons -->
 
-			<!-- wp:paragraph {"className":"hero-meta","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-			<p class="hero-meta">Role: WordPress Developer at Qrolic Technologies</p>
+			<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p>WordPress Developer at Qrolic Technologies</p>
 			<!-- /wp:paragraph -->
 		</section>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"tagName":"section","className":"section section-capabilities has-base-background-color has-background","anchor":"what-i-build","ariaLabelledby":"heading-what-i-build","backgroundColor":"base","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group section section-capabilities has-base-background-color has-background" id="what-i-build" aria-labelledby="heading-what-i-build">
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","anchor":"capabilities","ariaLabelledby":"heading-capabilities","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid" id="capabilities" aria-labelledby="heading-capabilities">
 			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
 			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">02 · Core Engineering Capabilities</span></p>
 			<!-- /wp:paragraph -->
 
-			<!-- wp:heading {"level":2,"anchor":"heading-what-i-build"} -->
-			<h2 class="wp-block-heading" id="heading-what-i-build">I build systems, not just websites.</h2>
+			<!-- wp:heading {"level":2,"anchor":"heading-capabilities"} -->
+			<h2 class="wp-block-heading" id="heading-capabilities">I build systems, not just websites.</h2>
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph -->
-			<p>Capability areas are described here in a later phase.</p>
+			<p>Five areas account for most of the work. Each one is described by what it has to survive, not by a level or a score.</p>
 			<!-- /wp:paragraph -->
+
+			<!-- wp:list -->
+			<ul class="wp-block-list">
+				<!-- wp:list-item -->
+				<li><strong>WordPress Engineering.</strong> Custom plugin architecture, role and capability design, form driven workflows and admin interfaces built on hooks rather than template overrides.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>PHP Backend.</strong> Object oriented backend services, REST endpoints, scheduled work, data modelling in WordPress tables and the encryption and hashing primitives around them.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>API and Integration Engineering.</strong> Signed REST communication, asynchronous polling for slow third party services, credential isolation and webhook reconciliation.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>Payment Engineering.</strong> Checkout flows, gateway abstraction, iframe hosted payment interfaces and server authoritative transaction state.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>Security.</strong> HMAC SHA 256 request signing, nonce verification, context specific output escaping and capability gated access to sensitive records.</li>
+				<!-- /wp:list-item -->
+			</ul>
+			<!-- /wp:list -->
 		</section>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"tagName":"section","className":"section section-stack dark-grid","anchor":"technical-skills","ariaLabelledby":"heading-technical-skills","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group section section-stack dark-grid" id="technical-skills" aria-labelledby="heading-technical-skills">
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-subgrid","anchor":"technical-stack","ariaLabelledby":"heading-technical-stack","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-subgrid" id="technical-stack" aria-labelledby="heading-technical-stack">
 			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">03 · Interactive Technical Ecosystem</span></p>
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">03 · Technical Stack Ecosystem</span></p>
 			<!-- /wp:paragraph -->
 
-			<!-- wp:heading {"level":2,"anchor":"heading-technical-skills"} -->
-			<h2 class="wp-block-heading" id="heading-technical-skills">Verified Technical Stack</h2>
+			<!-- wp:heading {"level":2,"anchor":"heading-technical-stack"} -->
+			<h2 class="wp-block-heading" id="heading-technical-stack">Verified Technical Stack</h2>
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph -->
-			<p>The interactive ecosystem panel arrives in a later phase.</p>
+			<p>Seven systems, grouped by what they do rather than by how popular they are. Every entry describes a concrete use, so nothing here has to be defended with a proficiency number.</p>
 			<!-- /wp:paragraph -->
+
+			<!-- wp:group {"tagName":"div","className":"section-tight","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group section-tight">
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>SYS.01 · WordPress</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Custom plugins, block and shortcode free structure, custom roles and capabilities, form submission workflows, admin screens and query level work against WordPress data.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>SYS.02 · PHP</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Backend service layers, typed error handling, the Sodium cryptography extension, HMAC verification with timing safe comparison, and code that a second maintainer can read.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>SYS.03 · APIs</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>REST routes registered in code, signed payloads, asynchronous job polling, webhook receivers and retry safe delivery for third party services.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>SYS.04 · Databases</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Schema design for custom tables, form entry metadata, transactional references, audit trails and queries that stay scoped to the current user's role.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>SYS.05 · Security</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Payload signing, nonce verification, context specific escaping before render, capability checks on sensitive views and decryption, and key material held outside the database.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>SYS.06 · Integrations</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Payment gateways, cloud OCR services, object storage, booking and form systems, marketing automation and marketing APIs, each behind one adapter the rest of the code can call.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>SYS.07 · Tools</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Git for version control, staging environments for verification before anything ships, and browser and server side inspection of the requests that carry the behaviour.</p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
 		</section>
 		<!-- /wp:group -->
 
 		<!--
-			SECTION 04 IS THE SPLIT ONE.
+			SECTION 04 SITS DIRECTLY AFTER ANOTHER DARK SURFACE, so it takes
+			section-tight rather than the full section rhythm. Adjacency is the
+			only reason to choose the tighter spacing.
 
-			Internally divided: the RankKernel block sits on solid base, the
-			featured project cards sit on dark-grid. Preserving the division is the
-			point of the section. No project names, domains or outcomes are
-			invented here.
+			NINE PROJECTS, ALL COMPLETED AS PROFESSIONAL WORK. Titles and
+			categories are the verified record. There is no client field, no live
+			URL, no repository link, no date and no metric on any of them, because
+			none of those exist in the record. Nothing is substituted for them.
 		-->
-		<!-- wp:group {"tagName":"section","className":"section section-selected-work has-base-background-color has-background","anchor":"selected-work","ariaLabelledby":"heading-selected-work","backgroundColor":"base","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group section section-selected-work has-base-background-color has-background" id="selected-work" aria-labelledby="heading-selected-work">
+		<!-- wp:group {"tagName":"section","className":"section-tight surface-dark-grid","anchor":"selected-work","ariaLabelledby":"heading-selected-work","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section-tight surface-dark-grid" id="selected-work" aria-labelledby="heading-selected-work">
 			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
 			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">04 · Selected Development Work</span></p>
 			<!-- /wp:paragraph -->
@@ -125,38 +236,62 @@
 			<h2 class="wp-block-heading" id="heading-selected-work">Selected Development Work</h2>
 			<!-- /wp:heading -->
 
-			<!-- wp:group {"tagName":"div","className":"work-split","layout":{"type":"constrained"}} -->
-			<div class="wp-block-group work-split">
-				<!-- wp:group {"tagName":"div","className":"work-split-primary has-base-background-color has-background","backgroundColor":"base","layout":{"type":"constrained"}} -->
-				<div class="wp-block-group work-split-primary has-base-background-color has-background">
-					<!-- wp:heading {"level":3} -->
-					<h3 class="wp-block-heading">RankKernel</h3>
-					<!-- /wp:heading -->
+			<!-- wp:paragraph -->
+			<p>Nine projects, all completed as part of professional work. Client names, domains and proprietary details are withheld on purpose. Four are documented in full as case studies.</p>
+			<!-- /wp:paragraph -->
 
-					<!-- wp:paragraph -->
-					<p>Open source SEO and schema engine work. Subsystem detail arrives in a later phase.</p>
-					<!-- /wp:paragraph -->
-				</div>
-				<!-- /wp:group -->
+			<!-- wp:list -->
+			<ul class="wp-block-list">
+				<!-- wp:list-item -->
+				<li>Cross Domain Payment Architecture · Payments and Security Architecture</li>
+				<!-- /wp:list-item -->
 
-				<!-- wp:group {"tagName":"div","className":"work-split-secondary dark-grid","layout":{"type":"constrained"}} -->
-				<div class="wp-block-group work-split-secondary dark-grid">
-					<!-- wp:heading {"level":3} -->
-					<h3 class="wp-block-heading">Development work</h3>
-					<!-- /wp:heading -->
+				<!-- wp:list-item -->
+				<li>Employee Application Management System · Workflow and Access Control</li>
+				<!-- /wp:list-item -->
 
-					<!-- wp:paragraph -->
-					<p>Featured project cards arrive in a later phase. No case study claims are asserted until they are written.</p>
-					<!-- /wp:paragraph -->
-				</div>
-				<!-- /wp:group -->
+				<!-- wp:list-item -->
+				<li>Identity Document OCR Integration · API Integration and Automation</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Secure WordPress Data Encryption · Security and Cryptography</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Rank Math SEO Engineering · SEO Engineering</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Brevo API Automation · API and Marketing Automation</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Distance Based Dynamic Pricing · Backend Calculation and E Commerce</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>Object Storage Automation · Cloud Storage and Automation</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li>WooCommerce Integration · E Commerce and Backend Systems</li>
+				<!-- /wp:list-item -->
+			</ul>
+			<!-- /wp:list -->
+
+			<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<div class="wp-block-buttons">
+				<!-- wp:button -->
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/projects/">View the archive</a></div>
+				<!-- /wp:button -->
 			</div>
-			<!-- /wp:group -->
+			<!-- /wp:buttons -->
 		</section>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"tagName":"section","className":"section section-experience has-base-background-color has-background","anchor":"experience","ariaLabelledby":"heading-experience","backgroundColor":"base","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group section section-experience has-base-background-color has-background" id="experience" aria-labelledby="heading-experience">
+		<!-- wp:group {"tagName":"section","className":"section surface-cream-editorial","anchor":"experience","ariaLabelledby":"heading-experience","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-cream-editorial" id="experience" aria-labelledby="heading-experience">
 			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
 			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">05 · Career Progression and Responsibilities</span></p>
 			<!-- /wp:paragraph -->
@@ -165,14 +300,30 @@
 			<h2 class="wp-block-heading" id="heading-experience">Professional Experience</h2>
 			<!-- /wp:heading -->
 
-			<!-- wp:paragraph -->
-			<p>Roles and dates are added in a later phase, from the verified record rather than from memory.</p>
-			<!-- /wp:paragraph -->
+			<!-- wp:group {"tagName":"div","className":"section-tight","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group section-tight">
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>WordPress Developer · Qrolic Technologies · July 2025 to present</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Custom plugin development and backend work inside WordPress, including payment architectures, form driven internal systems, third party API integrations and field level encryption. Responsibilities run from design through implementation to verification.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>PHP Developer Intern · Qrolic Technologies · January to June 2025</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>PHP and WordPress fundamentals in a production codebase: structure, form handling, data access and debugging real problems rather than exercises.</p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
 		</section>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"tagName":"section","className":"section section-approach dark-grid","anchor":"engineering-approach","ariaLabelledby":"heading-engineering-approach","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group section section-approach dark-grid" id="engineering-approach" aria-labelledby="heading-engineering-approach">
+		<!-- wp:group {"tagName":"section","className":"section surface-warm-editorial","anchor":"engineering-approach","ariaLabelledby":"heading-engineering-approach","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-warm-editorial" id="engineering-approach" aria-labelledby="heading-engineering-approach">
 			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
 			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">06 · Methodology and System Discipline</span></p>
 			<!-- /wp:paragraph -->
@@ -182,13 +333,37 @@
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph -->
-			<p>The five stage panel: Understand, Design, Build, Verify, Improve. The deep dive arrives in a later phase.</p>
+			<p>Five stages, run in order and repeated whenever the requirement changes underneath the work.</p>
 			<!-- /wp:paragraph -->
+
+			<!-- wp:list {"className":"section-tight"} -->
+			<ul class="wp-block-list section-tight">
+				<!-- wp:list-item -->
+				<li><strong>Understand.</strong> What the system actually has to do, what it must never do, and where the real constraint sits.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>Design.</strong> Component boundaries, data flow and the failure cases, decided before any code is written.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>Build.</strong> Small changes, each one reviewable on its own.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>Verify.</strong> Test the failure path, not only the happy one. An unprivileged user should not be able to bypass the interface and call an endpoint directly.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>Improve.</strong> Simplify what the work made harder than it needed to be.</li>
+				<!-- /wp:list-item -->
+			</ul>
+			<!-- /wp:list -->
 		</section>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"tagName":"section","className":"section section-about has-base-background-color has-background","anchor":"about","ariaLabelledby":"heading-about","backgroundColor":"base","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group section section-about has-base-background-color has-background" id="about" aria-labelledby="heading-about">
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","anchor":"about","ariaLabelledby":"heading-about","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid" id="about" aria-labelledby="heading-about">
 			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
 			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">07 · Engineering Profile</span></p>
 			<!-- /wp:paragraph -->
@@ -198,26 +373,48 @@
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph -->
-			<p>Background and focus areas arrive in a later phase.</p>
+			<p>I am a WordPress and PHP developer based in Rajkot, Gujarat. I work on the parts of a site that decide whether it stays maintainable: plugin structure, data handling, integrations and access control.</p>
 			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph -->
+			<p>Most of my work arrives anonymised. Client names, domains and credentials are stripped out before a project can be described, which is the right thing to do and also makes the engineering the only part worth reading.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph -->
+			<p>I also maintain RankKernel, an independent open source SEO and schema engine. It is my own project and it is not employer or client work.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph -->
+			<p>The full profile, including education and a longer technical account, is on the about page.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<div class="wp-block-buttons">
+				<!-- wp:button -->
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/about/">Read the profile</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
 		</section>
 		<!-- /wp:group -->
 
 		<!--
-			SECTION 08 IS THE COMPLIANCE-CRITICAL ONE AND IT IS CORRECT AS WRITTEN.
+			SECTION 08 IS THE EMPLOYMENT SECTION AND IT IS CORRECT AS WRITTEN.
 
 			"Looking for a WordPress or PHP developer?" is a recruiter speaking.
 			That is seeking employment, which is the opposite of the pattern this
-			theme bans. Do not soften the heading, and do not add recruitment agency,
-			commission, service, availability or rate language anywhere in this
-			section. The
-			prototype's "Email Me" CTA became a link to the contact page, because
-			there is no mailto and no plaintext address anywhere in this theme.
+			theme bans. Do not soften the heading and do not add recruitment
+			agency, commission, service, availability or rate language here or
+			anywhere in this file.
 
-			Pure black, the only #000000 section in the theme.
+			PURE BLACK, applied with backgroundColor rather than a variation
+			because black is a palette colour and not one of the four surfaces.
+			It is the only #000000 section in the theme and that is intentional.
+			There is no mail link and no published address. Contact runs through
+			the contact page.
 		-->
-		<!-- wp:group {"tagName":"section","className":"section section-contact has-black-background-color has-background","anchor":"hiring-cta","ariaLabelledby":"heading-hiring-cta","backgroundColor":"black","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group section section-contact has-black-background-color has-background" id="hiring-cta" aria-labelledby="heading-hiring-cta">
+		<!-- wp:group {"tagName":"section","className":"section has-black-background-color has-background","anchor":"hiring-cta","ariaLabelledby":"heading-hiring-cta","backgroundColor":"black","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section has-black-background-color has-background" id="hiring-cta" aria-labelledby="heading-hiring-cta">
 			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
 			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">08 · Employment Opportunities and Technical Evaluation</span></p>
 			<!-- /wp:paragraph -->
@@ -227,13 +424,17 @@
 			<!-- /wp:heading -->
 
 			<!-- wp:paragraph -->
-			<p>Technical evaluation details arrive in a later phase.</p>
+			<p>If you are hiring for this kind of work, the case studies are the fastest way to evaluate the work. Each one shows the problem, the architecture, the decisions and the verification steps, with client identities removed.</p>
 			<!-- /wp:paragraph -->
 
 			<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
 			<div class="wp-block-buttons">
 				<!-- wp:button -->
 				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/contact/">Start a conversation</a></div>
+				<!-- /wp:button -->
+
+				<!-- wp:button {"className":"is-style-outline"} -->
+				<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/resume/">Read the resume</a></div>
 				<!-- /wp:button -->
 			</div>
 			<!-- /wp:buttons -->

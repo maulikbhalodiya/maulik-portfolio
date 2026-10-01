@@ -1,20 +1,25 @@
 <!--
 	CONDITION: a page using the "about" custom template. Registered in
-	theme.json customTemplates under the name "about". Served at /about/.
+	theme.json customTemplates under the name "about", so an editor picks it
+	from the Page attributes panel. Served at /about/.
 
-	Profile copy is a later phase. The timeline dates go in from the verified
-	record only: PHP Developer Intern January to June 2025, WordPress Developer
-	from July 2025, Rajkot, Gujarat, B.Tech Computer Engineering at Ganpat
-	University 2021 to 2025. No phone number belongs on this site.
+	STRUCTURE IS GROUP BLOCKS WITH STYLE VARIATIONS, exactly as on the
+	homepage. Each section is a core/group whose className carries the surface
+	slug and the rhythm slug, so an editor can change either from the Styles
+	panel without touching this file.
 
-	THE PROTOTYPE HAS A NUMBERING BUG HERE AND IT IS NOT TO BE REPRODUCED. It
-	concatenates two eyebrows into one reading "06 ... and 08 ...", and renders 07
-	after 08. When this page is built, number the sections sequentially and do not
-	preserve the error.
+	SECTION ORDER IS SEQUENTIAL AND IS NOT TO BE REPRODUCED FROM THE PROTOTYPE.
+	The prototype concatenates two eyebrows into one reading "06 ... and 08 ..."
+	and renders 07 after 08. Number 01 to 05 in order here.
+
+	FACTS ARE THE VERIFIED RECORD ONLY. WordPress Developer at Qrolic
+	Technologies from July 2025, PHP Developer Intern January to June 2025,
+	Rajkot, Gujarat, B.Tech Computer Engineering at Ganpat University 2021 to
+	2025. No phone number belongs on this site. No metric, no percentage, no
+	client name.
 
 	A template is block markup. It is parsed, not executed, so it cannot call
-	esc_html__(). Headings come from the page's own content, not from hardcoded
-	strings here.
+	esc_html__() and its literal text is NOT translatable.
 -->
 <!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
 <div class="wp-site-blocks">
@@ -22,17 +27,188 @@
 
 	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
 	<main class="wp-block-group site-main">
-		<!-- wp:group {"tagName":"section","className":"page-hero dark-grid","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group page-hero dark-grid">
-			<!-- wp:post-title {"level":1} /-->
+
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","anchor":"about-hero","ariaLabelledby":"heading-about-hero","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid" id="about-hero" aria-labelledby="heading-about-hero">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">01 · Engineering Profile</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:post-title {"level":1,"anchor":"heading-about-hero"} /-->
+
+			<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p>WordPress Developer | PHP Engineer | Custom Plugin Developer</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph -->
+			<p>Rajkot, Gujarat. Working on WordPress since 2025, mostly on the parts of a site that have to keep working after the launch.</p>
+			<!-- /wp:paragraph -->
 		</section>
 		<!-- /wp:group -->
 
-		<!-- wp:group {"tagName":"section","className":"page-body has-base-background-color has-background","backgroundColor":"base","layout":{"type":"constrained"}} -->
-		<section class="wp-block-group page-body has-base-background-color has-background">
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","anchor":"who","ariaLabelledby":"heading-who","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid" id="who" aria-labelledby="heading-who">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">02 · Who</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-who"} -->
+			<h2 class="wp-block-heading" id="heading-who">Who I am</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>I build WordPress plugins and the backend systems behind them. The work is usually the unglamorous kind: a payment flow that has to survive an interrupted tab, an internal review tool where one role must not see another's records, a booking table where sensitive fields must not sit in plain text.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph -->
+			<p>I am comfortable owning a requirement end to end, which includes deciding what not to build. Most of what I write is invisible on the page, and that is the point.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph -->
+			<p>I also maintain RankKernel, an independent open source SEO and schema engine. It is my own work, separate from anything done as part of employment.</p>
+			<!-- /wp:paragraph -->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"section surface-cream-editorial","anchor":"journey","ariaLabelledby":"heading-journey","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-cream-editorial" id="journey" aria-labelledby="heading-journey">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">03 · Journey</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-journey"} -->
+			<h2 class="wp-block-heading" id="heading-journey">Journey</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:group {"tagName":"div","className":"section-tight","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group section-tight">
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>2025 to present · WordPress Developer, Qrolic Technologies</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>Custom plugin development and backend work inside WordPress. Payment architectures, internal workflow systems, third party integrations and field level encryption, each designed, implemented and verified rather than handed over half finished.</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+				<p>January to June 2025 · PHP Developer Intern, Qrolic Technologies</p>
+				<!-- /wp:paragraph -->
+
+				<!-- wp:paragraph -->
+				<p>PHP and WordPress fundamentals inside a production codebase. Structure, form handling, database access, and learning to debug a real defect rather than an exercise.</p>
+				<!-- /wp:paragraph -->
+			</div>
+			<!-- /wp:group -->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"section surface-warm-editorial","anchor":"technical-focus","ariaLabelledby":"heading-technical-focus","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-warm-editorial" id="technical-focus" aria-labelledby="heading-technical-focus">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">04 · Technical Focus</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-technical-focus"} -->
+			<h2 class="wp-block-heading" id="heading-technical-focus">Technical focus</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>Four areas where the majority of the effort goes.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:list {"className":"section-tight"} -->
+			<ul class="wp-block-list section-tight">
+				<!-- wp:list-item -->
+				<li><strong>Plugin architecture.</strong> Extending WordPress through hooks and its extension points rather than replacing templates, so an update does not undo the work.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>Backend and data.</strong> REST endpoints, schema design for custom tables, form entry metadata and server side query scoping.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>Integration.</strong> Signed REST communication, webhook receivers, asynchronous polling for slow services and credential isolation behind the PHP backend.</li>
+				<!-- /wp:list-item -->
+
+				<!-- wp:list-item -->
+				<li><strong>Security.</strong> HMAC SHA 256 payload signing, nonce verification, capability gated access and authenticated encryption with key material held outside the database.</li>
+				<!-- /wp:list-item -->
+			</ul>
+			<!-- /wp:list -->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","anchor":"education","ariaLabelledby":"heading-education","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid" id="education" aria-labelledby="heading-education">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">05 · Education</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-education"} -->
+			<h2 class="wp-block-heading" id="heading-education">Education</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph {"typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p>2021 to 2025 · B.Tech, Computer Engineering</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph -->
+			<p>Ganpat University. The computer engineering foundation the PHP and WordPress work is built on.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:paragraph -->
+			<p>The complete record is on the resume page.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<div class="wp-block-buttons">
+				<!-- wp:button -->
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/resume/">Read the resume</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"section has-black-background-color has-background","anchor":"about-contact","ariaLabelledby":"heading-about-contact","backgroundColor":"black","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section has-black-background-color has-background" id="about-contact" aria-labelledby="heading-about-contact">
+			<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
+			<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text">06 · Next Step</span></p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:heading {"level":2,"anchor":"heading-about-contact"} -->
+			<h2 class="wp-block-heading" id="heading-about-contact">Evaluating the work?</h2>
+			<!-- /wp:heading -->
+
+			<!-- wp:paragraph -->
+			<p>The case studies are the fastest route to the engineering detail, and the contact page carries the two published channels.</p>
+			<!-- /wp:paragraph -->
+
+			<!-- wp:buttons {"layout":{"type":"flex","flexWrap":"wrap"}} -->
+			<div class="wp-block-buttons">
+				<!-- wp:button -->
+				<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/projects/">See the work</a></div>
+				<!-- /wp:button -->
+
+				<!-- wp:button {"className":"is-style-outline"} -->
+				<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="/contact/">Get in touch</a></div>
+				<!-- /wp:button -->
+			</div>
+			<!-- /wp:buttons -->
+		</section>
+		<!-- /wp:group -->
+
+		<!--
+			ANYTHING THE EDITOR WRITES ON THE PAGE RENDERS HERE, below the
+			structured sections. It is deliberately last so page content can never
+			push the designed structure around.
+		-->
+		<!-- wp:group {"tagName":"section","className":"section surface-dark-grid","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group section surface-dark-grid">
 			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
 		</section>
 		<!-- /wp:group -->
+
 	</main>
 	<!-- /wp:group -->
 

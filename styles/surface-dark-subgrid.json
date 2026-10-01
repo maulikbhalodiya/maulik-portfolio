@@ -1,0 +1,13 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "Dark Sub Grid",
+	"slug": "surface-dark-subgrid",
+	"blockTypes": [ "core/group" ],
+	"styles": {
+		"color": {
+			"text": "var:preset|color|text"
+		},
+		"css": "background-image: radial-gradient(circle at 1px 1px, rgba(250, 204, 21, 0.14) 1px, transparent 0);\nbackground-size: 32px 32px;"
+	}
+}

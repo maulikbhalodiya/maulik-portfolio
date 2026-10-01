@@ -1,0 +1,16 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "Dark Grid",
+	"slug": "surface-dark-grid",
+	"blockTypes": [
+		"core/group"
+	],
+	"styles": {
+		"color": {
+			"background": "var:preset|color|base",
+			"text": "var:preset|color|text"
+		},
+		"css": "background-image:\n\tlinear-gradient(to right, rgba(255, 253, 244, 0.035) 1px, transparent 1px),\n\tlinear-gradient(to bottom, rgba(255, 253, 244, 0.035) 1px, transparent 1px);\nbackground-size: 48px 48px;\n\n\t/* The Resume nav item stays amber whether or not it is the current page,\n\t   because it opens the resume viewer rather than navigating. It needs a class\n\t   rather than a colour attribute: core/navigation-link declares no color\n\t   support and never reads textColor from its own attributes, so a textColor\n\t   attribute parses and is then discarded without a warning. The class is\n\t   emitted by patterns/header.php. */\n\t.site-header__nav-resume,\n\t.site-header__nav-resume:visited {\n\t\tcolor: var(--wp--preset--color--accent);\n\t}\n\n\t.site-header__nav-resume:hover {\n\t\tcolor: var(--wp--preset--color--accent-hover);\n\t}"
+	}
+}

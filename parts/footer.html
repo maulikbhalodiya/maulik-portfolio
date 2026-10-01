@@ -36,52 +36,14 @@
 
 	NO WRITING OR BLOG LINK. Posts are supported, the blog is not advertised.
 -->
-<!-- wp:group {"tagName":"footer","className":"site-footer no-print has-black-background-color has-background","backgroundColor":"black","layout":{"type":"constrained"}} -->
-<footer class="wp-block-group site-footer no-print has-black-background-color has-background">
-	<!-- wp:group {"tagName":"div","className":"site-footer__grid","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group site-footer__grid">
-		<!-- wp:group {"tagName":"div","className":"site-footer__col site-footer__col--identity","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group site-footer__col site-footer__col--identity">
-			<!-- wp:site-title {"level":2,"className":"site-footer__brand"} /-->
+	THE BRIDGE, SAME REASON AS THE HEADER. This part references
+	maulik-portfolio/footer, which is where every word lives. Without that
+	reference the footer rendered its column headings and copyright as empty
+	paragraphs, because structure alone carries no text and Core has no fallback
+	to supply it. An empty footer reads like a styling bug rather than a missing
+	reference, which is why it survived until the rendered markup was inspected
+	rather than photographed.
 
-			<!-- wp:paragraph {"className":"site-footer__identity-line"} -->
-			<p class="site-footer__identity-line"></p>
-			<!-- /wp:paragraph -->
-		</div>
-		<!-- /wp:group -->
-
-		<!-- wp:group {"tagName":"div","className":"site-footer__col site-footer__col--explore","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group site-footer__col site-footer__col--explore">
-			<!-- wp:navigation {"className":"site-footer__nav","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"}} /-->
-		</div>
-		<!-- /wp:group -->
-
-		<!-- wp:group {"tagName":"div","className":"site-footer__col site-footer__col--development","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group site-footer__col site-footer__col--development">
-			<!-- wp:navigation {"className":"site-footer__nav","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"}} /-->
-		</div>
-		<!-- /wp:group -->
-
-		<!-- wp:group {"tagName":"div","className":"site-footer__col site-footer__col--connect","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group site-footer__col site-footer__col--connect">
-			<!-- wp:navigation {"className":"site-footer__nav","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"}} /-->
-		</div>
-		<!-- /wp:group -->
-	</div>
-	<!-- /wp:group -->
-
-	<!-- wp:separator {"className":"site-footer__rule"} /-->
-
-	<!-- wp:group {"tagName":"div","className":"site-footer__legal","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
-	<div class="wp-block-group site-footer__legal">
-		<!-- wp:paragraph {"className":"site-footer__copyright","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-		<p class="site-footer__copyright"></p>
-		<!-- /wp:paragraph -->
-
-		<!-- wp:paragraph {"className":"site-footer__technical","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-		<p class="site-footer__technical"></p>
-		<!-- /wp:paragraph -->
-	</div>
-	<!-- /wp:group -->
-</footer>
-<!-- /wp:group -->
+	The chain is: template -> wp:template-part -> wp:pattern -> words.
+-->
+<!-- wp:pattern {"slug":"maulik-portfolio/footer"} /-->
