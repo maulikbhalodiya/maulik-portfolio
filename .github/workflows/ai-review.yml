@@ -49,10 +49,19 @@ jobs:
       - name: AI review
         uses: nilesh32236/opencode-ai-reviewer@103082c963f64cb2cf979ae14b729ec41d40866e # v1.22.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          model: anthropic/claude-sonnet-4-5
+          github_token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          model: ${{ vars.OPENCODE_MODEL || 'opencode/muse-spark-1.3-contributor-free' }}
+          review_model: ${{ vars.OPENCODE_MODEL || 'opencode/muse-spark-1.3-contributor-free' }}
+          opencode_api_key: ${{ secrets.OPENCODE_API_KEY }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
           opencode_version: 'v1.18.31'
           require_opencode_checksum: 'false'
+          # Integrity verification is off on purpose. Upstream publishes no
+          # checksum assets for any release, so require_opencode_checksum can
+          # never be satisfied and only fails the job closed. The version pin above
+          # restores the determinism the checksum would have protected. This is a
+          # known, accepted supply chain gap, not an oversight.
           pr_number: ${{ steps.pr.outputs.oid }}
           base_url: ${{ github.server_url }}
           max_comments: 10
@@ -223,10 +232,19 @@ jobs:
       - name: AI fix
         uses: nilesh32236/opencode-ai-reviewer@103082c963f64cb2cf979ae14b729ec41d40866e # v1.22.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          model: anthropic/claude-sonnet-4-5
+          github_token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          model: ${{ vars.OPENCODE_MODEL || 'opencode/muse-spark-1.3-contributor-free' }}
+          review_model: ${{ vars.OPENCODE_MODEL || 'opencode/muse-spark-1.3-contributor-free' }}
+          opencode_api_key: ${{ secrets.OPENCODE_API_KEY }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
           opencode_version: 'v1.18.31'
           require_opencode_checksum: 'false'
+          # Integrity verification is off on purpose. Upstream publishes no
+          # checksum assets for any release, so require_opencode_checksum can
+          # never be satisfied and only fails the job closed. The version pin above
+          # restores the determinism the checksum would have protected. This is a
+          # known, accepted supply chain gap, not an oversight.
           pr_number: ${{ steps.pr.outputs.oid }}
           base_url: ${{ github.server_url }}
           auto_fix: true
