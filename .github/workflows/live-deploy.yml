@@ -21,7 +21,140 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Every quality gate that CI runs, repeated here as a hard barrier to deploying.
+  #
+  # WHY THIS DUPLICATES ci.yml. CI already gated the pull request, so running
+  # this again on main is redundant in the happy path. It is here because CI can
+  # be bypassed: a maintainer can push straight to main, a required check can be
+  # skipped, and a merge can land while a workflow is failing for an unrelated
+  # reason. This job makes the deploy itself refuse to run on bad code, rather
+  # than trusting that something upstream did the checking.
+  #
+  # The commands are copied from ci.yml rather than invented, so the two cannot
+  # drift into checking different things.
+  gates:
+    name: Quality gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: Install PHP dependencies
+        run: composer install --no-progress --no-interaction
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Assert WPCS is at least 3.4.1
+        run: |
+          set -euo pipefail
+          installed="$(composer show wp-coding-standards/wpcs --format=json | php -r '$d=json_decode(stream_get_contents(STDIN), true); echo $d["versions"][0];')"
+          echo "Installed wp-coding-standards/wpcs version: ${installed}"
+          php -r '
+            $v = $argv[1];
+            if ( version_compare( ltrim( $v, "v" ), "3.4.1", "<" ) ) {
+              fwrite( STDERR, "FATAL: WPCS ${v} is below 3.4.1 and is vulnerable to RCE when linting untrusted code.\n" );
+              exit( 1 );
+            }
+            echo "WPCS version is acceptable\n";
+          ' "${installed}"
+
+      - name: PHP lint
+        run: |
+          set -euo pipefail
+          find . -name '*.php' -not -path './vendor/*' -not -path './node_modules/*' -print0 \
+            | xargs -0 -n1 -P4 php -l > /dev/null
+          echo "every PHP file parses"
+
+      - name: PHP_CodeSniffer
+        run: vendor/bin/phpcs --standard=phpcs.xml.dist
+
+      - name: PHPStan
+        run: composer stan
+
+      - name: Stylelint
+        run: npm run lint:css
+
+      - name: ESLint
+        run: npm run lint:js
+
+      - name: Build CSS
+        run: npm run build:css
+
+      - name: Assert style.css still carries the WordPress theme header
+        run: |
+          set -euo pipefail
+          grep -q '^Theme Name:' style.css || { echo "style.css lost its theme header" >&2; exit 1; }
+
+      - name: Assert no em dashes or en dashes
+        run: |
+          set -euo pipefail
+          if git grep -nP '[\x{2014}\x{2013}]' -- . \
+            ':(exclude)node_modules' ':(exclude)vendor' \
+            ':(exclude)package-lock.json' ':(exclude)composer.lock'; then
+            echo "em or en dash found, which breaks the project rule" >&2
+            exit 1
+          fi
+          echo "no em or en dashes"
+
+      - name: Assert no mailto links
+        run: |
+          set -euo pipefail
+          # Built from parts so this gate does not match its own source, which is
+          # the same trap ci.yml avoids. A literal here would make the gate fail
+          # forever on the workflow file that contains it.
+          pattern="mail$(printf 'to')"':'
+          if git grep -nI -F "${pattern}" -- . \
+            ':(exclude)node_modules' \
+            ':(exclude)vendor' \
+            ':(exclude)package-lock.json' \
+            ':(exclude)docs'; then
+            echo "mailto link found, which breaks the no published email rule" >&2
+            exit 1
+          fi
+          echo "no mailto links"
+
+      - name: Assert no raw email addresses
+        run: |
+          set -euo pipefail
+          if git grep -nI -P '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
+            ':(exclude)node_modules' ':(exclude)vendor' \
+            ':(exclude)package-lock.json' ':(exclude)composer.lock' \
+            ':(exclude)languages/*.pot' ':(exclude)docs'; then
+            echo "raw email address found, which breaks the no published email rule" >&2
+            exit 1
+          fi
+          echo "no raw email addresses"
+
+      - name: Assert theme .htaccess is present in the repository
+        run: |
+          set -euo pipefail
+          # The deploy rsyncs with --delete scoped to the theme directory, so a
+          # file that exists only on the server gets deleted on the first real
+          # deploy. These deny rules are what stop docs/ and tools/ being
+          # readable over HTTP, so losing them reopens that exposure silently.
+          test -f .htaccess || { echo ".htaccess is missing from the repo and would be deleted by rsync --delete" >&2; exit 1; }
+          grep -q 'FilesMatch' .htaccess || { echo ".htaccess has no deny rules" >&2; exit 1; }
+          echo "theme .htaccess will survive the deploy"
+
   deploy:
+    needs: gates
     name: Deploy theme to live server
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -149,6 +282,7 @@ jobs:
           set -euo pipefail
           rsync -azn --delete \
             --itemize-changes \
+            --rsync-path="sudo -n /usr/bin/rsync" \
             -e "ssh -i deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
             --exclude='.git/' \
             --exclude='.github/' \
@@ -191,6 +325,7 @@ jobs:
           # is the second: if the .htaccess is ever lost the files are not on
           # disk to be served. Keep both.
           rsync -az --delete \
+            --rsync-path="sudo -n /usr/bin/rsync" \
             -e "ssh -i deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
             --exclude='.git/' \
             --exclude='.github/' \
@@ -225,7 +360,7 @@ jobs:
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=accept-new \
             "${LIVE_SERVER_USER}@${LIVE_SERVER_IP}" \
-            "sudo -n chown -R www-data:www-data '${THEME_DEST}' && echo 'ownership set to www-data:www-data'"
+            "sudo -n /usr/local/sbin/ghdeploy-theme-chown '${THEME_DEST}' && echo 'ownership set to www-data:www-data'"
 
       # Activation runs as www-data rather than with --allow-root, so the theme
       # is activated in the same user context WordPress runs in. A theme that is
