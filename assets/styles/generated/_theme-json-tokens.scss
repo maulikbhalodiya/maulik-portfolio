@@ -8,16 +8,34 @@
 // Palette (record only, consume at runtime as --wp--preset--color--*)
 // Base is owned by theme.json
 $palette-base: base;
+// Pure Black is owned by theme.json
+$palette-black: black;
 // Surface is owned by theme.json
 $palette-surface: surface;
-// Text is owned by theme.json
+// Surface Raised is owned by theme.json
+$palette-surface-2: surface-2;
+// Editorial Ground is owned by theme.json
+$palette-paper: paper;
+// Editorial Cream is owned by theme.json
+$palette-paper-warm: paper-warm;
+// Text on Dark is owned by theme.json
 $palette-text: text;
-// Muted is owned by theme.json
-$palette-muted: muted;
-// Accent is owned by theme.json
+// Text Secondary is owned by theme.json
+$palette-text-muted: text-muted;
+// Text Muted is owned by theme.json
+$palette-text-faint: text-faint;
+// Text on Light is owned by theme.json
+$palette-text-on-paper: text-on-paper;
+// Signal Amber (dark surfaces only) is owned by theme.json
 $palette-accent: accent;
-// Accent Strong is owned by theme.json
-$palette-accent-strong: accent-strong;
+// Signal Amber Hover is owned by theme.json
+$palette-accent-hover: accent-hover;
+// Signal Gold (light surfaces only) is owned by theme.json
+$palette-accent-on-paper: accent-on-paper;
+// Hairline Dark is owned by theme.json
+$palette-line: line;
+// Hairline Emphasis is owned by theme.json
+$palette-line-strong: line-strong;
 
 // Font sizes (record only, consume at runtime as --wp--preset--font-size--*)
 // Small is owned by theme.json
@@ -26,24 +44,32 @@ $font-size-small: small;
 $font-size-medium: medium;
 // Large is owned by theme.json
 $font-size-large: large;
-// Extra Large is owned by theme.json
+// Display is owned by theme.json
 $font-size-x-large: x-large;
+// Hero is owned by theme.json
+$font-size-hero: hero;
 
 // Spacing sizes (record only, consume at runtime as --wp--preset--spacing--*)
-// 1: Compact is owned by theme.json
+// Hairline is owned by theme.json
+$spacing-20: 20;
+// Micro is owned by theme.json
 $spacing-30: 30;
-// 2: Tight is owned by theme.json
+// Compact is owned by theme.json
+$spacing-40: 40;
+// Standard is owned by theme.json
 $spacing-50: 50;
-// 3: Standard is owned by theme.json
+// Roomy is owned by theme.json
+$spacing-60: 60;
+// Section is owned by theme.json
 $spacing-70: 70;
-// 4: Roomy is owned by theme.json
+// Section Large is owned by theme.json
 $spacing-80: 80;
 
 // Layout widths, derived from settings.layout
 // from settings.layout.contentSize: 48rem
 $content-width: 768px;
-// from settings.layout.wideSize: 72rem
-$wide-width: 1152px;
+// from settings.layout.wideSize: 90rem
+$wide-width: 1440px;
 
 // Breakpoints, compile-time only
 // medium layout breakpoint, 768px
