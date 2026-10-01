@@ -171,6 +171,16 @@ jobs:
       THEME_DEST: /var/www/maulik-dev/wp-content/themes/maulik-portfolio
       ROUTES: '/ /about/ /resume/ /projects/ /rankkernel/ /contact/'
 
+      # Secrets are mapped explicitly here because referencing them directly
+      # in a run block is what makes them available. An earlier version of this
+      # file read ${LIVE_DEPLOY_KEY} in a step but never declared it in env, so
+      # every secret resolved to an empty string and the job refused to deploy.
+      # The check that caught it is below and it did its job: it failed before
+      # a single file was written to the server.
+      LIVE_DEPLOY_KEY: ${{ secrets.LIVE_DEPLOY_KEY }}
+      LIVE_SERVER_USER: ${{ secrets.LIVE_SERVER_USER }}
+      LIVE_SERVER_IP: ${{ secrets.LIVE_SERVER_IP }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
