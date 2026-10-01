@@ -12,6 +12,14 @@ path_filters:
   - '!build/**'
   - '!package-lock.json'
   - '!composer.lock'
+  # Documentation is prose, not shipped code. Reviewing it produces findings
+  # about wording and formatting that change no behaviour and cannot break the
+  # site. The phase checklists under docs/phases are working notes that get
+  # rewritten every phase, and reviewing them wastes the review budget that
+  # should go to PHP and SCSS.
+  - '!docs/**'
+  # Local tooling, never shipped and never served.
+  - '!tools/**'
 
 path_instructions:
   - path: '**/*.php'

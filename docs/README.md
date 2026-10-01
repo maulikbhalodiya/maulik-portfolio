@@ -81,7 +81,10 @@ These live in the parent directory and are reference material, not checklists.
 
 | Document | Contents |
 |---|---|
-| `PLAN.md` | Reasoning. What we are building and why |
+| Document | Contents |
+|---|---|
+| [`PLAN.md`](PLAN.md) | Reasoning. What we are building and why |
+| [`GIT-WORKFLOW.md`](GIT-WORKFLOW.md) | Issue first, GH-* branches, review then approval. **Read this before contributing** |
 | `ROADMAP.md` | Build order, condensed |
 | `DESIGN-SPEC.md` | Colour, type, texture, motion, layout tokens |
 | `CONTENT-INVENTORY.md` | All case studies verbatim, timeline, skills, RankKernel |

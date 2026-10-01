@@ -1,3 +1,287 @@
+*,
+*::before,
+*::after {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+:where(body) *,
+:where(body) *::before,
+:where(body) *::after {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+img,
+video,
+canvas,
+svg {
+  border-radius: 0;
+}
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+  body,
+  body.page,
+  body.single,
+  body.archive,
+  body.home,
+  .site,
+  .page,
+  .entry,
+  .entry-content {
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+  }
+  .dark-grid,
+  .dark-subgrid,
+  .cream-editorial,
+  .warm-editorial {
+    background-color: Canvas;
+    background-image: none;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  li,
+  dt,
+  dd,
+  figcaption,
+  blockquote,
+  table,
+  th,
+  td,
+  code,
+  pre,
+  kbd,
+  samp,
+  a {
+    color: CanvasText;
+  }
+  a {
+    text-decoration: underline;
+  }
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.wp-block-heading {
+  text-wrap: balance;
+}
+
+.has-hero-font-size,
+.has-x-large-font-size {
+  text-wrap: balance;
+}
+
+.has-hero-font-size,
+.has-x-large-font-size,
+h1,
+h2 {
+  line-height: 1.08;
+}
+
+code,
+kbd,
+samp,
+pre,
+.has-mono-font-family {
+  font-variant-numeric: tabular-nums;
+}
+
+body {
+  line-height: 1.625;
+}
+
+@font-face {
+  font-family: Syne;
+  src: url(../fonts/syne-latin-700-800.woff2) format("woff2");
+  font-weight: 700 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url(../fonts/plus-jakarta-sans-latin-400-600.woff2) format("woff2");
+  font-weight: 400 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url(../fonts/ibm-plex-mono-latin-400.woff2) format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url(../fonts/ibm-plex-mono-latin-600.woff2) format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Syne Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT");
+  font-weight: 700;
+  font-style: normal;
+  size-adjust: 117.0146%;
+  ascent-override: 79.05%;
+  descent-override: 23.501%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Syne Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT");
+  font-weight: 800;
+  font-style: normal;
+  size-adjust: 170.0527%;
+  ascent-override: 54.395%;
+  descent-override: 16.171%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Syne Fallback Android";
+  src: local("Roboto Bold");
+  font-weight: 700;
+  font-style: normal;
+  size-adjust: 124.3218%;
+  ascent-override: 74.404%;
+  descent-override: 22.12%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Syne Fallback Android";
+  src: local("Roboto Bold");
+  font-weight: 800;
+  font-style: normal;
+  size-adjust: 180.672%;
+  ascent-override: 51.198%;
+  descent-override: 15.221%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans Fallback";
+  src: local("Arial"), local("Helvetica");
+  font-weight: 400;
+  font-style: normal;
+  size-adjust: 109.3202%;
+  ascent-override: 94.95%;
+  descent-override: 20.307%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT");
+  font-weight: 600;
+  font-style: normal;
+  size-adjust: 102.239%;
+  ascent-override: 101.527%;
+  descent-override: 21.714%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans Fallback Android";
+  src: local("Roboto");
+  font-weight: 400;
+  font-style: normal;
+  size-adjust: 107.4879%;
+  ascent-override: 96.569%;
+  descent-override: 20.653%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans Fallback Android";
+  src: local("Roboto Bold");
+  font-weight: 600;
+  font-style: normal;
+  size-adjust: 108.6235%;
+  ascent-override: 95.559%;
+  descent-override: 20.438%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "IBM Plex Mono Fallback";
+  src: local("Menlo"), local("DejaVu Sans Mono"), local("Consolas");
+  font-weight: 400;
+  font-style: normal;
+  size-adjust: 99.6593%;
+  ascent-override: 102.85%;
+  descent-override: 27.594%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "IBM Plex Mono Fallback";
+  src: local("Menlo Bold"), local("DejaVu Sans Mono Bold"), local("Consolas Bold");
+  font-weight: 600;
+  font-style: normal;
+  size-adjust: 99.6593%;
+  ascent-override: 102.85%;
+  descent-override: 27.594%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "IBM Plex Mono Fallback Android";
+  src: local("Roboto Mono");
+  font-weight: 400;
+  font-style: normal;
+  size-adjust: 99.9837%;
+  ascent-override: 102.517%;
+  descent-override: 27.504%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "IBM Plex Mono Fallback Android";
+  src: local("Roboto Mono Medium"), local("Roboto Mono");
+  font-weight: 600;
+  font-style: normal;
+  size-adjust: 99.9837%;
+  ascent-override: 102.517%;
+  descent-override: 27.504%;
+  line-gap-override: 0%;
+}
+:root {
+  --font-display: 'Syne', 'Syne Fallback', 'Syne Fallback Android', system-ui, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', 'Plus Jakarta Sans Fallback Android', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'IBM Plex Mono Fallback', 'IBM Plex Mono Fallback Android', system-ui, monospace;
+}
+
+.dark-grid {
+  background-color: var(--wp--preset--color--base);
+  background-image: linear-gradient(to right, rgba(255, 253, 244, 0.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 253, 244, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.dark-subgrid {
+  background-image: radial-gradient(circle at 1px 1px, rgba(250, 204, 21, 0.14) 1px, transparent 0);
+  background-size: 32px 32px;
+}
+
+.cream-editorial {
+  background-color: var(--wp--preset--color--paper-warm);
+  color: var(--wp--preset--color--text-on-paper);
+  background-image: linear-gradient(to right, rgba(10, 10, 11, 0.04) 1px, transparent 1px);
+  background-size: 96px 96px;
+}
+
+.warm-editorial {
+  background-color: var(--wp--preset--color--paper);
+  color: var(--wp--preset--color--text-on-paper);
+  background-image: linear-gradient(to bottom, rgba(10, 10, 11, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
 :root {
   color-scheme: dark;
 }

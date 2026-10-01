@@ -1,0 +1,45 @@
+<!--
+	CONDITION: search results, for both posts and pages, and for any post type
+	that has not opted out of search.
+
+	search.html is the only template where a core/search block belongs. It is
+	deliberately absent from every other template in this theme: the design has
+	no site-wide search UI, and shipping an unassigned search box on every page
+	would add a layout shift for a feature nobody asked for.
+
+	A template is block markup. It is parsed, not executed, so it cannot call
+	esc_html__() and literal text here is NOT translatable. The core/search block
+	carries its own placeholder and button strings, which the block manages and
+	which are translatable through WordPress core. The query-no-results block is
+	left empty for the same reason index.html leaves it empty.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+		<!-- wp:search {"label":"Search","showLabel":false,"buttonText":"Search","buttonUseIcon":true} /-->
+
+		<!-- wp:query {"queryId":3,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":true},"className":"is-layout-flow"} -->
+		<div class="wp-block-query is-layout-flow">
+			<!-- wp:post-template -->
+				<!-- wp:post-title {"level":2,"isLink":true} /-->
+				<!-- wp:post-excerpt /-->
+			<!-- /wp:post-template -->
+
+			<!-- wp:query-no-results /-->
+
+			<!-- wp:query-pagination {"className":"is-layout-flex","layout":{"type":"flex","justifyContent":"space-between"}} -->
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
+		</div>
+		<!-- /wp:query -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

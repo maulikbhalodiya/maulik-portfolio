@@ -1,22 +1,60 @@
 <!--
-	Header template part.
+	HEADER TEMPLATE PART.
 
-	Constraint that matters here: template parts are parsed as block markup, not
-	executed as PHP. They cannot contain PHP, they cannot call esc_html_e(), and
-	they cannot read options. Anything in a part that needs translation or a
-	dynamic value has to live in a pattern instead, because patterns are PHP and
-	are included at init time.
+	WHY THERE ARE NO WORDS IN THIS FILE.
 
-	The equivalent Twenty Twenty-Five header uses a Site Title block, which
-	handles its own i18n internally. That is the pattern to follow rather than
-	trying to translate a string here.
+	Block theme template parts are .html files and they are PARSED, not executed.
+	They cannot contain PHP. There is no get_template_part() in a block theme in
+	the sense a classic theme developer means it, so esc_html__() cannot be
+	called here, esc_html_e() cannot be called here, and no option can be read
+	here. Anything written as a literal string in this file ships to every
+	visitor of every language, untranslatable, forever.
 
-	No navigation block yet. A navigation block needs a menu to be assigned, and
-	an unassigned navigation block renders an empty container that costs layout
-	shift. It goes in once there is a menu.
+	That failure is invisible in a screenshot. The header looks correct, it reads
+	correctly in English, and nothing anywhere reports an error while it is wrong.
+	It is the single most common block theme porting mistake precisely because it
+	looks fine.
+
+	THE SPLIT, THEREFORE:
+
+	  parts/    STRUCTURE ONLY. Pure block markup. Zero PHP. Zero user-facing
+	            words. Which blocks appear and where.
+	  patterns/ WORDS. Every translatable string in the theme, each one wrapped
+	            in esc_html__( 'Text', 'maulik-portfolio' ). Because patterns are
+	            PHP, translation is available there and only there.
+
+	patterns/header.php carries the six navigation labels. It is the
+	translatable source of this structure and it is what an editor sees in the
+	site editor.
+
+	ONE THING THAT FAILS COMPLETELY SILENTLY. Every file in patterns/ must open
+	with a Title:, Slug: and Categories: header in its docblock. Core reads those
+	with get_file_data() and if the Slug line is missing it does not register the
+	pattern and does not raise an error in the place anyone would look. The
+	pattern simply never appears. Verified against Core 7.1.2 by counting what
+	get_block_patterns() returns, which is the only way to notice.
+
+	FLAT DIRECTORY. /parts cannot be nested. Core looks up parts by slug in a
+	single flat namespace, so parts/header/mobile.html is unreachable: there is no
+	get_template_part( 'header/mobile' ) in a block theme. A second header region
+	is a separate slug, such as header-minimal.html, at the top level of /parts.
+
+	NAVIGATION IS EMPTY HERE AND THAT IS DELIBERATE. An unassigned navigation
+	block renders an empty container and costs layout shift. It is added when
+	there is a menu to assign.
+
+	NO WRITING OR BLOG LINK. The theme supports posts, but the site does not
+	advertise a blog. See patterns/header.php for the six items that do exist:
+	Home, RankKernel, Projects, About, Resume, Contact.
 -->
 <!-- wp:group {"tagName":"header","className":"site-header","layout":{"type":"constrained"}} -->
 <header class="wp-block-group site-header">
-	<!-- wp:site-title {"level":0} /-->
+	<!-- wp:group {"tagName":"div","className":"site-header__inner","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between"}} -->
+	<div class="wp-block-group site-header__inner">
+		<!-- wp:site-title {"level":0,"className":"site-header__title"} /-->
+
+		<!-- wp:navigation {"className":"site-header__nav","overlayMenu":"mobile","layout":{"type":"flex","justifyContent":"right"}} /-->
+	</div>
+	<!-- /wp:group -->
 </header>
 <!-- /wp:group -->

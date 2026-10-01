@@ -1,2 +1,6 @@
+// Base index. Forwards every base partial.
+// base/_fonts.scss is owned by another agent and forwarded here so the theme has
+// a single base entry point.
 @forward 'reset';
 @forward 'typography';
+@forward 'fonts';

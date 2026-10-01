@@ -1,0 +1,31 @@
+<!--
+	CONDITION: any single page that has no more specific template. This is the
+	generic page shape: hero-ish heading, then the content the editor wrote. It
+	is also the fallback that page-{slug}.html and page-{id}.html override.
+
+	A template is block markup. It is parsed, not executed, so it cannot call
+	esc_html__() and literal text here is NOT translatable. The heading below is
+	empty for that reason: an untranslated placeholder string shipped in a
+	template is permanently wrong, whereas an empty heading renders nothing and
+	the editor supplies the real title. Same reasoning for the no-results block
+	below.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+		<!-- wp:group {"tagName":"article","className":"page-shell","layout":{"type":"constrained"}} -->
+		<article class="wp-block-group page-shell">
+			<!-- wp:post-title {"level":1} /-->
+
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</article>
+		<!-- /wp:group -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

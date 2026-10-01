@@ -57,11 +57,15 @@ jobs:
           audit_create_issues: true
           audit_auto_fix: false
           audit_labels: 'audit'
+          # Shipped code only. docs/ is prose that changes no behaviour and
+          # blocks/ is not used by this theme, it has no custom block types
+          # because those are forbidden in a theme.
           audit_target_dirs: |
             inc
             patterns
             assets
-            blocks
+            templates
+            parts
           max_files_per_batch: 3
           enable_mcp: false
           audit_category: ${{ inputs.audit_category }}

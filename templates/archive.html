@@ -1,0 +1,42 @@
+<!--
+	CONDITION: any archive that has no more specific template: category, tag,
+	taxonomy, author and date archives, and post type archives that have not been
+	given their own file.
+
+	The theme's real project archive is /projects/, which is a page and is handled
+	by page-projects.html. This file is the fallback listing, so it uses a query
+	loop rather than a hardcoded grid.
+
+	A template is block markup. It is parsed, not executed, so it cannot call
+	esc_html__(). The query-no-results block is deliberately left empty: literal
+	placeholder text here would ship untranslatable.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+		<!-- wp:query {"queryId":2,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":true},"className":"is-layout-flow"} -->
+		<div class="wp-block-query is-layout-flow">
+			<!-- wp:post-template -->
+				<!-- wp:post-title {"level":2,"isLink":true} /-->
+				<!-- wp:post-date /-->
+				<!-- wp:post-excerpt /-->
+			<!-- /wp:post-template -->
+
+			<!-- wp:query-no-results /-->
+
+			<!-- wp:query-pagination {"className":"is-layout-flex","layout":{"type":"flex","justifyContent":"space-between"}} -->
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
+		</div>
+		<!-- /wp:query -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

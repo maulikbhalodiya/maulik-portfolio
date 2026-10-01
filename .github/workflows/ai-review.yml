@@ -71,6 +71,8 @@ jobs:
             !build/**
             !package-lock.json
             !composer.lock
+            !docs/**
+            !tools/**
           project_context: |
             You are reviewing a WordPress BLOCK THEME repository named maulik-portfolio.
             It is the personal developer portfolio theme of Maulik Bhalodiya, a
@@ -255,6 +257,8 @@ jobs:
             !build/**
             !package-lock.json
             !composer.lock
+            !docs/**
+            !tools/**
           project_context: |
             You are fixing review findings in a WordPress BLOCK THEME repository
             named maulik-portfolio, the personal developer portfolio theme of Maulik

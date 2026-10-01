@@ -1,0 +1,49 @@
+<!--
+	CONDITION: the blog posts index. WordPress picks this over index.html as soon
+	as the Reading settings show posts on the front page, so it is not a stub for
+	the homepage. It is also the archive-style listing for any custom post type
+	that has not been given its own template.
+
+	THE RULE THAT SHAPED THIS FILE: the theme is architected to support a future
+	blog, but the site does not advertise one. There is deliberately no Writing or
+	Blog link in any template, part or pattern. That is why no navigation block
+	appears here and why the footer in patterns/footer.php omits it. The
+	capability exists without being advertised.
+
+	A query loop is used rather than do_blocks() so the listing stays native. The
+	no-results block is intentionally left empty: an empty query renders no
+	copy, and any placeholder string here would be untranslatable literal text.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+		<!-- wp:query {"queryId":1,"query":{"perPage":10,"pages":0,"offset":0,"postType":"post","order":"desc","orderBy":"date","inherit":true},"className":"is-layout-flow"} -->
+		<div class="wp-block-query is-layout-flow">
+			<!-- wp:post-template -->
+				<!-- wp:group {"className":"post-card","layout":{"type":"constrained"}} -->
+				<div class="wp-block-group post-card">
+					<!-- wp:post-title {"level":2,"isLink":true} /-->
+					<!-- wp:post-date /-->
+					<!-- wp:post-excerpt /-->
+				</div>
+				<!-- /wp:group -->
+			<!-- /wp:post-template -->
+
+			<!-- wp:query-no-results /-->
+
+			<!-- wp:query-pagination {"className":"is-layout-flex","layout":{"type":"flex","justifyContent":"space-between"}} -->
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
+		</div>
+		<!-- /wp:query -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->

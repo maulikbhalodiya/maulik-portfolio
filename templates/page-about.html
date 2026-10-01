@@ -1,0 +1,41 @@
+<!--
+	CONDITION: a page using the "about" custom template. Registered in
+	theme.json customTemplates under the name "about". Served at /about/.
+
+	Profile copy is a later phase. The timeline dates go in from the verified
+	record only: PHP Developer Intern January to June 2025, WordPress Developer
+	from July 2025, Rajkot, Gujarat, B.Tech Computer Engineering at Ganpat
+	University 2021 to 2025. No phone number belongs on this site.
+
+	THE PROTOTYPE HAS A NUMBERING BUG HERE AND IT IS NOT TO BE REPRODUCED. It
+	concatenates two eyebrows into one reading "06 ... and 08 ...", and renders 07
+	after 08. When this page is built, number the sections sequentially and do not
+	preserve the error.
+
+	A template is block markup. It is parsed, not executed, so it cannot call
+	esc_html__(). Headings come from the page's own content, not from hardcoded
+	strings here.
+-->
+<!-- wp:group {"tagName":"div","className":"wp-site-blocks","layout":{"type":"constrained"}} -->
+<div class="wp-site-blocks">
+	<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+	<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"constrained"}} -->
+	<main class="wp-block-group site-main">
+		<!-- wp:group {"tagName":"section","className":"page-hero dark-grid","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group page-hero dark-grid">
+			<!-- wp:post-title {"level":1} /-->
+		</section>
+		<!-- /wp:group -->
+
+		<!-- wp:group {"tagName":"section","className":"page-body has-base-background-color has-background","backgroundColor":"base","layout":{"type":"constrained"}} -->
+		<section class="wp-block-group page-body has-base-background-color has-background">
+			<!-- wp:post-content {"layout":{"type":"constrained"}} /-->
+		</section>
+		<!-- /wp:group -->
+	</main>
+	<!-- /wp:group -->
+
+	<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+</div>
+<!-- /wp:group -->
