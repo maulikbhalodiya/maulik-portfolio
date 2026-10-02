@@ -269,7 +269,15 @@ them:
 
 - No custom post types. No taxonomies. No shortcodes. No form handling handler.
 - No em dashes (U+2014) and no en dashes (U+2013), anywhere. CI greps repo wide.
-- No raw email addresses and no `mailto` links. Contact is a form with an intent dropdown.
+- The design's own email address IS published, by owner decision. It appears in the
+  footer Connect column and in the section 08 `Email Me` button, because the owner's
+  standing rule is that design or colour related work follows the design exactly, and
+  the design has both. The owner was told the address was spam-listed in production and
+  ruled that it ships anyway; that decision is settled. No OTHER raw address and no
+  OTHER `mailto` is permitted anywhere. Contact remains a form with an intent dropdown
+  everywhere else. The six CI gates that enforced the old blanket ban were narrowed to
+  exempt exactly the design's address, not deleted, so an address nobody decided to
+  publish still fails the build.
 - No skill percentage bars, no progress meters, no star ratings.
 - Never create `block-templates/` or `block-template-parts/`.
 - Never create `index.php`.

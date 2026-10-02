@@ -119,34 +119,54 @@ jobs:
           fi
           echo "no em or en dashes"
 
-      - name: Assert no mailto links
+      # NARROWED BY OWNER DECISION, NOT DELETED. The owner ruled that the demo
+      # design's own address ships in the footer Connect column and in the
+      # section 08 Email Me button, so a blanket ban on every mailto and every
+      # raw address is now wrong here and would fail every deploy. These two
+      # gates still reject any OTHER address, which is the whole point of
+      # keeping them on the deploy path rather than only on CI.
+      #
+      # Built from parts so this gate does not match its own source, which is
+      # the same trap ci.yml avoids. A literal here would make the gate fail
+      # forever on the workflow file that contains it. The permitted address is
+      # assembled the same way for the same reason.
+      - name: Assert no mailto links other than the design's own
         run: |
           set -euo pipefail
-          # Built from parts so this gate does not match its own source, which is
-          # the same trap ci.yml avoids. A literal here would make the gate fail
-          # forever on the workflow file that contains it.
-          pattern="mail$(printf 'to')"':'
-          if git grep -nI -F "${pattern}" -- . \
+          allowed="mail$(printf 'to')"':maulikbhalodiya9999@'"gmail.com"
+          tok="mail$(printf 'to')"':[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+          found="$(git grep -oI -P "${tok}" -- . \
             ':(exclude)node_modules' \
             ':(exclude)vendor' \
             ':(exclude)package-lock.json' \
-            ':(exclude)docs'; then
-            echo "mailto link found, which breaks the no published email rule" >&2
+            ':(exclude)docs' \
+            | sed 's|^[^:]*:||' \
+            | sort -u || true)"
+          unexpected="$(printf '%s\n' "${found}" | grep -v -F -x "${allowed}" || true)"
+          if [ -n "${unexpected}" ]; then
+            echo "mailto link other than the design's own found" >&2
+            printf '%s\n' "${unexpected}" >&2
             exit 1
           fi
-          echo "no mailto links"
+          echo "no unexpected mailto links"
 
-      - name: Assert no raw email addresses
+      - name: Assert no raw email addresses other than the design's own
         run: |
           set -euo pipefail
-          if git grep -nI -P '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
+          permitted="maulikbhalodiya9999@""gmail.com"
+          found="$(git grep -oI -P '[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
             ':(exclude)node_modules' ':(exclude)vendor' \
             ':(exclude)package-lock.json' ':(exclude)composer.lock' \
-            ':(exclude)languages/*.pot' ':(exclude)docs'; then
-            echo "raw email address found, which breaks the no published email rule" >&2
+            ':(exclude)languages/*.pot' ':(exclude)docs' \
+            | sed 's|^[^:]*:||' \
+            | sort -u || true)"
+          unexpected="$(printf '%s\n' "${found}" | grep -v -F -x "${permitted}" || true)"
+          if [ -n "${unexpected}" ]; then
+            echo "raw email address other than the design's own found" >&2
+            printf '%s\n' "${unexpected}" >&2
             exit 1
           fi
-          echo "no raw email addresses"
+          echo "no unexpected raw email addresses"
 
       - name: Assert theme .htaccess is present in the repository
         run: |

@@ -145,6 +145,29 @@ a.site-header__title:focus {
 	color: var(--wp--preset--color--accent);
 }
 
+// THE MENU TOGGLE IS A 44 PIXEL BOX. Header.tsx:194 gives the hamburger button
+// w-11 h-11, which is 44 by 44, and it was measuring 20 by 20 on the live site.
+//
+// Core states no size for the button at all. Its own rules zero the padding and
+// leave the box to shrink wrap the 20px mark inside it, so the tap target was
+// exactly the size of the glyph. That is below any floor worth defending, and
+// below the 44px the design asks for by a factor of more than two.
+//
+// The rule has to name the button and not the svg. The 20px glyph is the
+// design's own w-5 h-5 at Header.tsx:194 and it is correct already, so the size
+// belongs on the button that wraps it, not on the mark.
+//
+// At every width below the design's lg the toggle is the ONLY route to the
+// navigation, because the nav links are hidden there, so this box is the whole
+// of the navigation at 768 and below.
+.site-header__nav .wp-block-navigation__responsive-container-open:not(.always-shown) {
+	width: 2.75rem;
+	height: 2.75rem;
+	padding: 0;
+	align-items: center;
+	justify-content: center;
+}
+
 // The nav container. Plus Jakarta Sans, 14px, weight 500. theme.json used to
 // force the mono family onto core/navigation, which is the wrong voice for a
 // primary nav: mono is the technical metadata voice and is reserved for the
@@ -243,10 +266,51 @@ a.site-header__title:focus {
 	border-color: var(--wp--preset--color--line);
 }
 
-.site-header__social-link .wp-block-social-link__service-icon {
+// The two header social marks are 16px, and this rule was measuring 24px.
+//
+// THE OLD SELECTOR WAS .site-header__social-link .wp-block-social-link__
+// service-icon, AND THAT CLASS IS NEVER IN THE MARKUP. It belongs to the icon
+// font variation of core/social-link. What core actually renders is a plain
+// <svg width="24" height="24" viewBox="0 0 24 24"> inside the anchor, so the
+// size came from the attribute and the rule matched nothing. Measured 24 by 24
+// on the live site against the design's w-4 h-4, which Header.tsx:163 and 173
+// put on the LinkedIn and GitHub marks.
+//
+// The width and height are stated here rather than relying on the icon
+// primitive's floor, because this row is a fixed 40px box and a glyph that
+// outgrows it is the visible symptom. flex-shrink is stated for the same reason
+// every icon in this theme states it: the row is nowrap.
+.site-header__social-link svg {
+	display: block;
 	width: 1rem;
 	height: 1rem;
-	fill: currentcolor;
+	flex-shrink: 0;
+	vertical-align: middle;
+}
+
+// THE ANCHOR FILLS THE 40 PIXEL BOX, BECAUSE THE BOX WAS NOT THE TAP TARGET.
+//
+// The list item is the design's w-10 h-10 and measures 42 by 42 including its
+// one pixel border, but the anchor Core renders inside it is an inline box that
+// shrink wraps, and it measured 16 by 16, which is the size of the mark. The
+// border, the hover fill and the padding therefore all describe a 40px target
+// that nothing was actually clickable on.
+//
+// This is an accessibility fix and not a fidelity fix, and it is said to be one.
+// The design also measures its marks at 16px and also gives them a 40px anchor,
+// so nothing visible changes: the mark stays 16px and the box stays 40px. What
+// changes is that the whole box is now the link.
+//
+// The accessible name is not restated here. Core already renders the social
+// link label as screen reader only text inside the anchor, which is why the
+// anchor reports a name of LinkedIn and GitHub today, and the mark itself is
+// aria-hidden. This rule changes the geometry and nothing else.
+.site-header__social-link .wp-block-social-link-anchor {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
 }
 
 // ---------------------------------------------------------------------------

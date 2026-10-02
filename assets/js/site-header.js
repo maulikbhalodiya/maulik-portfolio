@@ -21,6 +21,24 @@
 	const SCROLLED_CLASS = 'is-scrolled';
 	const HEADER_SELECTOR = '.site-header';
 
+	/*
+	 * The menu toggle and the container it opens.
+	 *
+	 * Both are rendered by core/navigation rather than by patterns/header.php,
+	 * because the pattern authors the block and Core renders its own toggle. Core
+	 * states aria-label and aria-haspopup on the button and nothing else: the
+	 * button shipped with no aria-expanded at all, which means its state is
+	 * announced identically whether the menu is open or shut. At every width
+	 * below the design's lg this button is the only route to the navigation,
+	 * because the nav links themselves are hidden there, so the missing state is
+	 * on the one control that matters.
+	 */
+	const MENU_TOGGLE_SELECTOR =
+		'.wp-block-navigation__responsive-container-open';
+	const MENU_CONTAINER_SELECTOR =
+		'.wp-block-navigation__responsive-container';
+	const MENU_OPEN_CLASS = 'is-menu-open';
+
 	const header = document.querySelector( HEADER_SELECTOR );
 
 	/*
@@ -33,6 +51,47 @@
 	}
 
 	let frameRequested = false;
+
+	const menuToggle = header.querySelector( MENU_TOGGLE_SELECTOR );
+	const menuContainer = header.querySelector( MENU_CONTAINER_SELECTOR );
+
+	/*
+	 * aria-expanded ON THE TOGGLE, TRACKED FROM CORE'S OWN STATE.
+	 *
+	 * Core drives the overlay menu through the Interactivity API and signals that
+	 * it is open with a class on the container, is-menu-open. That class is
+	 * therefore the single source of truth for the state, and it is observed
+	 * rather than second-guessed from a click handler: a click handler would miss
+	 * the Escape key, a click outside the panel, and the focusout close that Core
+	 * itself performs, and would report the wrong state on any of them.
+	 *
+	 * aria-controls is set once, from the id Core already prints on the
+	 * container, so the two cannot name different elements.
+	 */
+	if ( menuToggle && menuContainer ) {
+		menuToggle.setAttribute( 'aria-controls', menuContainer.id );
+
+		const applyMenuState = () => {
+			const isOpen = menuContainer.classList.contains( MENU_OPEN_CLASS );
+
+			menuToggle.setAttribute(
+				'aria-expanded',
+				isOpen ? 'true' : 'false'
+			);
+		};
+
+		applyMenuState();
+
+		/*
+		 * MutationObserver is reached through window rather than used bare. The
+		 * lint globals in this repository name window but not every member of it,
+		 * and a bare global here would be a lint error rather than a runtime one.
+		 */
+		new window.MutationObserver( applyMenuState ).observe( menuContainer, {
+			attributes: true,
+			attributeFilter: [ 'class' ],
+		} );
+	}
 
 	/**
 	 * Apply the scrolled class from the current scroll position.

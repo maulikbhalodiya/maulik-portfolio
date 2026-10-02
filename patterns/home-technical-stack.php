@@ -28,9 +28,33 @@
  * is drawn selected, which is the state the component starts in, so the static
  * rendering matches the first paint of the interactive one.
  *
- * THE SEVEN TABS ARE ANCHOR LINKS, NOT BUTTONS. Each tab jumps to its domain
- * heading in the breakdown panel below, so a tab is never a control that does
- * nothing. The first carries the selected treatment and aria-current.
+ * THE SEVEN TABS ARE REAL TABS NOW, NOT ANCHOR LINKS. Measured on the reference
+ * at 1440: seven button elements inside one element carrying role="tablist",
+ * each of them carrying role="tab" and type="button". The previous version of
+ * this pattern rendered them as anchor links that jumped to a heading, which is
+ * a different control with different behaviour and is what this version
+ * replaces. A button whose content is one short label cannot be a heading block
+ * or a paragraph, so core/html carries the strip, which is the same block this
+ * page already uses for the node map itself.
+ *
+ * ALL SEVEN PANELS ARE IN THE POST AND SIX ARE COLLAPSED. The design renders
+ * only the active domain's skills, so rendering all seven and collapsing six
+ * would add six panels worth of skill cards to the page. It does not, because
+ * the collapse is display: none, which contributes no height. That is the whole
+ * height mechanism and the only rule that has to hold for the section to measure
+ * what it measures today. Rendering one panel and rebuilding its text from a
+ * data attribute was the alternative and it was rejected: it would put all forty
+ * one entries into the markup twice and make none of them editable as blocks.
+ *
+ * THE ACTIVE TAB IS NOT A COLOUR ALONE. The design's active tab has an amber
+ * ground, black ink, an amber border and a heavier weight, and aria-selected
+ * states the same thing to a screen reader, so all five signals agree.
+ *
+ * AUTOMATIC ROTATION HERE ONLY. The site owner has decided that this section
+ * advances on its own every 3000 milliseconds while it is in view, which the
+ * design reference does not do anywhere, and that hover and keyboard focus pause
+ * it with no visible pause control. assets/js/section-switcher.js implements
+ * that; data-hz-rotates is what asks for it, and no other section carries it.
  *
  * @package Maulik_Portfolio
  */
@@ -165,10 +189,23 @@ $maulik_portfolio_node_positions = array(
 $maulik_portfolio_active_domain = $maulik_portfolio_domains[0];
 
 /**
+ * The panel element id for a domain.
+ *
+ * The tabs address their panels by id through data-hz-target, so the two are
+ * generated from one function rather than written out twice.
+ *
+ * @param string $domain_id The domain id.
+ * @return string The panel element id.
+ */
+function maulik_portfolio_domain_panel_id( $domain_id ) {
+	return 'hz-stack-panel-' . $domain_id;
+}
+
+/**
  * Builds the node map SVG, with the first domain drawn selected.
  *
- * @param array $domains    The seven domains, in their display order.
- * @param array $positions  Radial coordinates, one pair per domain.
+ * @param array $domains   The seven domains, in their display order.
+ * @param array $positions Radial coordinates, one pair per domain.
  * @return string The SVG element.
  */
 function maulik_portfolio_node_map_svg( $domains, $positions ) {
@@ -229,6 +266,42 @@ function maulik_portfolio_node_map_svg( $domains, $positions ) {
 	);
 }
 
+/**
+ * The seven domain tabs, as one HTML string.
+ *
+ * Aria-selected and tabindex are written here rather than left to the script,
+ * so that the saved markup alone describes a valid tablist: exactly one tab is
+ * selected and exactly one is a tab stop, which is the roving tabindex pattern.
+ *
+ * data-hz-rotates is what asks assets/js/section-switcher.js for automatic
+ * rotation, and it is on this strip alone. Hovering the panel and focusing
+ * inside it pause the rotation and there is no pause control on the page,
+ * because the site owner asked for no visible control.
+ *
+ * @param array $domains The seven domains.
+ * @return string The tablist markup.
+ */
+function maulik_portfolio_domain_tabs( $domains ) {
+	$markup = sprintf(
+		'<div class="hz-stack__tabs" role="tablist" aria-label="%1$s" data-hz-switcher data-hz-tab="hz-tab" data-hz-rotates="true">',
+		esc_attr__( 'Technical ecosystem domains', 'maulik-portfolio' )
+	);
+
+	foreach ( $domains as $index => $domain ) {
+		$is_selected = 0 === $index;
+
+		$markup .= sprintf(
+			'<button type="button" role="tab" class="hz-tab" data-hz-target="%1$s" aria-selected="%2$s" tabindex="%3$s">%4$s</button>',
+			esc_attr( maulik_portfolio_domain_panel_id( $domain['id'] ) ),
+			$is_selected ? 'true' : 'false',
+			$is_selected ? '0' : '-1',
+			esc_html( $domain['label'] )
+		);
+	}
+
+	return $markup . '</div>';
+}
+
 ?>
 <!-- wp:group {"anchor":"technical-stack","ariaLabelledby":"heading-technical-stack","className":"is-style-section hz-section hz-stack is-style-surface-dark-grid","layout":{"type":"constrained"}} -->
 <section class="wp-block-group is-style-section hz-section hz-stack is-style-surface-dark-grid" id="technical-stack" aria-labelledby="heading-technical-stack">
@@ -266,65 +339,86 @@ function maulik_portfolio_node_map_svg( $domains, $positions ) {
 				</div>
 				<!-- /wp:group -->
 				<!-- wp:html -->
-				<?php echo maulik_portfolio_node_map_svg( $maulik_portfolio_domains, $maulik_portfolio_node_positions ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php
+				/*
+				 * THE TRAILING NEWLINE IN BOTH ECHOES IS LOAD BEARING.
+				 *
+				 * PHP swallows the single newline that immediately follows a
+				 * closing ?> tag. Without an explicit newline here the emitted
+				 * markup and the block delimiter that closes it land on one line,
+				 * the delimiter stops being the first thing on its line, and the
+				 * block parser stops seeing the block at all. The pattern then
+				 * looks correct when it is read and produces a section that
+				 * parses as freeform.
+				 */
+				echo maulik_portfolio_node_map_svg( $maulik_portfolio_domains, $maulik_portfolio_node_positions ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
 				<!-- /wp:html -->
-				<div class="hz-stack__tabs">
-					<?php foreach ( $maulik_portfolio_domains as $maulik_portfolio_domain_index => $maulik_portfolio_domain ) : ?>
-						<?php
-						$maulik_portfolio_tab_class     = 0 === $maulik_portfolio_domain_index ? 'hz-tab hz-tab-selected' : 'hz-tab';
-						$maulik_portfolio_tab_current   = 0 === $maulik_portfolio_domain_index ? ' aria-current="true"' : '';
-						$maulik_portfolio_domain_anchor = 'stack-' . $maulik_portfolio_domain['id'];
-						?>
-						<a class="<?php echo esc_html( $maulik_portfolio_tab_class ); ?>" href="#<?php echo esc_html( $maulik_portfolio_domain_anchor ); ?>"<?php echo $maulik_portfolio_tab_current; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>><?php echo esc_html( $maulik_portfolio_domain['label'] ); ?></a>
-					<?php endforeach; ?>
-				</div>
+				<!-- wp:html -->
+				<?php
+				echo maulik_portfolio_domain_tabs( $maulik_portfolio_domains ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				?>
+				<!-- /wp:html -->
 			</div>
 			<!-- /wp:group -->
-			<!-- wp:group {"className":"hz-body__main hz-panel hz-panel-breakdown","layout":{"type":"default"}} -->
-			<div class="wp-block-group hz-body__main hz-panel hz-panel-breakdown">
-				<?php foreach ( $maulik_portfolio_domains as $maulik_portfolio_domain ) : ?>
-					<!-- wp:group {"className":"hz-stack-4","layout":{"type":"default"}} -->
-					<div class="wp-block-group hz-stack-4">
-						<!-- wp:group {"className":"hz-row","layout":{"type":"default"}} -->
-						<div class="wp-block-group hz-row">
-							<!-- wp:paragraph {"className":"hz-label"} -->
-							<p class="hz-label"><?php echo esc_html( $maulik_portfolio_domain['code'] ); ?> · <?php echo esc_html__( 'Verified Technical Domain', 'maulik-portfolio' ); ?></p>
+			<!-- wp:group {"className":"hz-body__main hz-switch-panels","layout":{"type":"default"}} -->
+			<div class="wp-block-group hz-body__main hz-switch-panels">
+				<?php foreach ( $maulik_portfolio_domains as $maulik_portfolio_domain_index => $maulik_portfolio_domain ) : ?>
+					<?php
+					$maulik_portfolio_domain_selected = 0 === $maulik_portfolio_domain_index;
+					$maulik_portfolio_domain_panel_id = maulik_portfolio_domain_panel_id( $maulik_portfolio_domain['id'] );
+					$maulik_portfolio_domain_classes  = 'hz-panel hz-panel-breakdown hz-switch-panel';
+
+					if ( ! $maulik_portfolio_domain_selected ) {
+						$maulik_portfolio_domain_classes .= ' hz-switch-panel--idle';
+					}
+					?>
+					<!-- wp:group {"anchor":<?php echo wp_json_encode( $maulik_portfolio_domain_panel_id ); ?>,"className":<?php echo wp_json_encode( $maulik_portfolio_domain_classes ); ?>,"layout":{"type":"default"}} -->
+					<div class="wp-block-group <?php echo esc_html( $maulik_portfolio_domain_classes ); ?>" id="<?php echo esc_attr( $maulik_portfolio_domain_panel_id ); ?>">
+						<!-- wp:group {"className":"hz-stack-4","layout":{"type":"default"}} -->
+						<div class="wp-block-group hz-stack-4">
+							<!-- wp:group {"className":"hz-row","layout":{"type":"default"}} -->
+							<div class="wp-block-group hz-row">
+								<!-- wp:paragraph {"className":"hz-label"} -->
+								<p class="hz-label"><?php echo esc_html( $maulik_portfolio_domain['code'] ); ?> · <?php echo esc_html__( 'Verified Technical Domain', 'maulik-portfolio' ); ?></p>
+								<!-- /wp:paragraph -->
+								<!-- wp:heading {"level":3,"anchor":<?php echo wp_json_encode( 'stack-' . $maulik_portfolio_domain['id'] ); ?>,"className":"hz-domain__title"} -->
+								<h3 class="wp-block-heading hz-domain__title" id="stack-<?php echo esc_html( $maulik_portfolio_domain['id'] ); ?>"><?php echo esc_html( $maulik_portfolio_domain['label'] ); ?></h3>
+								<!-- /wp:heading -->
+							</div>
+							<!-- /wp:group -->
+							<!-- wp:paragraph {"className":"hz-body-copy"} -->
+							<p class="hz-body-copy"><?php echo esc_html( $maulik_portfolio_domain['description'] ); ?></p>
 							<!-- /wp:paragraph -->
-							<!-- wp:heading {"level":3,"anchor":<?php echo wp_json_encode( 'stack-' . $maulik_portfolio_domain['id'] ); ?>,"className":"hz-domain__title"} -->
-							<h3 class="wp-block-heading hz-domain__title" id="stack-<?php echo esc_html( $maulik_portfolio_domain['id'] ); ?>"><?php echo esc_html( $maulik_portfolio_domain['label'] ); ?></h3>
-							<!-- /wp:heading -->
-						</div>
-						<!-- /wp:group -->
-						<!-- wp:paragraph {"className":"hz-body-copy"} -->
-						<p class="hz-body-copy"><?php echo esc_html( $maulik_portfolio_domain['description'] ); ?></p>
-						<!-- /wp:paragraph -->
-						<!-- wp:group {"className":"hz-skill-grid","layout":{"type":"default"}} -->
-						<div class="wp-block-group hz-skill-grid">
-							<?php foreach ( $maulik_portfolio_domain['skills'] as $maulik_portfolio_skill_index => $maulik_portfolio_skill ) : ?>
-								<!-- wp:group {"className":"hz-skill","layout":{"type":"default"}} -->
-								<div class="wp-block-group hz-skill">
-									<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
-									<div class="wp-block-group hz-skill__head">
-										<span class="hz-skill__name"><?php echo esc_html( $maulik_portfolio_skill[0] ); ?></span>
-										<span class="hz-label-faint"><?php echo esc_html( $maulik_portfolio_domain['code'] ); ?>.<?php echo esc_html( sprintf( '%02d', $maulik_portfolio_skill_index + 1 ) ); ?></span>
+							<!-- wp:group {"className":"hz-skill-grid","layout":{"type":"default"}} -->
+							<div class="wp-block-group hz-skill-grid">
+								<?php foreach ( $maulik_portfolio_domain['skills'] as $maulik_portfolio_skill_index => $maulik_portfolio_skill ) : ?>
+									<!-- wp:group {"className":"hz-skill","layout":{"type":"default"}} -->
+									<div class="wp-block-group hz-skill">
+										<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
+										<div class="wp-block-group hz-skill__head">
+											<span class="hz-skill__name"><?php echo esc_html( $maulik_portfolio_skill[0] ); ?></span>
+											<span class="hz-label-faint"><?php echo esc_html( $maulik_portfolio_domain['code'] ); ?>.<?php echo esc_html( sprintf( '%02d', $maulik_portfolio_skill_index + 1 ) ); ?></span>
+										</div>
+										<!-- /wp:group -->
+										<!-- wp:paragraph {"className":"hz-skill__context"} -->
+										<p class="hz-skill__context"><?php echo esc_html( $maulik_portfolio_skill[1] ); ?></p>
+										<!-- /wp:paragraph -->
 									</div>
 									<!-- /wp:group -->
-									<!-- wp:paragraph {"className":"hz-skill__context"} -->
-									<p class="hz-skill__context"><?php echo esc_html( $maulik_portfolio_skill[1] ); ?></p>
-									<!-- /wp:paragraph -->
-								</div>
-								<!-- /wp:group -->
-							<?php endforeach; ?>
-						</div>
-						<!-- /wp:group -->
-						<!-- wp:group {"className":"hz-stack__proof","layout":{"type":"default"}} -->
-						<div class="wp-block-group hz-stack__proof">
-							<!-- wp:paragraph {"className":"hz-label-faint"} -->
-							<p class="hz-label-faint"><?php echo esc_html__( 'Applied in Verified Work:', 'maulik-portfolio' ); ?></p>
-							<!-- /wp:paragraph -->
-							<!-- wp:paragraph {"className":"hz-meta"} -->
-							<p class="hz-meta"><?php echo esc_html( $maulik_portfolio_domain['projects'] ); ?></p>
-							<!-- /wp:paragraph -->
+								<?php endforeach; ?>
+							</div>
+							<!-- /wp:group -->
+							<!-- wp:group {"className":"hz-stack__proof","layout":{"type":"default"}} -->
+							<div class="wp-block-group hz-stack__proof">
+								<!-- wp:paragraph {"className":"hz-label-faint"} -->
+								<p class="hz-label-faint"><?php echo esc_html__( 'Applied in Verified Work:', 'maulik-portfolio' ); ?></p>
+								<!-- /wp:paragraph -->
+								<!-- wp:paragraph {"className":"hz-meta"} -->
+								<p class="hz-meta"><?php echo esc_html( $maulik_portfolio_domain['projects'] ); ?></p>
+								<!-- /wp:paragraph -->
+							</div>
+							<!-- /wp:group -->
 						</div>
 						<!-- /wp:group -->
 					</div>

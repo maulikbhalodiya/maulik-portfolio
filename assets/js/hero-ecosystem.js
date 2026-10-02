@@ -33,7 +33,7 @@
 	 *
 	 * @type {Array<{x: number, y: number, z: number}>}
 	 */
-	var CORE_VERTICES = [
+	const CORE_VERTICES = [
 		{ x: 0, y: -64, z: 0 },
 		{ x: 0, y: 64, z: 0 },
 		{ x: -52, y: 0, z: -52 },
@@ -47,7 +47,7 @@
 		{ x: -26, y: -26, z: 26 },
 		{ x: 26, y: -26, z: 26 },
 		{ x: 26, y: 26, z: 26 },
-		{ x: -26, y: 26, z: 26 }
+		{ x: -26, y: 26, z: 26 },
 	];
 
 	/**
@@ -56,47 +56,65 @@
 	 *
 	 * @type {Array<[number, number]>}
 	 */
-	var CORE_EDGES = [
-		[ 0, 2 ], [ 0, 3 ], [ 0, 4 ], [ 0, 5 ],
-		[ 1, 2 ], [ 1, 3 ], [ 1, 4 ], [ 1, 5 ],
-		[ 2, 3 ], [ 3, 4 ], [ 4, 5 ], [ 5, 2 ],
-		[ 6, 7 ], [ 7, 8 ], [ 8, 9 ], [ 9, 6 ],
-		[ 10, 11 ], [ 11, 12 ], [ 12, 13 ], [ 13, 10 ],
-		[ 6, 10 ], [ 7, 11 ], [ 8, 12 ], [ 9, 13 ]
+	const CORE_EDGES = [
+		[ 0, 2 ],
+		[ 0, 3 ],
+		[ 0, 4 ],
+		[ 0, 5 ],
+		[ 1, 2 ],
+		[ 1, 3 ],
+		[ 1, 4 ],
+		[ 1, 5 ],
+		[ 2, 3 ],
+		[ 3, 4 ],
+		[ 4, 5 ],
+		[ 5, 2 ],
+		[ 6, 7 ],
+		[ 7, 8 ],
+		[ 8, 9 ],
+		[ 9, 6 ],
+		[ 10, 11 ],
+		[ 11, 12 ],
+		[ 12, 13 ],
+		[ 13, 10 ],
+		[ 6, 10 ],
+		[ 7, 11 ],
+		[ 8, 12 ],
+		[ 9, 13 ],
 	];
 
 	/** Viewer distance from the origin, used by the projection. */
-	var DISTANCE = 520;
+	const DISTANCE = 520;
 
 	/** Near plane clamp, so a vertex behind the camera cannot divide by zero. */
-	var NEAR_LIMIT = 120;
+	const NEAR_LIMIT = 120;
 
 	/** Field of view below and above the 480 pixel compact breakpoint. */
-	var FOV_WIDE = 480;
-	var FOV_COMPACT = 370;
+	const FOV_WIDE = 480;
+	const FOV_COMPACT = 370;
 
 	/** Width in CSS pixels below which the compact layout applies. */
-	var COMPACT_WIDTH = 480;
+	const COMPACT_WIDTH = 480;
 
 	/** Pointer hover detection radius in CSS pixels. */
-	var HOVER_RADIUS = 34;
+	const HOVER_RADIUS = 34;
 
 	/** Rotation speed and signal packet time step per frame. */
-	var YAW_STEP = 0.0028;
-	var PULSE_STEP = 0.014;
+	const YAW_STEP = 0.0028;
+	const PULSE_STEP = 0.014;
 
 	/** Pointer influence on yaw and pitch, and the pitch easing factor. */
-	var YAW_POINTER_INFLUENCE = 0.32;
-	var PITCH_POINTER_INFLUENCE = 0.22;
-	var BASE_PITCH = 0.24;
-	var PITCH_EASE = 0.08;
+	const YAW_POINTER_INFLUENCE = 0.32;
+	const PITCH_POINTER_INFLUENCE = 0.22;
+	const BASE_PITCH = 0.24;
+	const PITCH_EASE = 0.08;
 
 	/** Starting orientation, also the value the reset button restores. */
-	var INITIAL_YAW = 0.4;
-	var INITIAL_PITCH = 0.22;
+	const INITIAL_YAW = 0.4;
+	const INITIAL_PITCH = 0.22;
 
 	/** Node id that the design highlights with a distinct core fill. */
-	var RANK_KERNEL_ID = 'rankkernel';
+	const RANK_KERNEL_ID = 'rankkernel';
 
 	/**
 	 * Project a 3D point to 2D through yaw then pitch, with perspective divide.
@@ -112,23 +130,23 @@
 	 * @return {{x: number, y: number, z: number, scale: number}} Projected point.
 	 */
 	function project3D( x, y, z, yaw, pitch, cx, cy, fov ) {
-		var cosY = Math.cos( yaw );
-		var sinY = Math.sin( yaw );
-		var x1 = x * cosY - z * sinY;
-		var z1 = z * cosY + x * sinY;
+		const cosY = Math.cos( yaw );
+		const sinY = Math.sin( yaw );
+		const x1 = x * cosY - z * sinY;
+		const z1 = z * cosY + x * sinY;
 
-		var cosX = Math.cos( pitch );
-		var sinX = Math.sin( pitch );
-		var y2 = y * cosX - z1 * sinX;
-		var z2 = z1 * cosX + y * sinX;
+		const cosX = Math.cos( pitch );
+		const sinX = Math.sin( pitch );
+		const y2 = y * cosX - z1 * sinX;
+		const z2 = z1 * cosX + y * sinX;
 
-		var scale = fov / Math.max( DISTANCE + z2, NEAR_LIMIT );
+		const scale = fov / Math.max( DISTANCE + z2, NEAR_LIMIT );
 
 		return {
 			x: cx + x1 * scale,
 			y: cy + y2 * scale,
 			z: z2,
-			scale: scale
+			scale,
 		};
 	}
 
@@ -136,7 +154,7 @@
 	 * One initialised hero block.
 	 *
 	 * @param {HTMLElement} container The block wrapper element.
-	 * @constructor
+	 * @class
 	 */
 	function HeroEcosystem( container ) {
 		this.container = container;
@@ -188,7 +206,7 @@
 
 		try {
 			this.ctx = this.canvas.getContext( '2d' );
-		} catch ( error ) {
+		} catch {
 			this.ctx = null;
 		}
 
@@ -197,8 +215,10 @@
 		}
 
 		try {
-			this.nodes = JSON.parse( this.container.getAttribute( 'data-maulik-hero-nodes' ) || '[]' );
-		} catch ( error ) {
+			this.nodes = JSON.parse(
+				this.container.getAttribute( 'data-maulik-hero-nodes' ) || '[]'
+			);
+		} catch {
 			this.nodes = [];
 		}
 
@@ -224,12 +244,14 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.readNodeDetails = function () {
-		var details = this.container.getAttribute( 'data-maulik-hero-details' );
-		var parsed = null;
+		const details = this.container.getAttribute(
+			'data-maulik-hero-details'
+		);
+		let parsed = null;
 
 		try {
 			parsed = JSON.parse( details || '{}' );
-		} catch ( error ) {
+		} catch {
 			parsed = null;
 		}
 
@@ -237,8 +259,8 @@
 			return;
 		}
 
-		for ( var i = 0; i < this.nodes.length; i++ ) {
-			var id = this.nodes[ i ].id;
+		for ( let i = 0; i < this.nodes.length; i++ ) {
+			const id = this.nodes[ i ].id;
 
 			if ( parsed[ id ] ) {
 				this.nodeDetails[ id ] = parsed[ id ];
@@ -253,13 +275,15 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.initReducedMotion = function () {
-		var self = this;
+		const self = this;
 
 		if ( typeof window.matchMedia !== 'function' ) {
 			return;
 		}
 
-		this.mediaQuery = window.matchMedia( '(prefers-reduced-motion: reduce)' );
+		this.mediaQuery = window.matchMedia(
+			'(prefers-reduced-motion: reduce)'
+		);
 		this.prefersReducedMotion = this.mediaQuery.matches;
 
 		if ( this.prefersReducedMotion ) {
@@ -279,7 +303,10 @@
 		};
 
 		if ( typeof this.mediaQuery.addEventListener === 'function' ) {
-			this.mediaQuery.addEventListener( 'change', this.onMediaQueryChange );
+			this.mediaQuery.addEventListener(
+				'change',
+				this.onMediaQueryChange
+			);
 		}
 	};
 
@@ -289,7 +316,7 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.initInteractions = function () {
-		var self = this;
+		const self = this;
 
 		this.onPointerMove = function ( event ) {
 			self.handlePointerMove( event );
@@ -305,7 +332,10 @@
 		};
 
 		this.onCanvasClick = function () {
-			if ( self.hoveredNodeId && self.hoveredNodeId !== self.selectedNodeId ) {
+			if (
+				self.hoveredNodeId &&
+				self.hoveredNodeId !== self.selectedNodeId
+			) {
 				self.selectedNodeId = self.hoveredNodeId;
 				self.syncReadout();
 				self.scheduleRender();
@@ -348,11 +378,17 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.bindButtons = function () {
-		var self = this;
-		var toggle = this.container.querySelector( '[data-maulik-hero-toggle]' );
-		var reset = this.container.querySelector( '[data-maulik-hero-reset]' );
-		var tabs = this.container.querySelectorAll( '[data-maulik-hero-node]' );
-		var i;
+		const self = this;
+		const toggle = this.container.querySelector(
+			'[data-maulik-hero-toggle]'
+		);
+		const reset = this.container.querySelector(
+			'[data-maulik-hero-reset]'
+		);
+		const tabs = this.container.querySelectorAll(
+			'[data-maulik-hero-node]'
+		);
+		let i;
 
 		if ( toggle ) {
 			toggle.addEventListener( 'click', this.onToggleClick );
@@ -365,7 +401,7 @@
 		for ( i = 0; i < tabs.length; i++ ) {
 			( function ( tab ) {
 				tab.addEventListener( 'click', function () {
-					var id = tab.getAttribute( 'data-maulik-hero-node' );
+					const id = tab.getAttribute( 'data-maulik-hero-node' );
 
 					if ( ! id ) {
 						return;
@@ -375,7 +411,7 @@
 					self.syncReadout();
 					self.scheduleRender();
 				} );
-			}( tabs[ i ] ) );
+			} )( tabs[ i ] );
 		}
 	};
 
@@ -386,7 +422,7 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.observe = function () {
-		var self = this;
+		const self = this;
 
 		if ( typeof window.ResizeObserver === 'function' ) {
 			this.resizeObserver = new window.ResizeObserver( function () {
@@ -404,16 +440,22 @@
 			}
 		};
 
-		document.addEventListener( 'visibilitychange', this.onVisibilityChange );
+		document.addEventListener(
+			'visibilitychange',
+			this.onVisibilityChange
+		);
 
 		if ( typeof window.IntersectionObserver === 'function' ) {
-			this.intersectionObserver = new window.IntersectionObserver( function ( entries ) {
-				for ( var i = 0; i < entries.length; i++ ) {
-					self.inView = entries[ i ].isIntersecting;
-				}
+			this.intersectionObserver = new window.IntersectionObserver(
+				function ( entries ) {
+					for ( let i = 0; i < entries.length; i++ ) {
+						self.inView = entries[ i ].isIntersecting;
+					}
 
-				self.scheduleRender();
-			}, { threshold: 0 } );
+					self.scheduleRender();
+				},
+				{ threshold: 0 }
+			);
 
 			this.intersectionObserver.observe( this.container );
 		}
@@ -435,13 +477,13 @@
 			return;
 		}
 
-		var rect = this.container.getBoundingClientRect();
+		const rect = this.container.getBoundingClientRect();
 
 		if ( ! rect.width || ! rect.height ) {
 			return;
 		}
 
-		var dpr = Math.min( window.devicePixelRatio || 1, 2 );
+		const dpr = Math.min( window.devicePixelRatio || 1, 2 );
 
 		this.canvas.width = Math.round( rect.width * dpr );
 		this.canvas.height = Math.round( rect.height * dpr );
@@ -454,7 +496,13 @@
 	 * @return {boolean} True when motion is wanted.
 	 */
 	HeroEcosystem.prototype.isAnimating = function () {
-		return ! this.isPaused && ! this.prefersReducedMotion && this.inView && this.pageVisible && ! this.destroyed;
+		return (
+			! this.isPaused &&
+			! this.prefersReducedMotion &&
+			this.inView &&
+			this.pageVisible &&
+			! this.destroyed
+		);
 	};
 
 	/**
@@ -473,14 +521,14 @@
 
 		try {
 			this.draw();
-		} catch ( error ) {
+		} catch {
 			// A drawing failure must never escape into the page.
 			this.destroy();
 			return;
 		}
 
 		if ( this.isAnimating() ) {
-			var self = this;
+			const self = this;
 
 			this.frameId = window.requestAnimationFrame( function () {
 				self.render();
@@ -496,7 +544,7 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.scheduleRender = function () {
-		var self = this;
+		const self = this;
 
 		if ( this.destroyed || this.frameId ) {
 			return;
@@ -514,25 +562,32 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.draw = function () {
-		var ctx = this.ctx;
-		var rect = this.container.getBoundingClientRect();
-		var width = rect.width;
-		var height = rect.height;
+		const ctx = this.ctx;
+		const rect = this.container.getBoundingClientRect();
+		const width = rect.width;
+		const height = rect.height;
 
 		if ( ! width || ! height ) {
 			return;
 		}
 
-		var cx = width / 2;
-		var cy = height / 2 - 10;
-		var isCompact = width < COMPACT_WIDTH;
-		var fov = isCompact ? FOV_COMPACT : FOV_WIDE;
-		var i;
+		const cx = width / 2;
+		const cy = height / 2 - 10;
+		const isCompact = width < COMPACT_WIDTH;
+		const fov = isCompact ? FOV_COMPACT : FOV_WIDE;
+		let i;
 
 		ctx.clearRect( 0, 0, width, height );
 
 		// Subtle radial architectural lighting.
-		var radialGrad = ctx.createRadialGradient( cx, cy, 12, cx, cy, Math.max( width, height ) * 0.55 );
+		const radialGrad = ctx.createRadialGradient(
+			cx,
+			cy,
+			12,
+			cx,
+			cy,
+			Math.max( width, height ) * 0.55
+		);
 
 		radialGrad.addColorStop( 0, 'rgba(250, 204, 21, 0.09)' );
 		radialGrad.addColorStop( 0.45, 'rgba(23, 23, 25, 0.35)' );
@@ -545,27 +600,47 @@
 			this.pulseTime += PULSE_STEP;
 		}
 
-		var targetYawOffset = this.pointer.active ? this.pointer.x * YAW_POINTER_INFLUENCE : 0;
-		var targetPitch = BASE_PITCH + ( this.pointer.active ? this.pointer.y * PITCH_POINTER_INFLUENCE : 0 );
-		var currentYaw = this.rotation.yaw + targetYawOffset;
-		var currentPitch = this.rotation.pitch + ( targetPitch - this.rotation.pitch ) * PITCH_EASE;
+		const targetYawOffset = this.pointer.active
+			? this.pointer.x * YAW_POINTER_INFLUENCE
+			: 0;
+		const targetPitch =
+			BASE_PITCH +
+			( this.pointer.active
+				? this.pointer.y * PITCH_POINTER_INFLUENCE
+				: 0 );
+		const currentYaw = this.rotation.yaw + targetYawOffset;
+		const currentPitch =
+			this.rotation.pitch +
+			( targetPitch - this.rotation.pitch ) * PITCH_EASE;
 
 		this.rotation.pitch = currentPitch;
 
-		var animating = this.isAnimating();
+		const animating = this.isAnimating();
 
 		// Two technical orbital reference rings.
 		[ 140, 200 ].forEach( function ( radius, idx ) {
 			ctx.beginPath();
 
-			var steps = 64;
+			const steps = 64;
 
-			for ( var s = 0; s <= steps; s++ ) {
-				var theta = ( s / steps ) * Math.PI * 2;
-				var rx = Math.cos( theta ) * radius;
-				var rz = Math.sin( theta ) * radius;
-				var ry = idx === 0 ? 12 * Math.sin( theta * 2 ) : -12 * Math.cos( theta * 2 );
-				var p = project3D( rx, ry, rz, currentYaw, currentPitch, cx, cy, fov );
+			for ( let s = 0; s <= steps; s++ ) {
+				const theta = ( s / steps ) * Math.PI * 2;
+				const rx = Math.cos( theta ) * radius;
+				const rz = Math.sin( theta ) * radius;
+				const ry =
+					idx === 0
+						? 12 * Math.sin( theta * 2 )
+						: -12 * Math.cos( theta * 2 );
+				const p = project3D(
+					rx,
+					ry,
+					rz,
+					currentYaw,
+					currentPitch,
+					cx,
+					cy,
+					fov
+				);
 
 				if ( s === 0 ) {
 					ctx.moveTo( p.x, p.y );
@@ -574,45 +649,79 @@
 				}
 			}
 
-			ctx.strokeStyle = idx === 0 ? 'rgba(255, 253, 244, 0.07)' : 'rgba(250, 204, 21, 0.11)';
+			ctx.strokeStyle =
+				idx === 0
+					? 'rgba(255, 253, 244, 0.07)'
+					: 'rgba(250, 204, 21, 0.11)';
 			ctx.lineWidth = 1;
 			ctx.stroke();
 		} );
 
 		// Central core edges.
-		var projectedCore = CORE_VERTICES.map( function ( v ) {
-			return project3D( v.x, v.y, v.z, currentYaw * 1.25, currentPitch, cx, cy, fov );
+		const projectedCore = CORE_VERTICES.map( function ( v ) {
+			return project3D(
+				v.x,
+				v.y,
+				v.z,
+				currentYaw * 1.25,
+				currentPitch,
+				cx,
+				cy,
+				fov
+			);
 		} );
 
 		for ( i = 0; i < CORE_EDGES.length; i++ ) {
-			var p1 = projectedCore[ CORE_EDGES[ i ][ 0 ] ];
-			var p2 = projectedCore[ CORE_EDGES[ i ][ 1 ] ];
-			var avgZ = ( p1.z + p2.z ) / 2;
-			var depthAlpha = Math.max( 0.15, Math.min( 0.75, 0.55 - avgZ / 220 ) );
+			const p1 = projectedCore[ CORE_EDGES[ i ][ 0 ] ];
+			const p2 = projectedCore[ CORE_EDGES[ i ][ 1 ] ];
+			const avgZ = ( p1.z + p2.z ) / 2;
+			const depthAlpha = Math.max(
+				0.15,
+				Math.min( 0.75, 0.55 - avgZ / 220 )
+			);
 
 			ctx.beginPath();
 			ctx.moveTo( p1.x, p1.y );
 			ctx.lineTo( p2.x, p2.y );
-			ctx.strokeStyle = i >= 12
-				? 'rgba(250, 204, 21, ' + ( depthAlpha * 0.9 ) + ')'
-				: 'rgba(255, 253, 244, ' + ( depthAlpha * 0.55 ) + ')';
+			ctx.strokeStyle =
+				i >= 12
+					? 'rgba(250, 204, 21, ' + depthAlpha * 0.9 + ')'
+					: 'rgba(255, 253, 244, ' + depthAlpha * 0.55 + ')';
 			ctx.lineWidth = i >= 12 ? 1.35 : 1;
 			ctx.stroke();
 		}
 
 		// Orbital technical nodes.
-		var centerProjected = project3D( 0, 0, 0, currentYaw, currentPitch, cx, cy, fov );
-		var currentNodes = [];
-		var radiusScale = isCompact ? 0.78 : 1;
+		const centerProjected = project3D(
+			0,
+			0,
+			0,
+			currentYaw,
+			currentPitch,
+			cx,
+			cy,
+			fov
+		);
+		const currentNodes = [];
+		const radiusScale = isCompact ? 0.78 : 1;
 
 		for ( i = 0; i < this.nodes.length; i++ ) {
-			var node = this.nodes[ i ];
-			var baseRad = ( node.orbitAngle * Math.PI ) / 180;
-			var r = node.orbitRadius * radiusScale;
-			var nx = Math.cos( baseRad ) * r;
-			var nz = Math.sin( baseRad ) * r;
-			var ny = node.elevation * radiusScale;
-			var proj = project3D( nx, ny, nz, currentYaw, currentPitch, cx, cy, fov );
+			const node = this.nodes[ i ];
+			const baseRad = ( node.orbitAngle * Math.PI ) / 180;
+			const r = node.orbitRadius * radiusScale;
+			const nx = Math.cos( baseRad ) * r;
+			const nz = Math.sin( baseRad ) * r;
+			const ny = node.elevation * radiusScale;
+			const proj = project3D(
+				nx,
+				ny,
+				nz,
+				currentYaw,
+				currentPitch,
+				cx,
+				cy,
+				fov
+			);
 
 			currentNodes.push( {
 				id: node.id,
@@ -621,7 +730,7 @@
 				x: proj.x,
 				y: proj.y,
 				z: proj.z,
-				scale: proj.scale
+				scale: proj.scale,
 			} );
 		}
 
@@ -630,14 +739,14 @@
 		} );
 
 		// Back to front by depth.
-		var sortedNodes = currentNodes.slice().sort( function ( a, b ) {
+		const sortedNodes = currentNodes.slice().sort( function ( a, b ) {
 			return b.z - a.z;
 		} );
 
 		// Inter node architectural mesh, connecting each node to the next.
 		for ( i = 0; i < currentNodes.length; i++ ) {
-			var n1 = currentNodes[ i ];
-			var n2 = currentNodes[ ( i + 1 ) % currentNodes.length ];
+			const n1 = currentNodes[ i ];
+			const n2 = currentNodes[ ( i + 1 ) % currentNodes.length ];
 
 			ctx.beginPath();
 			ctx.moveTo( n1.x, n1.y );
@@ -647,63 +756,84 @@
 			ctx.stroke();
 		}
 
-		var self = this;
+		const self = this;
 
 		sortedNodes.forEach( function ( node ) {
-			var isSelected = node.id === self.selectedNodeId;
-			var isHovered = node.id === self.hoveredNodeId;
-			var isHighlighted = isSelected || isHovered;
+			const isSelected = node.id === self.selectedNodeId;
+			const isHovered = node.id === self.hoveredNodeId;
+			const isHighlighted = isSelected || isHovered;
 
 			// Connection line to the central core.
 			ctx.beginPath();
 			ctx.moveTo( centerProjected.x, centerProjected.y );
 			ctx.lineTo( node.x, node.y );
-			ctx.strokeStyle = isHighlighted ? 'rgba(250, 204, 21, 0.85)' : 'rgba(216, 213, 202, 0.18)';
+			ctx.strokeStyle = isHighlighted
+				? 'rgba(250, 204, 21, 0.85)'
+				: 'rgba(216, 213, 202, 0.18)';
 			ctx.lineWidth = isHighlighted ? 1.6 : 1;
 			ctx.stroke();
 
 			// Signal packet travelling along the vector.
 			if ( animating || isHighlighted ) {
-				var t = isHighlighted
+				const t = isHighlighted
 					? ( self.pulseTime * 1.4 + node.index * 0.15 ) % 1
 					: ( self.pulseTime * 0.7 + node.index * 0.25 ) % 1;
-				var px = centerProjected.x + ( node.x - centerProjected.x ) * t;
-				var py = centerProjected.y + ( node.y - centerProjected.y ) * t;
+				const px =
+					centerProjected.x + ( node.x - centerProjected.x ) * t;
+				const py =
+					centerProjected.y + ( node.y - centerProjected.y ) * t;
 
 				ctx.beginPath();
 				ctx.arc( px, py, isHighlighted ? 3 : 2, 0, Math.PI * 2 );
-				ctx.fillStyle = isHighlighted ? '#FACC15' : 'rgba(250, 204, 21, 0.55)';
+				ctx.fillStyle = isHighlighted
+					? '#FACC15'
+					: 'rgba(250, 204, 21, 0.55)';
 				ctx.fill();
 			}
 
 			// Node architectural marker.
-			var nodeRadius = ( isHighlighted ? 8 : 5.5 ) * Math.max( 0.75, node.scale );
+			const nodeRadius =
+				( isHighlighted ? 8 : 5.5 ) * Math.max( 0.75, node.scale );
 
 			ctx.beginPath();
 			ctx.arc( node.x, node.y, nodeRadius + 4, 0, Math.PI * 2 );
-			ctx.fillStyle = isHighlighted ? 'rgba(250, 204, 21, 0.18)' : 'rgba(10, 10, 11, 0.7)';
+			ctx.fillStyle = isHighlighted
+				? 'rgba(250, 204, 21, 0.18)'
+				: 'rgba(10, 10, 11, 0.7)';
 			ctx.fill();
-			ctx.strokeStyle = isHighlighted ? '#FACC15' : 'rgba(255, 253, 244, 0.32)';
+			ctx.strokeStyle = isHighlighted
+				? '#FACC15'
+				: 'rgba(255, 253, 244, 0.32)';
 			ctx.lineWidth = isHighlighted ? 1.5 : 1;
 			ctx.stroke();
 
 			ctx.beginPath();
 			ctx.arc( node.x, node.y, nodeRadius * 0.55, 0, Math.PI * 2 );
-			ctx.fillStyle = isHighlighted
-				? '#FACC15'
-				: ( node.id === RANK_KERNEL_ID ? '#FDE047' : '#FFFDF4' );
+			if ( isHighlighted ) {
+				ctx.fillStyle = '#FACC15';
+			} else if ( node.id === RANK_KERNEL_ID ) {
+				ctx.fillStyle = '#FDE047';
+			} else {
+				ctx.fillStyle = '#FFFDF4';
+			}
 			ctx.fill();
 
 			// Crisp node label in 3D space.
-			ctx.font = ( isHighlighted ? '600' : '500' ) + ' 11px "IBM Plex Mono", monospace';
-			var labelText = node.label;
-			var textWidth = ctx.measureText( labelText ).width;
-			var labelX = node.x - textWidth / 2;
-			var labelY = node.y - nodeRadius - 12;
+			ctx.font =
+				( isHighlighted ? '600' : '500' ) +
+				' 11px "IBM Plex Mono", monospace';
+			const labelText = node.label;
+			const textWidth = ctx.measureText( labelText ).width;
+			const labelX = node.x - textWidth / 2;
+			const labelY = node.y - nodeRadius - 12;
 
-			ctx.fillStyle = isHighlighted ? 'rgba(10, 10, 11, 0.92)' : 'rgba(17, 17, 19, 0.82)';
+			ctx.fillStyle = isHighlighted
+				? 'rgba(10, 10, 11, 0.92)'
+				: 'rgba(17, 17, 19, 0.82)';
 			ctx.fillRect( labelX - 6, labelY - 11, textWidth + 12, 16 );
-			ctx.strokeStyle = isHighlighted ? '#FACC15' : 'rgba(52, 52, 52, 0.8)';
+			ctx.strokeStyle = isHighlighted
+				? '#FACC15'
+				: 'rgba(52, 52, 52, 0.8)';
 			ctx.lineWidth = 1;
 			ctx.strokeRect( labelX - 6, labelY - 11, textWidth + 12, 16 );
 
@@ -715,15 +845,29 @@
 		ctx.fillStyle = 'rgba(10, 10, 11, 0.9)';
 		ctx.strokeStyle = '#FACC15';
 		ctx.lineWidth = 1.2;
-		var coreLabel = 'MAULIK.CORE';
+		const coreLabel = 'MAULIK.CORE';
 
 		ctx.font = '600 11px "IBM Plex Mono", monospace';
-		var cw = ctx.measureText( coreLabel ).width;
+		const cw = ctx.measureText( coreLabel ).width;
 
-		ctx.fillRect( centerProjected.x - cw / 2 - 8, centerProjected.y - 9, cw + 16, 18 );
-		ctx.strokeRect( centerProjected.x - cw / 2 - 8, centerProjected.y - 9, cw + 16, 18 );
+		ctx.fillRect(
+			centerProjected.x - cw / 2 - 8,
+			centerProjected.y - 9,
+			cw + 16,
+			18
+		);
+		ctx.strokeRect(
+			centerProjected.x - cw / 2 - 8,
+			centerProjected.y - 9,
+			cw + 16,
+			18
+		);
 		ctx.fillStyle = '#FACC15';
-		ctx.fillText( coreLabel, centerProjected.x - cw / 2, centerProjected.y + 4 );
+		ctx.fillText(
+			coreLabel,
+			centerProjected.x - cw / 2,
+			centerProjected.y + 4
+		);
 	};
 
 	/**
@@ -733,27 +877,27 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.handlePointerMove = function ( event ) {
-		var rect = this.container.getBoundingClientRect();
+		const rect = this.container.getBoundingClientRect();
 
 		if ( ! rect.width || ! rect.height ) {
 			return;
 		}
 
-		var relX = event.clientX - rect.left;
-		var relY = event.clientY - rect.top;
+		const relX = event.clientX - rect.left;
+		const relY = event.clientY - rect.top;
 
 		this.pointer.x = ( relX / rect.width - 0.5 ) * 2;
 		this.pointer.y = ( relY / rect.height - 0.5 ) * 2;
 		this.pointer.active = true;
 
-		var closest = null;
-		var minDist = HOVER_RADIUS;
+		let closest = null;
+		let minDist = HOVER_RADIUS;
 
-		for ( var i = 0; i < this.projected.length; i++ ) {
-			var node = this.projected[ i ];
-			var dx = node.x - relX;
-			var dy = node.y - relY;
-			var dist = Math.sqrt( dx * dx + dy * dy );
+		for ( let i = 0; i < this.projected.length; i++ ) {
+			const node = this.projected[ i ];
+			const dx = node.x - relX;
+			const dy = node.y - relY;
+			const dist = Math.sqrt( dx * dx + dy * dy );
 
 			if ( dist < minDist ) {
 				minDist = dist;
@@ -780,16 +924,18 @@
 			return;
 		}
 
-		var current = this.nodes.findIndex( function ( node ) {
-			return node.id === this.selectedNodeId;
-		}.bind( this ) );
+		const current = this.nodes.findIndex(
+			function ( node ) {
+				return node.id === this.selectedNodeId;
+			}.bind( this )
+		);
 
 		if ( current < 0 ) {
 			return;
 		}
 
-		var step = event.key === 'ArrowRight' ? 1 : -1;
-		var next = ( current + step + this.nodes.length ) % this.nodes.length;
+		const step = event.key === 'ArrowRight' ? 1 : -1;
+		const next = ( current + step + this.nodes.length ) % this.nodes.length;
 
 		this.selectedNodeId = this.nodes[ next ].id;
 		this.syncReadout();
@@ -805,17 +951,23 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.syncReadout = function () {
-		var activeId = this.hoveredNodeId || this.selectedNodeId;
-		var tabs = this.container.querySelectorAll( '[data-maulik-hero-node]' );
-		var i;
+		const activeId = this.hoveredNodeId || this.selectedNodeId;
+		const tabs = this.container.querySelectorAll(
+			'[data-maulik-hero-node]'
+		);
+		let i;
 
 		for ( i = 0; i < tabs.length; i++ ) {
-			var isActive = tabs[ i ].getAttribute( 'data-maulik-hero-node' ) === activeId;
+			const isActive =
+				tabs[ i ].getAttribute( 'data-maulik-hero-node' ) === activeId;
 
-			tabs[ i ].setAttribute( 'aria-selected', isActive ? 'true' : 'false' );
+			tabs[ i ].setAttribute(
+				'aria-selected',
+				isActive ? 'true' : 'false'
+			);
 		}
 
-		var details = this.findNodeDetails( activeId );
+		const details = this.findNodeDetails( activeId );
 
 		if ( ! details ) {
 			return;
@@ -838,13 +990,15 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.syncInspect = function ( details ) {
-		var slot = this.container.querySelector( '[data-maulik-hero-inspect-slot]' );
+		const slot = this.container.querySelector(
+			'[data-maulik-hero-inspect-slot]'
+		);
 
 		if ( ! slot ) {
 			return;
 		}
 
-		var existing = slot.querySelector( '[data-maulik-hero-inspect]' );
+		const existing = slot.querySelector( '[data-maulik-hero-inspect]' );
 
 		if ( ! details.inspectUrl || ! details.inspectText ) {
 			if ( existing && existing.parentNode ) {
@@ -860,7 +1014,7 @@
 			return;
 		}
 
-		var link = document.createElement( 'a' );
+		const link = document.createElement( 'a' );
 
 		link.className = 'maulik-hero-inspect';
 		link.setAttribute( 'data-maulik-hero-inspect', '' );
@@ -873,11 +1027,11 @@
 	 * Write text into the first element matching a selector, if it exists.
 	 *
 	 * @param {string} selector CSS selector inside the block.
-	 * @param {string} text    Text to write.
+	 * @param {string} text     Text to write.
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.writeText = function ( selector, text ) {
-		var element = this.container.querySelector( selector );
+		const element = this.container.querySelector( selector );
 
 		if ( element && text ) {
 			element.textContent = text;
@@ -901,8 +1055,12 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.syncToggleLabel = function () {
-		var toggle = this.container.querySelector( '[data-maulik-hero-toggle]' );
-		var label = this.container.querySelector( '[data-maulik-hero-toggle-label]' );
+		const toggle = this.container.querySelector(
+			'[data-maulik-hero-toggle]'
+		);
+		const label = this.container.querySelector(
+			'[data-maulik-hero-toggle-label]'
+		);
 
 		if ( ! toggle || ! label ) {
 			return;
@@ -910,10 +1068,16 @@
 
 		if ( this.isPaused ) {
 			label.textContent = 'Resume Orbit';
-			toggle.setAttribute( 'aria-label', 'Resume the 3D ecosystem rotation' );
+			toggle.setAttribute(
+				'aria-label',
+				'Resume the 3D ecosystem rotation'
+			);
 		} else {
 			label.textContent = 'Pause Orbit';
-			toggle.setAttribute( 'aria-label', 'Pause the 3D ecosystem rotation' );
+			toggle.setAttribute(
+				'aria-label',
+				'Pause the 3D ecosystem rotation'
+			);
 		}
 	};
 
@@ -924,7 +1088,7 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.destroy = function () {
-		var self = this;
+		const self = this;
 
 		if ( this.destroyed ) {
 			return;
@@ -954,14 +1118,20 @@
 
 		if ( this.mediaQuery && this.onMediaQueryChange ) {
 			if ( typeof this.mediaQuery.removeEventListener === 'function' ) {
-				this.mediaQuery.removeEventListener( 'change', this.onMediaQueryChange );
+				this.mediaQuery.removeEventListener(
+					'change',
+					this.onMediaQueryChange
+				);
 			} else if ( typeof this.mediaQuery.removeListener === 'function' ) {
 				this.mediaQuery.removeListener( this.onMediaQueryChange );
 			}
 		}
 
 		if ( this.onVisibilityChange ) {
-			document.removeEventListener( 'visibilitychange', this.onVisibilityChange );
+			document.removeEventListener(
+				'visibilitychange',
+				this.onVisibilityChange
+			);
 		}
 
 		if ( this.onPageHide ) {
@@ -969,11 +1139,17 @@
 		}
 
 		if ( this.onPointerMove ) {
-			this.container.removeEventListener( 'pointermove', this.onPointerMove );
+			this.container.removeEventListener(
+				'pointermove',
+				this.onPointerMove
+			);
 		}
 
 		if ( this.onPointerLeave ) {
-			this.container.removeEventListener( 'pointerleave', this.onPointerLeave );
+			this.container.removeEventListener(
+				'pointerleave',
+				this.onPointerLeave
+			);
 		}
 
 		if ( this.onKeyDown ) {
@@ -998,10 +1174,16 @@
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.detachControls = function () {
-		var toggle = this.container.querySelector( '[data-maulik-hero-toggle]' );
-		var reset = this.container.querySelector( '[data-maulik-hero-reset]' );
-		var tabs = this.container.querySelectorAll( '[data-maulik-hero-node]' );
-		var i;
+		const toggle = this.container.querySelector(
+			'[data-maulik-hero-toggle]'
+		);
+		const reset = this.container.querySelector(
+			'[data-maulik-hero-reset]'
+		);
+		const tabs = this.container.querySelectorAll(
+			'[data-maulik-hero-node]'
+		);
+		let i;
 
 		if ( toggle ) {
 			toggle.removeEventListener( 'click', this.onToggleClick );
@@ -1022,12 +1204,16 @@
 	 * @return {void}
 	 */
 	function initHeroEcosystems() {
-		var containers = document.querySelectorAll( '[data-maulik-hero-ecosystem]' );
+		const containers = document.querySelectorAll(
+			'[data-maulik-hero-ecosystem]'
+		);
 
-		for ( var i = 0; i < containers.length; i++ ) {
-			var container = containers[ i ];
+		for ( let i = 0; i < containers.length; i++ ) {
+			const container = containers[ i ];
 
-			if ( container.getAttribute( 'data-maulik-hero-ready' ) === 'yes' ) {
+			if (
+				container.getAttribute( 'data-maulik-hero-ready' ) === 'yes'
+			) {
 				continue;
 			}
 
@@ -1035,7 +1221,7 @@
 
 			try {
 				new HeroEcosystem( container );
-			} catch ( error ) {
+			} catch {
 				// Never let one broken block break the page.
 				container.setAttribute( 'data-maulik-hero-error', 'true' );
 			}
@@ -1050,6 +1236,6 @@
 
 	window.maulikHeroEcosystem = {
 		init: initHeroEcosystems,
-		HeroEcosystem: HeroEcosystem
+		HeroEcosystem,
 	};
-}() );
+} )();

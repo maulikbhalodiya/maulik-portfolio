@@ -79,6 +79,16 @@
 // Core puts the theme block gap on every child of a constrained group, which
 // would replace the design's own stack, so each child states the gap the
 // design asks for and the first one states nothing.
+//
+// THE ORDER OF THIS FILE MATTERS AND THE REASON IS SPECIFICITY. This rule is
+// two classes plus the child, so 0,2,0. The four element rules further down
+// carry the same two classes and then the element's own class, so they tie with
+// it at 0,3,0 and win by being later in the file. When they carried
+// `margin-block: 0` rather than `margin-block-end: 0`, every one of them
+// deleted the gap this rule had just set and the hero measured 470px against
+// the design's 542px: exactly the 12px of the title pair plus three 20px stack
+// gaps, 72px in total. The rule the title pair needs is stated here at 0,3,0 as
+// well, so the same order dependency is now visible in one place.
 .wp-block-group.contact-hero > * {
 	margin-block-start: 1.25rem;
 }
@@ -114,14 +124,22 @@
 }
 
 // The title pair is space-y-3, which is 12px, so this one child sits closer to
-// the h1 than the rest of the column does.
+// the h1 than the rest of the column does. This selector carries the same two
+// classes as the rule below it and comes first, so the value below has to leave
+// margin-block-start alone. See the note on the rule below.
 .wp-block-group.contact-hero > .contact-hero-subtitle {
 	margin-block-start: 0.75rem;
 }
 
 // The subtitle. text-xl sm:text-2xl font-display font-semibold in amber.
+//
+// Only the trailing margin is zeroed here. This rule and the `> *` stack rule
+// above it both carry two classes plus the child, so they tie at 0,3,0 against
+// 0,2,0 and this one is later in the file, which means a `margin-block: 0` here
+// silently deleted every gap in the hero and left the section 72px short. That
+// is the same trap content/pages/projects.html hit, and it is the same fix.
 .wp-block-group.contact-hero .contact-hero-subtitle {
-	margin-block: 0;
+	margin-block-end: 0;
 	font-family: var(--wp--preset--font-family--display);
 	font-size: 1.25rem;
 	font-weight: 600;
@@ -138,9 +156,10 @@
 }
 
 // The description. text-base sm:text-lg leading-relaxed in the secondary text
-// colour, capped at max-w-3xl, which is 48rem.
+// colour, capped at max-w-3xl, which is 48rem. Trailing margin only, for the
+// reason given on the subtitle rule above.
 .wp-block-group.contact-hero .contact-hero-lede {
-	margin-block: 0;
+	margin-block-end: 0;
 	max-width: 48rem;
 	font-size: 1rem;
 	line-height: 1.625;
@@ -156,7 +175,9 @@
 
 // The metadata row. pt-2, a flex row with a 10px column gap and a 4px row gap.
 // The items are the secondary text colour and the middot between them is the
-// muted one, which is what the design separates them with.
+// muted one, which is what the design separates them with. The padding is the
+// design's own pt-2 and it stacks on top of the stack gap above this child, so
+// the two together are the design's space-y-5 then pt-2.
 .wp-block-group.contact-hero > .contact-hero-meta {
 	padding-block-start: 0.5rem;
 }
@@ -166,7 +187,7 @@
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.25rem 0.625rem;
-	margin-block: 0;
+	margin-block-end: 0;
 	font-family: var(--wp--preset--font-family--mono);
 	font-size: 0.75rem;
 	line-height: 1.3333;
@@ -193,7 +214,7 @@
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 1rem;
-	margin-block: 0;
+	margin-block-end: 0;
 }
 
 .wp-block-group.contact-hero .contact-hero-actions > *,
@@ -715,6 +736,155 @@
 	font-size: 0.75rem;
 	line-height: 1.625;
 	color: var(--wp--preset--color--text-muted);
+}
+
+// ---------------------------------------------------------------------------
+// The contact form section.
+//
+// THE DESIGN HAS NO FORM. The prototype's contact page is a hero, four channel
+// cards and an interactive signal panel, and a grep across
+// design-reference/src finds no form, no input, no select and no textarea
+// anywhere in the codebase. There is therefore no input styling to copy, and
+// this file does not invent a new visual language for controls. It reuses the
+// two treatments that already exist on this page instead:
+//
+//   control   the contact node, which is the design's own raised rectangle on
+//             the base ground behind a #343434 stroke, so a field is #171719
+//             with a #343434 hairline and the text colour as its ink
+//   submit    contact-btn contact-btn-amber, which is the design's primary
+//             button and is applied by patterns/contact-form.php to the same
+//             core/button shape the rest of the page uses, so no button CSS
+//             is restated here
+//
+// ZERO BORDER RADIUS, ZERO BOX SHADOW, and no light surface. Nothing below
+// sets either property.
+//
+// FOCUS IS NOT RESTATED. base/_focus.scss already owns the outline, and it
+// applies to every focusable element including these controls, so this file
+// deliberately says nothing about focus. Hover moves the hairline to amber,
+// which matches contact-card, but it is decoration and never the only signal.
+.wp-block-group.is-style-section.contact-form-section {
+	padding-block: 4rem;
+	background-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--text);
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.is-style-section.contact-form-section {
+		padding-block: 6rem;
+	}
+}
+
+// The section holds one column: the title, the honesty note, the required
+// legend and the form, 24px apart, capped at the design's 768px measure so the
+// form does not run the full width of a 1440px band.
+.contact-form-section .contact-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	max-width: 48rem;
+	margin-block: 0;
+}
+
+.contact-form-section .contact-form-title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.contact-form-section .contact-form-title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+// The note is the honest one. It says in the interface, not only in a commit,
+// that nothing processes a submission. It is text, so it is never colour alone.
+.contact-form-section .contact-form-note {
+	margin-block: 0;
+	max-width: 42rem;
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.contact-form-section .contact-form-required-note {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+// The form is a column of fields, 24px apart.
+.contact-form-section .contact-form-fields {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 1.5rem;
+	margin-block: 0;
+}
+
+// A field is label, control, 8px apart. It is a paragraph because a label and
+// its control are both phrasing content, and its margin is zeroed so the gap
+// below is the only spacing here.
+.contact-form-section .contact-form-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	width: 100%;
+	margin-block: 0;
+}
+
+.contact-form-section .contact-form-label {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.4286;
+	color: var(--wp--preset--color--text);
+}
+
+// The required indicator is an asterisk, so the contract is carried by a glyph
+// and not by colour. The legend above the form says what it means, and every
+// control also carries the required attribute, so the same fact is available
+// three ways: visually, in the legend, and from the accessibility tree.
+.contact-form-section .contact-form-required {
+	font-family: var(--wp--preset--font-family--mono);
+	color: var(--wp--preset--color--accent);
+}
+
+// The control. The design's own raised rectangle, as the contact node states
+// it: the raised surface on the base ground behind the emphasis hairline. The
+// native select arrow and the native textarea resize handle are both left
+// alone, because replacing them means drawing an indicator the design never
+// drew.
+.contact-form-section .contact-form-control {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0.75rem 1rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.contact-form-section .contact-form-control:hover {
+	border-color: var(--wp--preset--color--accent);
+}
+
+.contact-form-section .contact-form-textarea {
+	resize: vertical;
 }
 
 /* stylelint-enable selector-class-pattern */

@@ -214,6 +214,30 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_css' ) ) {
 			. $scope . ' .maulik-hero-button-icon{padding:6px;}'
 			. $scope . ' .maulik-hero-button-icon svg{width:14px;height:14px;display:block;fill:none;'
 			. 'stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}'
+			// The Pause Orbit control measured zero by zero on the live site.
+			//
+			// Two reasons, and they are the same reason the content arrows were
+			// rendering at 120px. The svg carries a viewBox and neither a width nor
+			// a height, so it has no intrinsic box and as a flex item in a nowrap
+			// row it collapsed to nothing. And unlike every other icon in this
+			// panel it also carried no fill and no stroke, so its two paths painted
+			// nothing even once a box existed.
+			//
+			// 12px is Hero3DEcosystem.tsx:388, which gives the Pause and Play marks
+			// w-3 h-3. The two buttons beside each other in the design are gap-1.5,
+			// 6px, which the button rule above already states.
+			//
+			// The header is named in the selector so this rule outranks the 16px
+			// floor in _icon.scss on its own specificity, and :not(.maulik-hero-
+			// button-icon) keeps it off the reset control beside it, which has its
+			// own 14px above and its own design value, w-3.5 h-3.5 at
+			// Hero3DEcosystem.tsx:400. Without the :not, this rule outranked that
+			// one as well and the reset mark came out at 12px, which was measured
+			// before it was added.
+			. $scope . ' .maulik-hero-header .maulik-hero-button:not(.maulik-hero-button-icon)'
+			. ' svg{width:12px;height:12px;'
+			. 'display:block;flex-shrink:0;vertical-align:middle;fill:none;'
+			. 'stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}'
 			. $scope . ' .maulik-hero-canvas{position:absolute;top:0;right:0;bottom:0;left:0;z-index:1;'
 			. 'display:block;width:100%;max-width:100%;height:100%;}'
 			. $scope . ' .maulik-hero-footer{position:relative;z-index:10;margin-top:auto;'
@@ -222,8 +246,13 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_css' ) ) {
 			. 'display:flex;flex-direction:column;gap:12px;}'
 			. $scope . ' .maulik-hero-tabs{display:flex;align-items:center;gap:6px;overflow-x:auto;'
 			. 'padding-bottom:4px;}'
+			// The tab label is text-xs in Hero3DEcosystem.tsx, which is 12px on a
+			// 16px line, so the leading is 1.3333 and not the 1.4 that put it at
+			// 16.8px. Nothing else in the panel changes: the canvas, the node data,
+			// the selection behaviour and the teardown are all below or above this
+			// one declaration and none of them read it.
 			. $scope . ' .maulik-hero-tab{padding:5px 10px;border:1px solid #262626;background:#171719;'
-			. 'color:#D8D5CA;font:inherit;line-height:1.4;cursor:pointer;white-space:nowrap;'
+			. 'color:#D8D5CA;font:inherit;line-height:1.3333;cursor:pointer;white-space:nowrap;'
 			. 'flex:0 0 auto;transition:color .15s ease,border-color .15s ease;}'
 			. $scope . ' .maulik-hero-tab:hover{border-color:#77746C;color:#FFFDF4;}'
 			. $scope . ' .maulik-hero-tab:focus-visible{outline:2px solid #FACC15;outline-offset:1px;}'

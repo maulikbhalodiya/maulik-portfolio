@@ -52,6 +52,30 @@ the inner text of one original comment, in the order it appeared in the file.
 
 	NO WRITING OR BLOG LINK. Posts are supported, the blog is not advertised.
 ```
+
+### Correction, 2026-10-02: the NO EMAIL LINK paragraph above is superseded
+
+The archived reasoning above is kept verbatim, as this directory requires, and its
+`NO EMAIL LINK, NO MAILTO, NO PLAINTEXT ADDRESS` rule is no longer in force.
+
+The owner's standing rule for this project is that design or colour related work uses
+exactly what the demo design uses, with no substitutions. The design's footer has an
+`Email` link in the Connect column, and this theme had substituted a second `/contact/`
+link in its place, which is itself the substitution the rule forbids. The owner was told
+the address had been spam-listed in production once and ruled that it ships anyway. That
+decision is settled and is not to be reopened.
+
+What holds now: the design's single address appears in the footer Connect column and in
+the section 08 `Email Me` button. No plaintext address appears anywhere, and no other
+`mailto` exists. Contact is still a form with an intent dropdown everywhere else. The CI
+gates that enforced the blanket ban were narrowed to exempt exactly this one address
+rather than removed, so an address nobody decided to publish still fails the build.
+
+One detail worth keeping from the original paragraph, because it was right: the reason a
+`/contact/` substitution was a bad idea is structural, not just a policy breach. Explore
+already carries Contact pointing at `/contact/`, so the same label at the same URL in two
+columns of one footer reads as a duplicate. The fix for that was to publish the design's
+real third link, not to drop the entry.
 ## Comment 2 of 2 (originally at parts/footer.html line 39)
 
 Note on this one: in the shipped file this second block was never actually opened

@@ -10,6 +10,10 @@
 				"top": "5rem",
 				"bottom": "5rem"
 			},
+			"margin": {
+				"top": "0",
+				"bottom": "0"
+			},
 			"blockGap": "3.5rem"
 		}
 	}

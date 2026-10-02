@@ -60,15 +60,32 @@
  * site does not advertise a blog, so the capability exists without being
  * announced.
  *
- * THE SUBTLE ONE THAT BITES EVERYONE. The navigation-link labels sit INSIDE the
- * JSON in the block comment, so they must not be passed through esc_attr().
- * esc_attr() turns every double quote into &quot;, and &quot; is not valid
- * JSON, so Core silently fails to parse the block and the menu does not render.
- * This is also why wp_json_encode() is not used here: it emits escaped forward
- * slashes for URLs, which is noise, and it produces bare values that then have
- * to be escaped, which lands straight back in the same trap. Core's own
- * patterns put the PHP between the JSON quotes and let the output be the value.
- * The rendered markup is checked for this in CI rather than assumed.
+ * THE SUBTLE ONE THAT BITES EVERYONE. Every value in these block comments is
+ * JSON, and JSON is written with double quotes. That means esc_attr() cannot be
+ * used on any of them, because esc_attr() turns a double quote into the entity
+ * &quot;, and &quot; is not valid JSON. A block whose JSON does not parse fails
+ * silently: no error, no markup, no attribute, and the menu or the icon row
+ * simply is not there.
+ *
+ * This was a measured defect on the live site before it was fixed. The footer's
+ * external links came out carrying target=&quot;_blank&quot;, with the quote
+ * characters inside the attribute value and the rel truncated at the first
+ * space, because a raw attribute fragment had been passed through esc_attr().
+ * The same class of mistake was latent in the two rules below.
+ *
+ * So every value that goes into a block comment here is written with
+ * wp_json_encode(), which emits a real quote and produces JSON that parses.
+ * patterns/home-capabilities.php, patterns/home-approach.php and
+ * patterns/home-technical-stack.php already do it this way, and this file now
+ * matches them. Note what is NOT being claimed: wp_json_encode() escapes
+ * forward slashes, so a URL reads with escaped slashes in the source. That is
+ * valid JSON, Core decodes it, and the noise is the right trade for a block
+ * that actually renders.
+ *
+ * esc_html() and esc_url() belong to attribute values in the rendered HTML, not
+ * to the block comment. Using them inside the JSON also happens to work today,
+ * but only because none of these strings currently contain a character that
+ * they escape, which is a coincidence and not a property.
  *
  * get_home_url() TAKES ITS BLOG ID FIRST. get_home_url( '/resume/' ) passes a
  * path as $blog_id, which is typed int|null, so the path is cast away and every
@@ -263,12 +280,12 @@ if ( '' !== $maulik_portfolio_request_uri ) {
 					$maulik_portfolio_nav_class = trim( $maulik_portfolio_nav_class . ' site-header__nav-item--current' );
 				}
 				?>
-				<!-- wp:navigation-link {"label":"<?php echo esc_html( $maulik_portfolio_nav_label ); ?>","url":"<?php echo esc_url( $maulik_portfolio_nav_url ); ?>","kind":"<?php echo esc_attr( $maulik_portfolio_nav_kind ); ?>","isTopLevelLink":true
+				<!-- wp:navigation-link {"label":<?php echo wp_json_encode( $maulik_portfolio_nav_label ); ?>,"url":<?php echo wp_json_encode( $maulik_portfolio_nav_url ); ?>,"kind":<?php echo wp_json_encode( $maulik_portfolio_nav_kind ); ?>,"isTopLevelLink":true
 				<?php if ( $maulik_portfolio_nav_id > 0 ) : ?>
 					,"id":<?php echo (int) $maulik_portfolio_nav_id; ?>
 				<?php endif; ?>
 				<?php if ( '' !== $maulik_portfolio_nav_class ) : ?>
-					,"className":"<?php echo esc_attr( $maulik_portfolio_nav_class ); ?>"
+					,"className":<?php echo wp_json_encode( $maulik_portfolio_nav_class ); ?>
 				<?php endif; ?>
 				} /-->
 			<?php endforeach; ?>
@@ -278,7 +295,7 @@ if ( '' !== $maulik_portfolio_request_uri ) {
 		<!-- wp:group {"tagName":"div","className":"site-header__social","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"}} -->
 		<div class="wp-block-group site-header__social">
 			<?php foreach ( $maulik_portfolio_header_channels as $maulik_portfolio_header_channel ) : ?>
-				<!-- wp:social-link {"service":"<?php echo esc_attr( $maulik_portfolio_header_channel['service'] ); ?>","label":"<?php echo esc_attr( $maulik_portfolio_header_channel['label'] ); ?>","url":"<?php echo esc_url( $maulik_portfolio_header_channel['url'] ); ?>","rel":"noopener noreferrer","className":"site-header__social-link"} /-->
+				<!-- wp:social-link {"service":<?php echo wp_json_encode( $maulik_portfolio_header_channel['service'] ); ?>,"label":<?php echo wp_json_encode( $maulik_portfolio_header_channel['label'] ); ?>,"url":<?php echo wp_json_encode( $maulik_portfolio_header_channel['url'] ); ?>,"rel":"noopener noreferrer","className":"site-header__social-link"} /-->
 			<?php endforeach; ?>
 		</div>
 		<!-- /wp:group -->

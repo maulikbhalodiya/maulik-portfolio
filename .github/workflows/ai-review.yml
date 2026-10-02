@@ -152,8 +152,13 @@ jobs:
                 side registration is also what makes theme.json styles apply to
                 a block at all.
 
-            11. Never emit a raw email address or a mailto link. Contact is a form
-                with an intent dropdown.
+            11. The design's own email address is published, by owner decision.
+                It appears in the footer Connect column and in the section 08
+                Email Me button. Do not report either as a violation, do not
+                propose replacing either with a /contact/ link, and do not
+                propose removing it. Any OTHER raw address or mailto is still
+                forbidden. Contact everywhere else is a form with an intent
+                dropdown.
 
             12. The site must be noindex while in development. The helper in
                 inc/seo.php is gated behind WP_DEBUG AND an explicit opt-in, so a
@@ -201,7 +206,10 @@ jobs:
             deleting a test or a CI assertion. Never propose code that would itself
             fail the gates, because your suggestions must pass phpcs.xml.dist with
             zero errors and zero warnings. Never use an em dash or an en dash in
-            your output. Never propose a raw email address or a mailto link. Never
+            your output. Never propose a raw email address or a mailto link other
+            than the design's own, which the owner has decided to publish. Never
+            propose removing the footer Email link or the section 08 Email Me
+            button. Never
             propose adding a custom post type, a shortcode or form handling.
 
   fix:
@@ -447,17 +455,33 @@ jobs:
             exit 1
           fi
 
-      - name: Assert no mailto links or raw email addresses
+      # NARROWED BY OWNER DECISION, NOT DELETED. The owner ruled that the demo
+      # design's own address ships in the footer Connect column and in the
+      # section 08 Email Me button. A blanket ban would now fail this review on
+      # correct code. Both checks still reject any OTHER address.
+      - name: Assert no mailto links or raw email addresses other than the design's own
         run: |
           set -euo pipefail
-          pattern="mail$(printf 'to')"':'
-          if git grep -nI -F "${pattern}" -- . ':(exclude)node_modules' ':(exclude)vendor'; then
-            echo "::error::A mailto link was found. Contact is a form with an intent dropdown."
+          allowed="mail$(printf 'to')"':maulikbhalodiya9999@'"gmail.com"
+          permitted="maulikbhalodiya9999@""gmail.com"
+          tok="mail$(printf 'to')"':[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+          found="$(git grep -oI -P "${tok}" -- . ':(exclude)node_modules' ':(exclude)vendor' \
+            ':(exclude)package-lock.json' \
+            | sed 's|^[^:]*:||' | sort -u || true)"
+          unexpected="$(printf '%s\n' "${found}" | grep -v -F -x "${allowed}" || true)"
+          if [ -n "${unexpected}" ]; then
+            echo "::error::A mailto link other than the design's own was found."
+            printf '%s\n' "${unexpected}"
             exit 1
           fi
-          if git grep -nI -P '[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
-            ':(exclude)node_modules' ':(exclude)vendor' ':(exclude)languages/*.pot'; then
-            echo "::error::A raw email address was found in the repository."
+          found="$(git grep -oI -P '[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
+            ':(exclude)node_modules' ':(exclude)vendor' ':(exclude)languages/*.pot' \
+            ':(exclude)package-lock.json' \
+            | sed 's|^[^:]*:||' | sort -u || true)"
+          unexpected="$(printf '%s\n' "${found}" | grep -v -F -x "${permitted}" || true)"
+          if [ -n "${unexpected}" ]; then
+            echo "::error::A raw email address other than the design's own was found."
+            printf '%s\n' "${unexpected}"
             exit 1
           fi
 

@@ -49,9 +49,7 @@
 		<!-- wp:paragraph {"className":"pj-filters__label"} -->
 		<p class="pj-filters__label">Filter Archive by Classification or Technical Domain</p>
 		<!-- /wp:paragraph -->
-		<!-- wp:paragraph {"className":"pj-filters__list"} -->
-		<p class="pj-filters__list"><a class="pj-tab pj-tab-selected" href="/projects/" aria-current="true">All</a> <a class="pj-tab" href="#independent-development">Independent</a> <a class="pj-tab" href="#professional-engineering-work">Professional</a> <a class="pj-tab" href="#professional-engineering-work">WordPress</a> <a class="pj-tab" href="#professional-engineering-work">PHP</a> <a class="pj-tab" href="#professional-engineering-work">API</a> <a class="pj-tab" href="#professional-engineering-work">Payment</a> <a class="pj-tab" href="#professional-engineering-work">Security</a> <a class="pj-tab" href="#professional-engineering-work">Integration</a> <a class="pj-tab" href="#professional-engineering-work">WooCommerce</a></p>
-		<!-- /wp:paragraph -->
+		<!-- wp:maulik-portfolio/project-filters /-->
 	</div>
 	<!-- /wp:group -->
 </section>
@@ -143,8 +141,8 @@
 	<!-- /wp:group -->
 	<!-- wp:group {"className":"pj-work__grid hz-work__grid","layout":{"type":"default"}} -->
 	<div class="wp-block-group pj-work__grid hz-work__grid">
-		<!-- wp:group {"className":"hz-card","anchor":"case-study-01","layout":{"type":"default"}} -->
-		<article class="wp-block-group hz-card" id="case-study-01">
+		<!-- wp:group {"className":"hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-payment pj-cat-security","anchor":"case-study-01","layout":{"type":"default"}} -->
+		<article class="wp-block-group hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-payment pj-cat-security" id="case-study-01">
 			<!-- wp:group {"className":"hz-card__body","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__body">
 				<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
@@ -153,12 +151,16 @@
 					<span class="hz-meta">Payments and Security Architecture</span>
 				</div>
 				<!-- /wp:group -->
-				<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
-				<h3 class="wp-block-heading hz-card__title">Cross Domain Payment Architecture</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"className":"hz-card__desc"} -->
-				<p class="hz-card__desc">Reusable cross domain payment architecture featuring an approved payment environment, iframe checkout interface, HMAC SHA 256 signed REST communication, shared secret authentication and multi gateway webhook processing.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:group {"className":"hz-card__lead","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__lead">
+					<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
+					<h3 class="wp-block-heading hz-card__title">Cross Domain Payment Architecture</h3>
+					<!-- /wp:heading -->
+					<!-- wp:paragraph {"className":"hz-card__desc"} -->
+					<p class="hz-card__desc">Reusable cross domain payment architecture featuring an approved payment environment, iframe checkout interface, HMAC SHA 256 signed REST communication, shared secret authentication and multi gateway webhook processing.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
 				<!-- wp:group {"className":"hz-card__scheme","layout":{"type":"default"}} -->
 				<div class="wp-block-group hz-card__scheme">
 					<!-- wp:group {"className":"hz-card__scheme-head","layout":{"type":"default"}} -->
@@ -184,14 +186,28 @@
 			<!-- /wp:group -->
 			<!-- wp:group {"className":"hz-card__foot","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__foot">
-				<span class="hz-meta">WordPress · PHP · Gravity Forms · REST APIs · Payment Gateways · HMAC SHA 256</span>
-				<a class="hz-link" href="#case-study-01">View Case Study<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
+				<!-- wp:group {"className":"hz-card__tech hz-meta","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__tech hz-meta">
+				<span>WordPress</span>
+				<span aria-hidden="true">·</span>
+				<span>PHP</span>
+				<span aria-hidden="true">·</span>
+				<span>Gravity Forms</span>
+				<span aria-hidden="true">·</span>
+				<span>REST APIs</span>
+				<span aria-hidden="true">·</span>
+				<span>Payment Gateways</span>
+				<span aria-hidden="true">·</span>
+				<span>HMAC SHA 256</span>
+				</div>
+				<!-- /wp:group -->
+				<a class="hz-link" href="#case-study-01"><span>View Case Study</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
 			</div>
 			<!-- /wp:group -->
 		</article>
 		<!-- /wp:group -->
-		<!-- wp:group {"className":"hz-card","anchor":"case-study-02","layout":{"type":"default"}} -->
-		<article class="wp-block-group hz-card" id="case-study-02">
+		<!-- wp:group {"className":"hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-automation","anchor":"case-study-02","layout":{"type":"default"}} -->
+		<article class="wp-block-group hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-automation" id="case-study-02">
 			<!-- wp:group {"className":"hz-card__body","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__body">
 				<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
@@ -200,12 +216,16 @@
 					<span class="hz-meta">Workflow and Access Control</span>
 				</div>
 				<!-- /wp:group -->
-				<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
-				<h3 class="wp-block-heading hz-card__title">Employee Application Management System</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"className":"hz-card__desc"} -->
-				<p class="hz-card__desc">Role based employee application management workflow built on WordPress, PHP, Gravity Forms, Forminator and AJAX with application assignment, asynchronous data loading and structured status transitions.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:group {"className":"hz-card__lead","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__lead">
+					<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
+					<h3 class="wp-block-heading hz-card__title">Employee Application Management System</h3>
+					<!-- /wp:heading -->
+					<!-- wp:paragraph {"className":"hz-card__desc"} -->
+					<p class="hz-card__desc">Role based employee application management workflow built on WordPress, PHP, Gravity Forms, Forminator and AJAX with application assignment, asynchronous data loading and structured status transitions.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
 				<!-- wp:group {"className":"hz-card__scheme","layout":{"type":"default"}} -->
 				<div class="wp-block-group hz-card__scheme">
 					<!-- wp:group {"className":"hz-card__scheme-head","layout":{"type":"default"}} -->
@@ -229,14 +249,28 @@
 			<!-- /wp:group -->
 			<!-- wp:group {"className":"hz-card__foot","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__foot">
-				<span class="hz-meta">WordPress · PHP · Gravity Forms · Forminator · AJAX · Custom Roles</span>
-				<a class="hz-link" href="#case-study-02">View Case Study<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
+				<!-- wp:group {"className":"hz-card__tech hz-meta","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__tech hz-meta">
+				<span>WordPress</span>
+				<span aria-hidden="true">·</span>
+				<span>PHP</span>
+				<span aria-hidden="true">·</span>
+				<span>Gravity Forms</span>
+				<span aria-hidden="true">·</span>
+				<span>Forminator</span>
+				<span aria-hidden="true">·</span>
+				<span>AJAX</span>
+				<span aria-hidden="true">·</span>
+				<span>Custom Roles</span>
+				</div>
+				<!-- /wp:group -->
+				<a class="hz-link" href="#case-study-02"><span>View Case Study</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
 			</div>
 			<!-- /wp:group -->
 		</article>
 		<!-- /wp:group -->
-		<!-- wp:group {"className":"hz-card","anchor":"case-study-03","layout":{"type":"default"}} -->
-		<article class="wp-block-group hz-card" id="case-study-03">
+		<!-- wp:group {"className":"hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-automation","anchor":"case-study-03","layout":{"type":"default"}} -->
+		<article class="wp-block-group hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-automation" id="case-study-03">
 			<!-- wp:group {"className":"hz-card__body","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__body">
 				<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
@@ -245,12 +279,16 @@
 					<span class="hz-meta">API Integration and Automation</span>
 				</div>
 				<!-- /wp:group -->
-				<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
-				<h3 class="wp-block-heading hz-card__title">Identity Document OCR Integration</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"className":"hz-card__desc"} -->
-				<p class="hz-card__desc">Custom WordPress plugin integrating Azure Form Recognizer with Gravity Forms to analyze uploaded identity documents via asynchronous AJAX polling and automatically map extracted OCR data into form fields.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:group {"className":"hz-card__lead","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__lead">
+					<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
+					<h3 class="wp-block-heading hz-card__title">Identity Document OCR Integration</h3>
+					<!-- /wp:heading -->
+					<!-- wp:paragraph {"className":"hz-card__desc"} -->
+					<p class="hz-card__desc">Custom WordPress plugin integrating Azure Form Recognizer with Gravity Forms to analyze uploaded identity documents via asynchronous AJAX polling and automatically map extracted OCR data into form fields.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
 				<!-- wp:group {"className":"hz-card__scheme","layout":{"type":"default"}} -->
 				<div class="wp-block-group hz-card__scheme">
 					<!-- wp:group {"className":"hz-card__scheme-head","layout":{"type":"default"}} -->
@@ -274,14 +312,26 @@
 			<!-- /wp:group -->
 			<!-- wp:group {"className":"hz-card__foot","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__foot">
-				<span class="hz-meta">WordPress · PHP · Azure Form Recognizer · AJAX · Gravity Forms</span>
-				<a class="hz-link" href="#case-study-03">View Case Study<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
+				<!-- wp:group {"className":"hz-card__tech hz-meta","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__tech hz-meta">
+				<span>WordPress</span>
+				<span aria-hidden="true">·</span>
+				<span>PHP</span>
+				<span aria-hidden="true">·</span>
+				<span>Azure Form Recognizer</span>
+				<span aria-hidden="true">·</span>
+				<span>AJAX</span>
+				<span aria-hidden="true">·</span>
+				<span>Gravity Forms</span>
+				</div>
+				<!-- /wp:group -->
+				<a class="hz-link" href="#case-study-03"><span>View Case Study</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
 			</div>
 			<!-- /wp:group -->
 		</article>
 		<!-- /wp:group -->
-		<!-- wp:group {"className":"hz-card","anchor":"case-study-04","layout":{"type":"default"}} -->
-		<article class="wp-block-group hz-card" id="case-study-04">
+		<!-- wp:group {"className":"hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-security","anchor":"case-study-04","layout":{"type":"default"}} -->
+		<article class="wp-block-group hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-security" id="case-study-04">
 			<!-- wp:group {"className":"hz-card__body","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__body">
 				<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
@@ -290,12 +340,16 @@
 					<span class="hz-meta">Security and Cryptography</span>
 				</div>
 				<!-- /wp:group -->
-				<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
-				<h3 class="wp-block-heading hz-card__title">Secure WordPress Data Encryption</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"className":"hz-card__desc"} -->
-				<p class="hz-card__desc">Field level encryption of sensitive LatePoint appointment data in WordPress using PHP Sodium and an external encryption key, paired with capability gated decryption for authorized roles.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:group {"className":"hz-card__lead","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__lead">
+					<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
+					<h3 class="wp-block-heading hz-card__title">Secure WordPress Data Encryption</h3>
+					<!-- /wp:heading -->
+					<!-- wp:paragraph {"className":"hz-card__desc"} -->
+					<p class="hz-card__desc">Field level encryption of sensitive LatePoint appointment data in WordPress using PHP Sodium and an external encryption key, paired with capability gated decryption for authorized roles.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
 				<!-- wp:group {"className":"hz-card__scheme","layout":{"type":"default"}} -->
 				<div class="wp-block-group hz-card__scheme">
 					<!-- wp:group {"className":"hz-card__scheme-head","layout":{"type":"default"}} -->
@@ -319,14 +373,26 @@
 			<!-- /wp:group -->
 			<!-- wp:group {"className":"hz-card__foot","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__foot">
-				<span class="hz-meta">WordPress · PHP · Sodium · LatePoint · Encryption</span>
-				<a class="hz-link" href="#case-study-04">View Case Study<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
+				<!-- wp:group {"className":"hz-card__tech hz-meta","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__tech hz-meta">
+				<span>WordPress</span>
+				<span aria-hidden="true">·</span>
+				<span>PHP</span>
+				<span aria-hidden="true">·</span>
+				<span>Sodium</span>
+				<span aria-hidden="true">·</span>
+				<span>LatePoint</span>
+				<span aria-hidden="true">·</span>
+				<span>Encryption</span>
+				</div>
+				<!-- /wp:group -->
+				<a class="hz-link" href="#case-study-04"><span>View Case Study</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
 			</div>
 			<!-- /wp:group -->
 		</article>
 		<!-- /wp:group -->
-		<!-- wp:group {"className":"hz-card","anchor":"case-study-05","layout":{"type":"default"}} -->
-		<article class="wp-block-group hz-card" id="case-study-05">
+		<!-- wp:group {"className":"hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php","anchor":"case-study-05","layout":{"type":"default"}} -->
+		<article class="wp-block-group hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php" id="case-study-05">
 			<!-- wp:group {"className":"hz-card__body","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__body">
 				<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
@@ -335,12 +401,16 @@
 					<span class="hz-meta">SEO and WordPress Engineering</span>
 				</div>
 				<!-- /wp:group -->
-				<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
-				<h3 class="wp-block-heading hz-card__title">Rank Math SEO Engineering</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"className":"hz-card__desc"} -->
-				<p class="hz-card__desc">Professional engineering work involving Rank Math SEO within WordPress environments. Detailed technical scope and verified responsibilities are marked with structured placeholders pending public release verification.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:group {"className":"hz-card__lead","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__lead">
+					<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
+					<h3 class="wp-block-heading hz-card__title">Rank Math SEO Engineering</h3>
+					<!-- /wp:heading -->
+					<!-- wp:paragraph {"className":"hz-card__desc"} -->
+					<p class="hz-card__desc">Professional engineering work involving Rank Math SEO within WordPress environments. Detailed technical scope and verified responsibilities are marked with structured placeholders pending public release verification.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
 				<!-- wp:group {"className":"hz-card__scheme","layout":{"type":"default"}} -->
 				<div class="wp-block-group hz-card__scheme">
 					<!-- wp:group {"className":"hz-card__scheme-head","layout":{"type":"default"}} -->
@@ -362,14 +432,26 @@
 			<!-- /wp:group -->
 			<!-- wp:group {"className":"hz-card__foot","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__foot">
-				<span class="hz-meta">WordPress · PHP · Rank Math SEO · Metadata · Schema</span>
-				<a class="hz-link" href="#case-study-05">View Case Study<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
+				<!-- wp:group {"className":"hz-card__tech hz-meta","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__tech hz-meta">
+				<span>WordPress</span>
+				<span aria-hidden="true">·</span>
+				<span>PHP</span>
+				<span aria-hidden="true">·</span>
+				<span>Rank Math SEO</span>
+				<span aria-hidden="true">·</span>
+				<span>Metadata</span>
+				<span aria-hidden="true">·</span>
+				<span>Schema</span>
+				</div>
+				<!-- /wp:group -->
+				<a class="hz-link" href="#case-study-05"><span>View Case Study</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
 			</div>
 			<!-- /wp:group -->
 		</article>
 		<!-- /wp:group -->
-		<!-- wp:group {"className":"hz-card","anchor":"case-study-06","layout":{"type":"default"}} -->
-		<article class="wp-block-group hz-card" id="case-study-06">
+		<!-- wp:group {"className":"hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-automation","anchor":"case-study-06","layout":{"type":"default"}} -->
+		<article class="wp-block-group hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-automation" id="case-study-06">
 			<!-- wp:group {"className":"hz-card__body","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__body">
 				<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
@@ -378,12 +460,16 @@
 					<span class="hz-meta">API and Marketing Automation</span>
 				</div>
 				<!-- /wp:group -->
-				<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
-				<h3 class="wp-block-heading hz-card__title">Brevo API Automation</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"className":"hz-card__desc"} -->
-				<p class="hz-card__desc">Professional WordPress and PHP integration connecting site events with the Brevo REST API for automated contact synchronization and transactional communication workflows.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:group {"className":"hz-card__lead","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__lead">
+					<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
+					<h3 class="wp-block-heading hz-card__title">Brevo API Automation</h3>
+					<!-- /wp:heading -->
+					<!-- wp:paragraph {"className":"hz-card__desc"} -->
+					<p class="hz-card__desc">Professional WordPress and PHP integration connecting site events with the Brevo REST API for automated contact synchronization and transactional communication workflows.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
 				<!-- wp:group {"className":"hz-card__scheme","layout":{"type":"default"}} -->
 				<div class="wp-block-group hz-card__scheme">
 					<!-- wp:group {"className":"hz-card__scheme-head","layout":{"type":"default"}} -->
@@ -403,14 +489,26 @@
 			<!-- /wp:group -->
 			<!-- wp:group {"className":"hz-card__foot","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__foot">
-				<span class="hz-meta">WordPress · PHP · Brevo API · REST APIs · JSON</span>
-				<a class="hz-link" href="#case-study-06">View Case Study<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
+				<!-- wp:group {"className":"hz-card__tech hz-meta","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__tech hz-meta">
+				<span>WordPress</span>
+				<span aria-hidden="true">·</span>
+				<span>PHP</span>
+				<span aria-hidden="true">·</span>
+				<span>Brevo API</span>
+				<span aria-hidden="true">·</span>
+				<span>REST APIs</span>
+				<span aria-hidden="true">·</span>
+				<span>JSON</span>
+				</div>
+				<!-- /wp:group -->
+				<a class="hz-link" href="#case-study-06"><span>View Case Study</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
 			</div>
 			<!-- /wp:group -->
 		</article>
 		<!-- /wp:group -->
-		<!-- wp:group {"className":"hz-card","anchor":"case-study-07","layout":{"type":"default"}} -->
-		<article class="wp-block-group hz-card" id="case-study-07">
+		<!-- wp:group {"className":"hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-woocommerce","anchor":"case-study-07","layout":{"type":"default"}} -->
+		<article class="wp-block-group hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-woocommerce" id="case-study-07">
 			<!-- wp:group {"className":"hz-card__body","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__body">
 				<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
@@ -419,12 +517,16 @@
 					<span class="hz-meta">Backend Calculation and E Commerce</span>
 				</div>
 				<!-- /wp:group -->
-				<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
-				<h3 class="wp-block-heading hz-card__title">Distance Based Dynamic Pricing</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"className":"hz-card__desc"} -->
-				<p class="hz-card__desc">Custom PHP calculation workflow in WordPress for computing dynamic pricing rules based on distance parameters and integrating calculated totals into checkout flows.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:group {"className":"hz-card__lead","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__lead">
+					<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
+					<h3 class="wp-block-heading hz-card__title">Distance Based Dynamic Pricing</h3>
+					<!-- /wp:heading -->
+					<!-- wp:paragraph {"className":"hz-card__desc"} -->
+					<p class="hz-card__desc">Custom PHP calculation workflow in WordPress for computing dynamic pricing rules based on distance parameters and integrating calculated totals into checkout flows.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
 				<!-- wp:group {"className":"hz-card__scheme","layout":{"type":"default"}} -->
 				<div class="wp-block-group hz-card__scheme">
 					<!-- wp:group {"className":"hz-card__scheme-head","layout":{"type":"default"}} -->
@@ -444,14 +546,26 @@
 			<!-- /wp:group -->
 			<!-- wp:group {"className":"hz-card__foot","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__foot">
-				<span class="hz-meta">WordPress · PHP · Dynamic Pricing · REST APIs · AJAX</span>
-				<a class="hz-link" href="#case-study-07">View Case Study<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
+				<!-- wp:group {"className":"hz-card__tech hz-meta","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__tech hz-meta">
+				<span>WordPress</span>
+				<span aria-hidden="true">·</span>
+				<span>PHP</span>
+				<span aria-hidden="true">·</span>
+				<span>Dynamic Pricing</span>
+				<span aria-hidden="true">·</span>
+				<span>REST APIs</span>
+				<span aria-hidden="true">·</span>
+				<span>AJAX</span>
+				</div>
+				<!-- /wp:group -->
+				<a class="hz-link" href="#case-study-07"><span>View Case Study</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
 			</div>
 			<!-- /wp:group -->
 		</article>
 		<!-- /wp:group -->
-		<!-- wp:group {"className":"hz-card","anchor":"case-study-08","layout":{"type":"default"}} -->
-		<article class="wp-block-group hz-card" id="case-study-08">
+		<!-- wp:group {"className":"hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-automation","anchor":"case-study-08","layout":{"type":"default"}} -->
+		<article class="wp-block-group hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-automation" id="case-study-08">
 			<!-- wp:group {"className":"hz-card__body","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__body">
 				<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
@@ -460,12 +574,16 @@
 					<span class="hz-meta">Cloud Storage and Automation</span>
 				</div>
 				<!-- /wp:group -->
-				<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
-				<h3 class="wp-block-heading hz-card__title">Object Storage Automation</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"className":"hz-card__desc"} -->
-				<p class="hz-card__desc">Automated media and document offloading workflow connecting WordPress PHP upload lifecycles with external object storage APIs.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:group {"className":"hz-card__lead","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__lead">
+					<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
+					<h3 class="wp-block-heading hz-card__title">Object Storage Automation</h3>
+					<!-- /wp:heading -->
+					<!-- wp:paragraph {"className":"hz-card__desc"} -->
+					<p class="hz-card__desc">Automated media and document offloading workflow connecting WordPress PHP upload lifecycles with external object storage APIs.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
 				<!-- wp:group {"className":"hz-card__scheme","layout":{"type":"default"}} -->
 				<div class="wp-block-group hz-card__scheme">
 					<!-- wp:group {"className":"hz-card__scheme-head","layout":{"type":"default"}} -->
@@ -485,14 +603,26 @@
 			<!-- /wp:group -->
 			<!-- wp:group {"className":"hz-card__foot","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__foot">
-				<span class="hz-meta">WordPress · PHP · Object Storage · REST APIs · Automation</span>
-				<a class="hz-link" href="#case-study-08">View Case Study<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
+				<!-- wp:group {"className":"hz-card__tech hz-meta","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__tech hz-meta">
+				<span>WordPress</span>
+				<span aria-hidden="true">·</span>
+				<span>PHP</span>
+				<span aria-hidden="true">·</span>
+				<span>Object Storage</span>
+				<span aria-hidden="true">·</span>
+				<span>REST APIs</span>
+				<span aria-hidden="true">·</span>
+				<span>Automation</span>
+				</div>
+				<!-- /wp:group -->
+				<a class="hz-link" href="#case-study-08"><span>View Case Study</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
 			</div>
 			<!-- /wp:group -->
 		</article>
 		<!-- /wp:group -->
-		<!-- wp:group {"className":"hz-card","anchor":"case-study-09","layout":{"type":"default"}} -->
-		<article class="wp-block-group hz-card" id="case-study-09">
+		<!-- wp:group {"className":"hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-woocommerce","anchor":"case-study-09","layout":{"type":"default"}} -->
+		<article class="wp-block-group hz-card pj-card pj-cat-professional pj-cat-wordpress pj-cat-php pj-cat-api pj-cat-woocommerce" id="case-study-09">
 			<!-- wp:group {"className":"hz-card__body","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__body">
 				<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
@@ -501,12 +631,16 @@
 					<span class="hz-meta">E Commerce and Backend Systems</span>
 				</div>
 				<!-- /wp:group -->
-				<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
-				<h3 class="wp-block-heading hz-card__title">WooCommerce Integration</h3>
-				<!-- /wp:heading -->
-				<!-- wp:paragraph {"className":"hz-card__desc"} -->
-				<p class="hz-card__desc">Custom WooCommerce backend engineering covering order lifecycle hooks, custom product workflows and third party data synchronization.</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:group {"className":"hz-card__lead","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__lead">
+					<!-- wp:heading {"level":3,"className":"hz-card__title"} -->
+					<h3 class="wp-block-heading hz-card__title">WooCommerce Integration</h3>
+					<!-- /wp:heading -->
+					<!-- wp:paragraph {"className":"hz-card__desc"} -->
+					<p class="hz-card__desc">Custom WooCommerce backend engineering covering order lifecycle hooks, custom product workflows and third party data synchronization.</p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
 				<!-- wp:group {"className":"hz-card__scheme","layout":{"type":"default"}} -->
 				<div class="wp-block-group hz-card__scheme">
 					<!-- wp:group {"className":"hz-card__scheme-head","layout":{"type":"default"}} -->
@@ -526,12 +660,37 @@
 			<!-- /wp:group -->
 			<!-- wp:group {"className":"hz-card__foot","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-card__foot">
-				<span class="hz-meta">WordPress · PHP · WooCommerce · Hooks · REST APIs</span>
-				<a class="hz-link" href="#case-study-09">View Case Study<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
+				<!-- wp:group {"className":"hz-card__tech hz-meta","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-card__tech hz-meta">
+				<span>WordPress</span>
+				<span aria-hidden="true">·</span>
+				<span>PHP</span>
+				<span aria-hidden="true">·</span>
+				<span>WooCommerce</span>
+				<span aria-hidden="true">·</span>
+				<span>Hooks</span>
+				<span aria-hidden="true">·</span>
+				<span>REST APIs</span>
+				</div>
+				<!-- /wp:group -->
+				<a class="hz-link" href="#case-study-09"><span>View Case Study</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a>
 			</div>
 			<!-- /wp:group -->
 		</article>
 		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+	<!-- wp:group {"className":"pj-work__empty","layout":{"type":"default"}} -->
+	<div class="wp-block-group pj-work__empty">
+		<!-- wp:paragraph {"className":"pj-work__empty-title"} -->
+		<p class="pj-work__empty-title">No professional projects match the active filter (<span class="pj-work__empty-filter">All</span>).</p>
+		<!-- /wp:paragraph -->
+		<!-- wp:paragraph {"className":"pj-work__empty-note"} -->
+		<p class="pj-work__empty-note">Reset the filter to inspect all verified professional engineering case studies.</p>
+		<!-- /wp:paragraph -->
+		<!-- wp:paragraph {"className":"pj-work__empty-actions"} -->
+		<p class="pj-work__empty-actions"><button type="button" class="pj-work__empty-reset">Show All Development Work</button></p>
+		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:group -->
 </section>
