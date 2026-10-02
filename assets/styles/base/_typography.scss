@@ -1,8 +1,10 @@
+@use '../abstracts' as *;
+
 // Typography.
 // Font family and font size are set from theme.json via
-// --wp--preset--font-family--* and --wp--preset--font-size--*. Do not repeat
-// those values here. This layer carries only the three typographic behaviours
-// that are easy to lose and that the identity depends on.
+// --wp--preset--font-family-* and --wp--preset--font-size-*. Do not repeat
+// those values here. This layer carries only the typographic behaviours that
+// are easy to lose and that the identity depends on.
 
 // 1. Every heading balances its line breaks. At display sizes an unbalanced
 // heading strands one short word on a line of its own, and text-wrap: balance is
@@ -23,17 +25,70 @@ h6,
 	text-wrap: balance;
 }
 
-// 2. Display headings run at 1.08. That is far tighter than the 1.625 body base
-// and the difference is most of the display type's character. Headings at body
-// sizes are left alone so the rhythm of the reading column does not change.
-.has-hero-font-size,
-.has-x-large-font-size,
+// 2. Display leading. The design states two different figures and they are not
+// interchangeable:
+//    h1  text-4xl sm:text-5xl xl:text-6xl leading-[1.06]
+//    h2  text-3xl sm:text-4xl md:text-5xl, no leading override, which in
+//        Tailwind is the display default of 1.0
+// An h2 at 1.06 looks loose next to an h1 at 1.06 and neither matches. Both
+// values live in theme.json styles.elements.h1 and styles.elements.h2, which
+// WordPress emits into the global styles, and the rules below restate them at
+// the same specificity as the bare element selector so that a heading which
+// carries a size class still gets the leading its level owns rather than the
+// one the size class happens to imply.
 h1,
-h2 {
-	line-height: 1.08;
+.has-hero-font-size {
+	line-height: 1.06;
 }
 
-// 3. All mono text uses tabular figures. Timestamps, version strings and counts
+h2,
+.has-x-large-font-size {
+	line-height: 1;
+}
+
+// 2b. The h2 size steps, exactly as the design states them.
+// The design's section heading is text-3xl sm:text-4xl md:text-5xl, which is
+// three discrete steps and not a ramp:
+//    below 640px   text-3xl   30px
+//    640px and up  text-4xl   36px
+//    768px and up  text-5xl   48px
+// The x-large font size preset in theme.json is a clamp between 36px and 48px,
+// so it can never produce 30px and the small end of the design's own scale was
+// unreachable. The steps live here rather than in theme.json because a single
+// preset value cannot express three of them, and because theme.json's font size
+// for h2 is the fluid preset the design's inner page headings also use.
+// The breakpoint names come from abstracts/_breakpoints.scss, which is where
+// 640px and 768px are defined, so the thresholds are stated once.
+h2,
+.has-x-large-font-size {
+	font-size: 1.875rem;
+}
+
+@include from( $bp-sm ) {
+
+	h2,
+	.has-x-large-font-size {
+		font-size: 2.25rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	h2,
+	.has-x-large-font-size {
+		font-size: 3rem;
+	}
+}
+
+// 3. Tracking tightens with size in the design: tracking-tight on the h1 is
+// Tailwind -0.025em, which at the 60px maximum is exactly the -1.5px the design
+// calls for. Restated at equal specificity with h1 for the same reason as the
+// leading above.
+h1 {
+	letter-spacing: -0.025em;
+}
+
+// 4. All mono text uses tabular figures. Timestamps, version strings and counts
 // have to line up in a column, and the default proportional figures in the mono
 // face break that alignment.
 code,
@@ -44,8 +99,110 @@ pre,
 	font-variant-numeric: tabular-nums;
 }
 
-// Body copy keeps the 1.625 base from theme.json. It is restated here only so the
-// contrast with the 1.08 display figure above is visible in one place.
-body {
-	line-height: 1.625;
+// 4b. Heading colour on the light surfaces.
+//
+// theme.json styles.elements.heading sets the heading colour to the bright text
+// preset, which is right on every dark surface and unreadable on a light one.
+// Setting it there is the correct default, because the overwhelming majority of
+// sections are dark, and the light surfaces are the exception that needs naming.
+// The failure this fixes was concrete rather than theoretical: a heading inside
+// a cream section rendered #FFFDF4 on a #FFFDF4 background at a 1.0 to 1
+// contrast ratio, which is invisible rather than merely ugly.
+//
+// The colour below is the design's own ink on paper. index.css states
+// color: #0A0A0B on both the cream and the warm editorial surface, and #0A0A0B
+// is the base and text-on-paper preset in this theme's palette, so the two
+// sources agree and there is no new colour to introduce.
+//
+// The selectors are the surface variations that styles/ registers, and they
+// carry two classes, so this wins over the bare h1 selector theme.json emits
+// without depending on which stylesheet prints first.
+.wp-block-group.is-style-surface-cream-editorial h1,
+.wp-block-group.is-style-surface-cream-editorial h2,
+.wp-block-group.is-style-surface-cream-editorial h3,
+.wp-block-group.is-style-surface-cream-editorial h4,
+.wp-block-group.is-style-surface-cream-editorial h5,
+.wp-block-group.is-style-surface-cream-editorial h6,
+.wp-block-group.is-style-surface-cream-editorial .wp-block-heading,
+.wp-block-group.is-style-surface-warm-editorial h1,
+.wp-block-group.is-style-surface-warm-editorial h2,
+.wp-block-group.is-style-surface-warm-editorial h3,
+.wp-block-group.is-style-surface-warm-editorial h4,
+.wp-block-group.is-style-surface-warm-editorial h5,
+.wp-block-group.is-style-surface-warm-editorial h6,
+.wp-block-group.is-style-surface-warm-editorial .wp-block-heading {
+	color: var(--wp--preset--color--text-on-paper);
 }
+
+// 5. Body copy. The design sets section prose at text-base, which is 16px, at
+// the secondary text colour rather than the primary one. It steps DOWN to
+// text-sm, 14px, where it steps at all, and it never steps up: no paragraph
+// anywhere in the design reference is larger than 16px except the hero's own
+// supporting paragraph, which is handled in components/_hero.scss and is
+// deliberately not restated here so there is one owner for it.
+// The colour and the size are this layer's job because they are properties of
+// a block inside a section, not of the theme root. The line height is a theme
+// root value and lives in theme.json.
+.is-style-section p,
+.is-style-section li,
+.site-footer p,
+.page-shell p,
+.single-shell p,
+.front-page-shell p {
+	color: var(--wp--preset--color--text-muted);
+	font-size: 1rem;
+}
+
+// THE 36rem CAP IS GONE, AND THE GRID CELL IS THE REPLACEMENT.
+// It used to sit here as a blanket max-width on every direct-child paragraph of
+// a section. That was a workaround for the fact that section body copy was not
+// laid out in the design's grid, so a paragraph had no cell to be measured by
+// and ran the full 1440px. The design puts each section lede in an
+// lg:col-span-5 cell of a 12 column grid, which measures 548px at a 1440px
+// viewport. That cell is the constraint now, and a max-width layered on top of
+// it was a second competing constraint on the same axis: at any viewport where
+// the cell is narrower than 576px the cap did nothing, and where the cell is
+// wider it silently overrode the design. Leaving both in place is how a layout
+// ends up with two numbers that disagree and no way to tell which one won.
+// Nothing is capped here, because nothing needs to be: a paragraph is either
+// inside a grid cell that measures it, or it is a full-bleed paragraph that the
+// design also runs full width.
+
+// THE READING MEASURE IS NOW OPT-IN AND CARRIES THE DESIGN'S OWN NUMBER.
+//
+// max-w-3xl, which is 48rem, is the design's widest prose measure. It appears in
+// the design as max-w-3xl on the section lede paragraphs, on the CTA lede and
+// on the inner page hero lede. It is a class rather than a blanket rule on every
+// paragraph because a blanket rule is exactly what the 36rem cap was, and a
+// blanket rule cannot be right for both a grid cell and a full-bleed paragraph.
+//
+// On a paragraph that sits in a grid cell this does nothing in practice, because
+// the cell is narrower than 48rem at every breakpoint the design defines, so the
+// cell measures the text and not the max-width. On a full-bleed paragraph it
+// does what the design does. Either way there is one number and it is the
+// design's.
+//
+// This is the mechanism that holds the measure while the content is being
+// rebuilt into the design's grid cells. Once every lede sits inside an
+// lg:col-span-5 cell the class is redundant and can be dropped from the markup
+// with no visual change, which is the opposite of the 36rem cap: that value had
+// to be kept in step with the grid by hand, and when the two disagreed there was
+// no way to tell which one had won.
+.section-lede {
+	max-width: 48rem;
+}
+
+// 6. Links do not underline on hover. The design changes link colour and nothing
+// else, so the underline in theme.json styles.elements.link :hover is gone from
+// there. The explicit none here stops Core's own anchor hover underline, which
+// is emitted by block-library and is not routed through theme.json.
+a:hover {
+	text-decoration: none;
+}
+
+/* stylelint-disable selector-class-pattern --
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by patterns/header.php, patterns/footer.php and the content
+   files, none of which this stylesheet can change. */
+
+/* stylelint-enable selector-class-pattern */

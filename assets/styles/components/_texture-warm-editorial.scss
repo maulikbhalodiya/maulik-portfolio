@@ -49,8 +49,9 @@
 		color: var(--wp--preset--color--accent-on-paper);
 	}
 
-	a:focus-visible {
-		outline: 2px solid var(--wp--preset--color--accent-on-paper);
-		outline-offset: 3px;
-	}
+	// THE FOCUS OUTLINE IS DELIBERATELY NOT RESTATED HERE, for the same reason as
+	// on the cream surface. A link specific rule nested in this file outranks the
+	// flip in base/_focus.scss on specificity rather than on print order, and it
+	// was measured winning on a real page. base/_focus.scss is the single owner
+	// of the focus outline on both light surfaces.
 }

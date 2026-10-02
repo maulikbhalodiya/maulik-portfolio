@@ -1,0 +1,1141 @@
+// RankKernel page.
+//
+// Six sections, in this order, on these surfaces. The table is the design's
+// own measured geometry at 1440px, taken from the browser, not from a reading
+// of the React source alone. Every row states the surface variation the
+// section group wears and the design class it came from.
+//
+//   0  hero          InnerPageHero    py-16 md:py-24   grid   h1 60px
+//   1  overview      section 01, 02   py-16 md:py-24   flat   h2 30px
+//   2  architecture  section 03       py-16 md:py-24   grid   h2 36px
+//   3  areas         section 04, 05   py-16 md:py-24   flat   h2 30px
+//   4  standards     section 06, 07   py-16 md:py-24   grid   h2 30px
+//   5  closing       section 08 to 11 py-16 md:py-24   flat   h2 30px
+//
+// The surface is carried by the variation class on the group in
+// content/pages/rankkernel.html, not by a rule in this file. A section wears
+// is-style-surface-dark-grid on rows 0, 2 and 4 and no variation on rows 1, 3
+// and 5, and a flat section computes the same #0A0A0B as a textured one, which
+// is what the design measures.
+//
+// ZERO LIGHT SURFACE ON THIS PAGE. The design has none: every one of its six
+// sections computes #0A0A0B and nothing computes #FFFDF4 or #F8F7F0 as a
+// background. The four texture partials stay registered and distinct at 48, 32,
+// 96 and 64px and none of them is deleted or unified; two of them simply are not
+// worn here.
+//
+// ZERO BORDER RADIUS, ZERO BOX SHADOW. The spine is square corners, and this
+// file sets neither property.
+//
+// TYPOGRAPHY. Sizes are Tailwind's own steps read from the design's classes:
+// text-6xl 60px, text-3xl 30px, text-4xl 36px, text-xl 20px, text-lg 18px,
+// text-base 16px, text-sm 14px, text-xs 12px. Leading comes from
+// tailwindcss/theme.css: text-3xl is 2.25 / 1.875, which is 1.2; text-4xl is
+// 2.5 / 2.25, which is 1.1111; text-xl is 1.75 / 1.25, which is 1.4; text-2xl is
+// 2 / 1.5, which is 1.3333. body default is leading-relaxed, which is 1.625.
+//
+// SPACING. Tailwind v4 is --spacing: 0.25rem per step, so the gap utilities below
+// are stated at their measured pixel value.
+
+@use '../abstracts' as *;
+
+/* stylelint-disable selector-class-pattern --
+   The double underscore is a BEM element marker. Every rk- class string is
+   written into content/pages/rankkernel.html and this file cannot change it. */
+
+// ---------------------------------------------------------------------------
+// The section frame.
+//
+// py-16 md:py-24 is 64px then 96px. is-style-section states 80px then 112px,
+// which is the home page value, so the inner page value has to win. The selector
+// carries both classes so it beats _rhythm.scss on specificity rather than on
+// stylesheet order.
+//
+// The 1px hairline under rows 0 to 4 is border-b border-[#262626]. The last row
+// has none, which is why the closing section drops it.
+.wp-block-group.is-style-section.rk-section {
+	padding-block: 4rem;
+	background-color: var(--wp--preset--color--base);
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.is-style-section.rk-section {
+		padding-block: 6rem;
+	}
+}
+
+.is-style-section .rk-closing {
+	border-bottom: 0;
+}
+
+// The block gap. Core puts --wp--style--block-gap on a group and turns it into a
+// margin on each child, so the design's space-y-N is stated here as a gap rather
+// than as six separate margin rules. A stack is a plain vertical rhythm.
+.is-style-section .rk-stack-1,
+.is-style-section .rk-stack-2,
+.is-style-section .rk-stack-3,
+.is-style-section .rk-stack-4,
+.is-style-section .rk-stack-5,
+.is-style-section .rk-stack-6,
+.is-style-section .rk-stack-8,
+.is-style-section .rk-stack-12,
+.is-style-section .rk-stack-16 {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+.is-style-section .wp-block-group.rk-stack-1 > * { margin-block: 0; }
+
+.is-style-section .wp-block-group.rk-stack-1 > * + * { margin-block-start: 0.25rem; }
+
+.is-style-section .wp-block-group.rk-stack-2 > * { margin-block: 0; }
+
+.is-style-section .wp-block-group.rk-stack-2 > * + * { margin-block-start: 0.5rem; }
+
+.is-style-section .wp-block-group.rk-stack-3 > * { margin-block: 0; }
+
+.is-style-section .wp-block-group.rk-stack-3 > * + * { margin-block-start: 0.75rem; }
+
+.is-style-section .wp-block-group.rk-stack-4 > * { margin-block: 0; }
+
+.is-style-section .wp-block-group.rk-stack-4 > * + * { margin-block-start: 1rem; }
+
+.is-style-section .wp-block-group.rk-stack-5 > * { margin-block: 0; }
+
+.is-style-section .wp-block-group.rk-stack-5 > * + * { margin-block-start: 1.25rem; }
+
+.is-style-section .wp-block-group.rk-stack-6 > * { margin-block: 0; }
+
+.is-style-section .wp-block-group.rk-stack-6 > * + * { margin-block-start: 1.5rem; }
+
+.is-style-section .wp-block-group.rk-stack-8 > * { margin-block: 0; }
+
+.is-style-section .wp-block-group.rk-stack-8 > * + * { margin-block-start: 2rem; }
+
+.is-style-section .wp-block-group.rk-stack-12 > * { margin-block: 0; }
+
+.is-style-section .wp-block-group.rk-stack-12 > * + * { margin-block-start: 3rem; }
+
+.is-style-section .wp-block-group.rk-stack-16 > * { margin-block: 0; }
+
+.is-style-section .wp-block-group.rk-stack-16 > * + * { margin-block-start: 4rem; }
+
+.is-style-section .wp-block-group.rk-stack-16 > * {
+	width: 100%;
+}
+
+// ---------------------------------------------------------------------------
+// Shared voices.
+//
+// The label voice is font-mono-tech text-xs, which is IBM Plex Mono at 12px,
+// and the body leading at that size is 1.625. The three label weights the
+// design uses are: amber for a section number, muted for a metadata value,
+// faint for a caption.
+.is-style-section .rk-label,
+.is-style-section .rk-meta,
+.is-style-section .rk-label-faint,
+.is-style-section .rk-state,
+.is-style-section .rk-stat__label,
+.is-style-section .rk-hero__meta,
+.is-style-section .rk-hero__back,
+.is-style-section .rk-status__label,
+.is-style-section .rk-directory__status,
+.is-style-section .rk-chip,
+.is-style-section .rk-link-chip,
+.is-style-section .rk-card__foot,
+.is-style-section .rk-points li,
+.is-style-section .rk-status__list li,
+.is-style-section .rk-svg-name,
+.is-style-section .rk-svg-badge,
+.is-style-section .rk-svg-core,
+.is-style-section .rk-svg-core-sub {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	font-variant-numeric: tabular-nums;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.is-style-section .rk-label {
+	color: var(--wp--preset--color--accent);
+}
+
+.is-style-section .rk-label-faint,
+.is-style-section .rk-hero__meta {
+	color: var(--wp--preset--color--text-faint);
+}
+
+.is-style-section .rk-state {
+	color: var(--wp--preset--color--text-faint);
+}
+
+// THE BLOCK GAP IS OFF ON THIS PAGE. The design states every vertical interval
+// as a Tailwind space-y-N or a gap-N. Core's flow layout instead puts a margin
+// on every child of every group, and on this WordPress version it reads that
+// margin from --wp--preset--spacing--50, which theme.json sets to 1.5rem, so
+// every group was silently adding 24px to each of the design's own gaps. The
+// rule below zeroes it inside this page's sections and the stacks become the
+// only source of vertical spacing, which is exactly the design's model.
+//
+// The :where() around the layout class keeps Core's own zero specificity on the
+// part that matters and puts the weight on .rk-section, which is a real class.
+// :where() on every class in this selector makes the whole rule worth one class,
+// so it beats Core's element level paragraph margin and Core's own
+// :root :where(.is-layout-flow) > * rule on order, and loses to none of the stack
+// rules below, which are worth two classes each.
+.rk-section:where(.is-style-section):where(.wp-block-group) :where(.is-layout-flow) > * {
+	margin-block-start: 0;
+}
+
+// The ruled label, which is the design's font-mono-tech text-xs with a hairline
+// under it and 8px of padding: border-b border-[#262626] pb-2.
+.is-style-section .rk-label--ruled {
+	padding-bottom: 0.5rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// Body copy. The design's section prose is text-base at 16px in the secondary
+// colour, stepping down to text-sm at 14px, and never up.
+.is-style-section .rk-body,
+.is-style-section .rk-body-sm,
+.is-style-section .rk-body-xs,
+.is-style-section .rk-measure {
+	margin-block: 0;
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.is-style-section .rk-body-sm {
+	font-size: 0.875rem;
+}
+
+.is-style-section .rk-body-xs {
+	font-size: 0.75rem;
+}
+
+.is-style-section .rk-measure {
+	max-width: 48rem;
+}
+
+// ---------------------------------------------------------------------------
+// Headings.
+//
+// The design does not use one size for the whole page and this file must not
+// imply that it does.
+//
+//   h1  text-4xl sm:text-5xl md:text-6xl  36 / 48 / 60px
+//   h2  section 01 and 09   text-2xl sm:text-3xl  24px then 30px
+//   h2  section 03          text-3xl sm:text-4xl  30px then 36px
+//   h2  section 04, 06, 07  text-3xl             30px at every width
+//
+// theme.json emits h2 as a fluid clamp and base/_typography.scss restates it as
+// 30px, 36px then 48px, so all three of the design's own h2 steps have to be
+// stated per class here.
+.is-style-section .rk-title-sm,
+.is-style-section .rk-title-md,
+.is-style-section .rk-title-lg,
+.is-style-section .rk-hero__title,
+.is-style-section .rk-card__heading,
+.is-style-section .rk-card__title,
+.is-style-section .rk-stackcard__name,
+.is-style-section .rk-inspector__title,
+.is-style-section .rk-closing__title {
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	color: var(--wp--preset--color--text);
+	margin-block: 0;
+}
+
+// text-2xl then sm:text-3xl.
+.is-style-section .rk-title-sm {
+	font-size: 1.5rem;
+	line-height: 1.3333;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .rk-title-sm {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+// text-3xl then sm:text-4xl.
+.is-style-section .rk-title-md {
+	font-size: 1.875rem;
+	line-height: 1.2;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .rk-title-md {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+// text-3xl, with no step.
+.is-style-section .rk-title-lg {
+	font-size: 1.875rem;
+	line-height: 1.2;
+}
+
+// The h1. 36px below 640, 48px from 640, 60px from 768, and no step between,
+// which is what the design's three text classes state. The weight is
+// font-extrabold, which is 800.
+.is-style-section .rk-hero__title {
+	font-size: 2.25rem;
+	font-weight: 800;
+	line-height: 1.08;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .rk-hero__title {
+		font-size: 3rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .rk-hero__title {
+		font-size: 3.75rem;
+	}
+}
+
+// text-xl sm:text-2xl is the hero subtitle: 20px then 24px, display semibold
+// in amber.
+.is-style-section .rk-hero__subtitle {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 600;
+	font-size: 1.25rem;
+	line-height: 1.4;
+	color: var(--wp--preset--color--accent);
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .rk-hero__subtitle {
+		font-size: 1.5rem;
+		line-height: 1.3333;
+	}
+}
+
+// text-base sm:text-lg is the hero description: 16px then 18px, capped at
+// max-w-3xl which is 48rem.
+.is-style-section .rk-hero__desc {
+	margin-block: 0;
+	max-width: 48rem;
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .rk-hero__desc {
+		font-size: 1.125rem;
+		line-height: 1.5556;
+	}
+}
+
+// The back link. The design gives it font-mono-tech text-xs, 12px, in the
+// secondary colour going amber on hover, with a 14px arrow in front of it.
+.is-style-section .rk-hero__back {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block: 0;
+}
+
+.is-style-section .rk-hero__back a {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: var(--wp--preset--color--text-muted);
+	text-decoration: none;
+}
+
+.is-style-section .rk-hero__back a:hover,
+.is-style-section .rk-hero__back a:focus {
+	color: var(--wp--preset--color--accent);
+}
+
+.is-style-section .rk-hero__back svg {
+	display: block;
+	width: 0.875rem;
+	height: 0.875rem;
+	stroke: var(--wp--preset--color--accent);
+	stroke-width: 2;
+	fill: none;
+}
+
+// The metadata row is a flex wrap with a 10px column gap, and the separators are
+// the design's own middot spans.
+.is-style-section .rk-hero__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.25rem 0.625rem;
+	margin-block: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Inner page hero frame.
+//
+// InnerPageHero.tsx is: py-16 md:py-24, a container with space-y-8, a border row
+// for the navigation, then grid-cols-1 lg:grid-cols-12 gap-10 items-end with the
+// main column at span 7 and the panel at span 5.
+.is-style-section .rk-hero__nav {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.is-style-section .rk-hero__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2.5rem;
+	align-items: end;
+}
+
+.is-style-section .rk-hero__main,
+.is-style-section .rk-hero__aside {
+	min-width: 0;
+	width: 100%;
+}
+
+@include from( $bp-lg ) {
+
+	.is-style-section .rk-hero__grid {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.is-style-section .rk-hero__main {
+		grid-column: span 7;
+	}
+
+	.is-style-section .rk-hero__aside {
+		grid-column: span 5;
+	}
+}
+
+.is-style-section .rk-hero__actions {
+	align-items: center;
+	padding-top: 0.75rem;
+	gap: 1rem;
+}
+
+// The buttons are font-mono-tech text-xs sm:text-sm at px-6 py-3.5, which is
+// 24px and 14px. The theme button element already states that padding, and
+// _block.scss states the secondary ground, so only the type is restated.
+.is-style-section .rk-hero__actions .wp-block-button__link,
+.is-style-section .rk-closing__actions .wp-block-button__link {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.625;
+	white-space: nowrap;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .rk-hero__actions .wp-block-button__link,
+	.is-style-section .rk-closing__actions .wp-block-button__link {
+		font-size: 0.875rem;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Panels and rows.
+//
+// #111113 is the design's panel ground and #262626 is the hairline. A panel is
+// p-6, and the hero panel is the same p-6 the design states.
+.is-style-section .rk-panel {
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// The p-5 focus note in section 02.
+.is-style-section .rk-note {
+	padding: 1.25rem;
+}
+
+// The bordered metadata row: flex, wrap, space-between, baseline aligned.
+.is-style-section .rk-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-block: 0;
+}
+
+// The hero panel's own stats row: grid-cols-3 gap-2 pt-1, each cell p-3 on
+// #171719 with a hairline. The count is text-lg mono bold and the label is
+// mono at 10px.
+.is-style-section .rk-stats {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.5rem;
+	padding-top: 0.25rem;
+	width: 100%;
+}
+
+.is-style-section .rk-stat {
+	padding: 0.75rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.is-style-section .rk-stat__value {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 1.125rem;
+	font-weight: 700;
+	line-height: 1.5556;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.is-style-section .rk-stat--on2 .rk-stat__value {
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .rk-stat--off .rk-stat__value {
+	color: var(--wp--preset--color--text-faint);
+}
+
+.is-style-section .rk-stat__label {
+	margin-block: 0.125rem 0;
+	font-size: 0.625rem;
+	line-height: 1.6;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// ---------------------------------------------------------------------------
+// Section 01 and 02: the two column body.
+//
+// grid-cols-1 lg:grid-cols-12 gap-12 with a span 6 cell on each side, each cell
+// a space-y-4 stack.
+.is-style-section .rk-split {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 3rem;
+}
+
+@include from( $bp-lg ) {
+
+	.is-style-section .rk-split {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.is-style-section .rk-split__cell {
+		grid-column: span 6;
+		min-width: 0;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Section 03: the six layer strip.
+//
+// grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3. Each cell is p-4 on #111113
+// with a hairline, a flex column that justifies its two parts apart, and a
+// 12px gap between them.
+.is-style-section .rk-layers {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0.75rem;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .rk-layers {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@include from( $bp-lg ) {
+
+	.is-style-section .rk-layers {
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+	}
+}
+
+.is-style-section .rk-layer {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 1rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// text-base, display bold. The design's layer name and principle title.
+.is-style-section .rk-card__title {
+	font-size: 1rem;
+	line-height: 1.5;
+}
+
+// ---------------------------------------------------------------------------
+// The architecture diagram.
+//
+// The design draws it as an SVG at aspect-[16/10] in a 760 by 480 viewBox, inside
+// a p-4 panel on #0A0A0B with a hairline, with a legend under it. The selected
+// subsystem is Modules, which is the design's own initial state, and the
+// selected state is what this file renders. The unselected nodes are linked to
+// their own entry in Major Technical Areas rather than carrying a click handler
+// that block markup cannot honour.
+.is-style-section .rk-arch {
+	padding: 1.5rem;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .rk-arch {
+		padding: 2rem;
+	}
+}
+
+.is-style-section .rk-arch__head {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding-bottom: 1.5rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-lg ) {
+
+	.is-style-section .rk-arch__head {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+.is-style-section .rk-states {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+// The state chips the design puts in the filter row. Rendered as labelled state
+// text rather than as buttons, because a button in block markup cannot swap a
+// panel and a dead control is worse than an honest label.
+.is-style-section .rk-state {
+	margin-block: 0;
+	padding: 0.375rem 0.75rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.is-style-section .rk-state--on {
+	color: var(--wp--preset--color--text-muted);
+}
+
+.is-style-section .rk-arch__main {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	align-items: start;
+}
+
+@include from( $bp-xl ) {
+
+	.is-style-section .rk-arch__main {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.is-style-section .rk-arch__figure {
+		grid-column: span 7;
+	}
+
+	.is-style-section .rk-inspector {
+		grid-column: span 5;
+	}
+}
+
+.is-style-section .rk-arch__figure {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+	min-width: 0;
+}
+
+.is-style-section .rk-arch__svg {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 16 / 10;
+}
+
+// The SVG type. The design states the centre node at 15px display bold and
+// 9.5px mono, and a subsystem node at 12px display bold and 9px mono.
+.is-style-section .rk-svg-core {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.is-style-section .rk-svg-core-sub {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 9.5px;
+}
+
+.is-style-section .rk-svg-name {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .rk-svg-badge {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 9px;
+}
+
+// The legend under the diagram: three border samples with their labels, spread
+// across the width.
+.is-style-section .rk-legend {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-top: 0.75rem;
+	margin-block: 0.75rem 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+.is-style-section .rk-legend__item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.is-style-section .rk-legend__item > span {
+	display: inline-block;
+	width: 0.75rem;
+	height: 0.75rem;
+	background-color: var(--wp--preset--color--surface-2);
+}
+
+.is-style-section .rk-swatch--solid {
+	border: 2px solid var(--wp--preset--color--accent);
+}
+
+.is-style-section .rk-swatch--dashed {
+	border: 2px dashed var(--wp--preset--color--text);
+}
+
+.is-style-section .rk-swatch--dotted {
+	border: 1px dotted var(--wp--preset--color--text-faint);
+}
+
+// The technical metadata panel, which is what the design's interactive inspector
+// shows for the selected subsystem. It sits on #171719 with a hairline at p-6.
+.is-style-section .rk-inspector {
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+	min-width: 0;
+}
+
+.is-style-section .rk-inspector__head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// text-2xl, display bold.
+.is-style-section .rk-inspector__title {
+	font-size: 1.5rem;
+	line-height: 1.3333;
+}
+
+.is-style-section .rk-inspector__lead {
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .rk-chip {
+	margin-block: 0;
+	padding: 0.25rem 0.625rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line-strong);
+	color: var(--wp--preset--color--text);
+	white-space: nowrap;
+}
+
+// The WordPress integration point list: a 6px amber square 8px down from the
+// top of each line, 8px to the right of the text.
+.is-style-section .rk-points {
+	margin-block: 0;
+	padding-inline-start: 0;
+	list-style: none;
+}
+
+.is-style-section .rk-points > li {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5rem;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.is-style-section .rk-points > li + li {
+	margin-block-start: 0.375rem;
+}
+
+.is-style-section .rk-points__mark {
+	flex-shrink: 0;
+	width: 0.375rem;
+	height: 0.375rem;
+	margin-block-start: 0.5rem;
+	background-color: var(--wp--preset--color--accent);
+}
+
+.is-style-section .rk-links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+.is-style-section .rk-links > .rk-label-faint {
+	margin-inline-end: 0.25rem;
+}
+
+.is-style-section .rk-link-chip {
+	margin-block: 0;
+}
+
+.is-style-section .rk-link-chip a {
+	display: inline-block;
+	padding: 0.25rem 0.625rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--text-muted);
+	text-decoration: none;
+}
+
+.is-style-section .rk-link-chip a:hover,
+.is-style-section .rk-link-chip a:focus {
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--accent);
+}
+
+// The full status directory. md:grid-cols-3 gap-4, each cell p-4 on #0A0A0B with
+// a hairline, and the selected one on #171719 with an amber border.
+.is-style-section .rk-directory {
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+.is-style-section .rk-directory__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .rk-directory__grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.is-style-section .rk-directory__item {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.is-style-section .rk-directory__item--selected {
+	background-color: var(--wp--preset--color--surface-2);
+	border-color: var(--wp--preset--color--accent);
+}
+
+.is-style-section .rk-directory__name {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text);
+}
+
+// ---------------------------------------------------------------------------
+// Section 04: the subsystem cards.
+//
+// md:grid-cols-2 lg:grid-cols-3 gap-5. Each card is p-6 on #111113 with a
+// hairline, a flex column that justifies its two parts apart, and a 16px gap.
+// The name is text-xl, display bold, and the integration line under a hairline is
+// mono at 11px in the faint colour.
+.is-style-section .rk-areas__head {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .rk-areas__head {
+		flex-direction: row;
+		align-items: flex-end;
+		justify-content: space-between;
+	}
+}
+
+.is-style-section .rk-areas__lede {
+	max-width: 36rem;
+}
+
+.is-style-section .rk-cards {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1.25rem;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .rk-cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@include from( $bp-lg ) {
+
+	.is-style-section .rk-cards {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.is-style-section .rk-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// text-xl is 20px on a 1.4 leading.
+.is-style-section .rk-card__heading {
+	font-size: 1.25rem;
+	line-height: 1.4;
+}
+
+.is-style-section .rk-card__foot {
+	padding-top: 0.75rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+	font-size: 0.6875rem;
+	color: var(--wp--preset--color--text-faint);
+}
+
+// Section 05: the three status panels. md:grid-cols-3 gap-6, each p-6 on #111113
+// with a space-y-4 stack. The three borders are the design's own three states:
+// a 2px amber rule, a 2px dashed cream rule, and a dotted faint rule.
+.is-style-section .rk-statuses {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1.5rem;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .rk-statuses {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.is-style-section .rk-status {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.is-style-section .rk-status--implemented {
+	border: 2px solid var(--wp--preset--color--accent);
+}
+
+.is-style-section .rk-status--implemented .rk-status__label {
+	color: var(--wp--preset--color--accent);
+}
+
+.is-style-section .rk-status--progress {
+	border: 2px dashed var(--wp--preset--color--text);
+}
+
+.is-style-section .rk-status--progress .rk-status__label {
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .rk-status--planned {
+	border: 1px dotted var(--wp--preset--color--text-faint);
+}
+
+.is-style-section .rk-status--planned .rk-status__label {
+	color: var(--wp--preset--color--text-faint);
+}
+
+.is-style-section .rk-status__list {
+	padding-top: 0.5rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+	list-style: none;
+}
+
+.is-style-section .rk-status__list > li {
+	list-style: none;
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .rk-status--progress .rk-status__list > li {
+	color: var(--wp--preset--color--text-muted);
+}
+
+.is-style-section .rk-status--planned .rk-status__list > li {
+	color: var(--wp--preset--color--text-faint);
+}
+
+.is-style-section .rk-status__list > li + li {
+	margin-block-start: 0.5rem;
+}
+
+.is-style-section .rk-status__list a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.is-style-section .rk-status__list a:hover,
+.is-style-section .rk-status__list a:focus {
+	color: var(--wp--preset--color--accent);
+}
+
+// ---------------------------------------------------------------------------
+// Section 06: the seven principles.
+//
+// md:grid-cols-2 lg:grid-cols-4 gap-4. Each cell is p-5 on #111113 with a
+// hairline and a space-y-2 stack, and its index is mono 12px in amber.
+.is-style-section .rk-principles {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .rk-principles {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@include from( $bp-lg ) {
+
+	.is-style-section .rk-principles {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
+.is-style-section .rk-principle {
+	padding: 1.25rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// ---------------------------------------------------------------------------
+// Section 07: the technical stack cards.
+//
+// md:grid-cols-2 lg:grid-cols-3 gap-4. Each cell is p-5 on #111113 with a
+// hairline and a space-y-2 stack. The name is text-lg, display bold.
+.is-style-section .rk-stackgrid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .rk-stackgrid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@include from( $bp-lg ) {
+
+	.is-style-section .rk-stackgrid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+.is-style-section .rk-stackcard {
+	padding: 1.25rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.is-style-section .rk-stackcard__name {
+	font-size: 1.125rem;
+	line-height: 1.5556;
+}
+
+// ---------------------------------------------------------------------------
+// Section 08 to 11: the closing band.
+//
+// p-8 on #111113 with a hairline, a flex row at lg with the actions pinned to
+// the trailing edge, and a 24px gap. The heading is text-2xl.
+.is-style-section .rk-closing__band {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 2rem;
+}
+
+@include from( $bp-lg ) {
+
+	.is-style-section .rk-closing__band {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+.is-style-section .rk-closing__title {
+	font-size: 1.5rem;
+	line-height: 1.3333;
+}
+
+.is-style-section .rk-closing__actions {
+	flex-shrink: 0;
+	align-items: center;
+	gap: 1rem;
+}
+
+/* stylelint-enable selector-class-pattern */

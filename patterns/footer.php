@@ -25,9 +25,37 @@
  * would produce a balanced grid with the same markup, which is the specific bug
  * this array shape exists to prevent.
  *
- * THE COPYRIGHT YEAR IS GENERATED, NEVER HARDCODED. A hardcoded year is not a
+ * THERE IS NO SEPARATOR BLOCK IN HERE, AND THAT IS A FIX. A core/separator was
+ * authored between the grid and the legal row while the grid was still styled
+ * without a border of its own. The grid rule in _site-footer.scss carries the
+ * hairline under the columns, exactly as the design does with border-b on the
+ * grid, so the authored separator was a second hairline in the same place. It
+ * did not render, which is why it went unnoticed, and a separator whose absence
+ * depends on something outside this file is not something to leave in place: the
+ * day it does render, the footer has a double rule. The design has no separator
+ * inside the footer grid, only the top border on the footer itself, and this now
+ * matches that exactly.
+ *
+ * THE COLUMNS FOLLOW THE DESIGN'S INVENTORY, AND EVERY LINK RESOLVES TO A PAGE
+ * THAT EXISTS. Explore is Home, About, Resume and Contact. Development is
+ * RankKernel and All Development Work, which are the two of the design's four
+ * targets that exist here: the design also points Payment Architecture and Data
+ * Encryption at two nested project pages, and this site has no such pages. They
+ * were not created, and no placeholder was linked in their place, because a
+ * link that 404s is worse than a missing link. Connect is GitHub, LinkedIn and
+ * Contact. The design's third Connect target is an email link, which this theme
+ * does not have anywhere, so Contact takes the place and the two real external
+ * profiles are kept, which leaves the footer with an actual off-site destination.
+ *
+ * The copyright year is generated, never hardcoded. A hardcoded year is not a
  * translation bug, it is a correctness bug, and it is the kind of thing that
  * survives for years because nothing breaks visibly.
+ *
+ * The name in the copyright is the author's name, not the site title, so it is
+ * content and it is translated. The site title itself is not written anywhere in
+ * this file: both the header wordmark and the footer wordmark are a core/site-title
+ * block, so they read blogname from the admin and changing the site title there
+ * updates both.
  *
  * PATTERNS RUN ON init. The conditional tags, the queried post accessor and the
  * loop are not available and are not used. Iterating this file's own arrays is.
@@ -45,6 +73,11 @@ defined( 'ABSPATH' ) || exit;
  *
  * The five/two/three/two split is asymmetric on purpose. Do not balance it to
  * three/three/three/three.
+ *
+ * A link carries either a path, which is resolved against the home URL, or a
+ * full url for the two external profiles. The external flag is what makes the
+ * anchor open in a new tab with noopener and noreferrer, which an internal link
+ * must not do.
  */
 $maulik_portfolio_footer_columns = array(
 	array(
@@ -56,16 +89,16 @@ $maulik_portfolio_footer_columns = array(
 				'path'  => '/',
 			),
 			array(
-				'label' => __( 'Projects', 'maulik-portfolio' ),
-				'path'  => '/projects/',
-			),
-			array(
-				'label' => __( 'RankKernel', 'maulik-portfolio' ),
-				'path'  => '/rankkernel/',
-			),
-			array(
 				'label' => __( 'About', 'maulik-portfolio' ),
 				'path'  => '/about/',
+			),
+			array(
+				'label' => __( 'Resume', 'maulik-portfolio' ),
+				'path'  => '/resume/',
+			),
+			array(
+				'label' => __( 'Contact', 'maulik-portfolio' ),
+				'path'  => '/contact/',
 			),
 		),
 	),
@@ -74,15 +107,11 @@ $maulik_portfolio_footer_columns = array(
 		'heading' => __( 'Development', 'maulik-portfolio' ),
 		'links'   => array(
 			array(
-				'label' => __( 'WordPress Engineering', 'maulik-portfolio' ),
-				'path'  => '/projects/',
+				'label' => __( 'RankKernel (Open Source)', 'maulik-portfolio' ),
+				'path'  => '/rankkernel/',
 			),
 			array(
-				'label' => __( 'PHP Backend', 'maulik-portfolio' ),
-				'path'  => '/projects/',
-			),
-			array(
-				'label' => __( 'Security', 'maulik-portfolio' ),
+				'label' => __( 'All Development Work', 'maulik-portfolio' ),
 				'path'  => '/projects/',
 			),
 		),
@@ -92,8 +121,12 @@ $maulik_portfolio_footer_columns = array(
 		'heading' => __( 'Connect', 'maulik-portfolio' ),
 		'links'   => array(
 			array(
-				'label' => __( 'Resume', 'maulik-portfolio' ),
-				'path'  => '/resume/',
+				'label' => __( 'GitHub', 'maulik-portfolio' ),
+				'url'   => 'https://github.com/maulikbhalodiya',
+			),
+			array(
+				'label' => __( 'LinkedIn', 'maulik-portfolio' ),
+				'url'   => 'https://www.linkedin.com/in/maulikbhalodiya/',
 			),
 			array(
 				'label' => __( 'Contact', 'maulik-portfolio' ),
@@ -116,8 +149,8 @@ $maulik_portfolio_footer_columns = array(
 			<p class="site-footer__identity-line"><?php echo esc_html__( 'WordPress Developer | PHP Engineer | Custom Plugin Developer', 'maulik-portfolio' ); ?></p>
 			<!-- /wp:paragraph -->
 
-			<!-- wp:paragraph {"className":"site-footer__identity-line"} -->
-			<p class="site-footer__identity-line"><?php echo esc_html__( 'WordPress Developer at Qrolic Technologies', 'maulik-portfolio' ); ?></p>
+			<!-- wp:paragraph {"className":"site-footer__summary"} -->
+			<p class="site-footer__summary"><?php echo esc_html__( 'Custom WordPress plugins, PHP backend systems, third party integrations, payment flows and field level encryption.', 'maulik-portfolio' ); ?></p>
 			<!-- /wp:paragraph -->
 		</div>
 		<!-- /wp:group -->
@@ -130,8 +163,15 @@ $maulik_portfolio_footer_columns = array(
 				<!-- /wp:heading -->
 
 				<?php foreach ( $maulik_portfolio_footer_column['links'] as $maulik_portfolio_footer_link ) : ?>
+					<?php
+					$maulik_portfolio_footer_external = isset( $maulik_portfolio_footer_link['url'] );
+					$maulik_portfolio_footer_url      = $maulik_portfolio_footer_external
+						? $maulik_portfolio_footer_link['url']
+						: get_home_url( null, $maulik_portfolio_footer_link['path'] );
+					$maulik_portfolio_footer_rel      = $maulik_portfolio_footer_external ? ' target="_blank" rel="noopener noreferrer"' : '';
+					?>
 					<!-- wp:paragraph {"className":"site-footer__link"} -->
-					<p class="site-footer__link"><a href="<?php echo esc_url( get_home_url( null, $maulik_portfolio_footer_link['path'] ) ); ?>"><?php echo esc_html( $maulik_portfolio_footer_link['label'] ); ?></a></p>
+					<p class="site-footer__link"><a href="<?php echo esc_url( $maulik_portfolio_footer_url ); ?>"<?php echo esc_attr( $maulik_portfolio_footer_rel ); ?>><?php echo esc_html( $maulik_portfolio_footer_link['label'] ); ?></a></p>
 					<!-- /wp:paragraph -->
 				<?php endforeach; ?>
 			</div>
@@ -140,12 +180,10 @@ $maulik_portfolio_footer_columns = array(
 	</div>
 	<!-- /wp:group -->
 
-	<!-- wp:separator {"className":"site-footer__rule"} /-->
-
 	<!-- wp:group {"tagName":"div","className":"site-footer__legal","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
 	<div class="wp-block-group site-footer__legal">
-		<!-- wp:paragraph {"className":"site-footer__copyright","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-		<p class="site-footer__copyright"><?php echo esc_html( sprintf( /* translators: %s: the current year. */ __( '© %s Maulik Bhalodiya', 'maulik-portfolio' ), wp_date( 'Y' ) ) ); ?></p>
+		<!-- wp:paragraph {"className":"site-footer__copyright"} -->
+		<p class="site-footer__copyright"><?php echo esc_html( sprintf( /* translators: 1: the current year, 2: the site author. */ __( '© %1$s %2$s. All rights reserved.', 'maulik-portfolio' ), wp_date( 'Y' ), 'Maulik Bhalodiya' ) ); ?></p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:paragraph {"className":"site-footer__technical","typography":{"fontFamily":"var:preset|font-family|mono"}} -->

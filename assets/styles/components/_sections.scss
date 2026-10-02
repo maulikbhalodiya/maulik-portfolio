@@ -1,0 +1,1495 @@
+@use '../abstracts' as *;
+
+/* The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by content/pages/home.html and by patterns/home-*.php, none
+   of which this stylesheet can change. */
+
+/* stylelint-disable selector-class-pattern */
+
+// Homepage sections 02 to 08.
+//
+// The hero, the header and the footer are not styled here and nothing here may
+// reach them. Every rule in this file is prefixed either with .hz-section, the
+// class the seven homepage section groups carry, or with the individual section
+// class (hz-capabilities, hz-stack, hz-work, hz-experience, hz-approach,
+// hz-about, hz-hiring). The hero group carries hero-section and no hz class, so
+// there is no selector in this file that can match it.
+//
+// WHY THE VALUES ARE IN THIS FILE AND NOT IN THEME.JSON. The design states them
+// per section. py-20 md:py-28, the 32px column gap, the seven split, the panel
+// padding, the 20px mono metadata, the 1px hairlines: all of it is section
+// scoped, so restating it once per section is what makes the stylesheet match
+// the design rather than approximate it.
+//
+// THE SURFACE OF EACH SECTION IS NOT DECIDED HERE. It is decided by which block
+// style variation the section group wears in content/pages/home.html. A flat
+// section wears no variation at all and inherits the root base colour, a textured
+// section wears is-style-surface-dark-grid, and the closing band wears the black
+// backgroundColor attribute. The variations themselves are untouched.
+//
+// ZERO BORDER RADIUS, ZERO BOX SHADOW. The design has neither and this theme
+// bans both. Nothing in this file sets either property, including at zero.
+//
+
+// Section frame.
+//
+// The design gives sections 02, 03, 05, 06 and 07 a 1px #262626 rule under them
+// and gives the closing band none. Padding comes from is-style-section, which is
+// 80px and 112px, which is py-20 md:py-28.
+.hz-section {
+	border-bottom: 1px solid var(--wp--preset--color--line);
+	background-color: var(--wp--preset--color--base);
+}
+
+// The closing band. py-24 md:py-32, so 96px then 128px, and no rule under it.
+.wp-block-group.section-cta.hz-hiring {
+	border-bottom: 0;
+	padding-block: 6rem;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.section-cta.hz-hiring {
+		padding-block: 8rem;
+	}
+}
+
+// Shared section header, used by 02, 03, 05 and 06.
+//
+// grid-cols-12 gap-8 items-end border-b pb-8, with the heading cell at
+// lg:col-span-7 and the lede cell at lg:col-span-5. At 1440 the container is
+// 1360px wide, eleven gaps of 32px leave 992px for twelve tracks, so a track is
+// 82.66px, col-span-7 is 578.66px and col-span-5 is 413.33px. The design states
+// those two spans and this file states the same two spans.
+.hz-section__head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	align-items: end;
+	padding-bottom: 2rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-lg ) {
+
+	.hz-section__head {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.hz-section__head-main {
+		grid-column: span 7;
+	}
+
+	.hz-section__head-lede {
+		grid-column: span 5;
+	}
+}
+
+.hz-section .hz-section__head-main > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-section__head-main > * + * {
+	margin-block-start: 0.75rem;
+}
+
+// The eyebrow. A plain mono 12px amber line. The 8px square that opens the
+// hero eyebrow is a hero device, not a section device, so no section carries
+// one. margin-block: 0 keeps the block gap from adding to the 12px that the
+// space-y-3 above the heading states.
+.hz-section .hz-eyebrow {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.625;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+// The section heading. text-3xl sm:text-4xl md:text-5xl is 30px, 36px and 48px,
+// font-display font-bold is Syne at 700, tracking-tight is -0.025em, and
+// text-5xl carries line-height 1. The theme h2 preset is a fluid clamp whose
+// floor is 36px, so the 30px step has to be stated here.
+.hz-section .hz-section__title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.875rem;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: -0.025em;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-section .hz-section__title {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.hz-section .hz-section__title {
+		font-size: 3rem;
+		line-height: 1;
+	}
+}
+
+// The lede. text-base at 16px in the secondary colour at leading-relaxed, which
+// is 1.625. The theme sets 18px from 640px for section paragraphs, so the 16px
+// the design states has to win here.
+.is-style-section .hz-section__head-lede,
+.is-style-section .hz-section__lede {
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-section .hz-section__head-lede,
+.hz-section .hz-section__lede {
+	max-width: none;
+	margin-block: 0;
+}
+
+// Shared surfaces and metadata.
+//
+// #111113 is the design's panel ground, #171719 is the design's raised ground
+// inside a panel, and #262626 is the hairline. Both appear as the surface style
+// variations and as inline borders.
+.hz-panel {
+	padding: 2rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.hz-panel {
+		padding: 2.5rem;
+	}
+}
+
+.hz-panel-breakdown {
+	padding: 1.5rem;
+}
+
+@include from( $bp-md ) {
+
+	.hz-panel-breakdown {
+		padding: 2rem;
+	}
+}
+
+.hz-panel-rail {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 2rem;
+}
+
+// Twelve column body, collapsing to one column below 1024px.
+.hz-body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	align-items: stretch;
+}
+
+@include from( $bp-lg ) {
+
+	.hz-body {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.hz-body__lead {
+		grid-column: span 5;
+	}
+
+	.hz-body__main {
+		grid-column: span 7;
+	}
+}
+
+// A bordered row split into two by a hairline, with the metadata left and the
+// muted note right.
+.hz-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding-bottom: 1.25rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-row__title {
+	margin-block: 0.25rem 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 700;
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .hz-row__title {
+	font-size: 1.5rem;
+	line-height: 1.3333;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-row__title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+// Mono 12px amber, the design's label voice.
+.hz-section .hz-label {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+// Mono 12px muted, the design's secondary metadata voice.
+.hz-section .hz-label-faint {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+.hz-section .hz-label-faint-strong {
+	font-weight: 600;
+}
+
+// Mono 12px secondary text, used for a technology strip.
+.hz-section .hz-meta {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.hz-section .hz-body-copy {
+	margin-block: 0;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.is-style-section .hz-section .hz-body-copy {
+	font-size: 1rem;
+	line-height: 1.625;
+}
+
+.hz-section .hz-body-copy-medium {
+	font-weight: 500;
+}
+
+// A stack whose children are 8px apart, which is space-y-2.
+.hz-section .hz-stack-2 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-2 > * + * {
+	margin-block-start: 0.5rem;
+}
+
+// A stack whose children are 12px apart, which is space-y-3.
+.hz-section .hz-stack-3 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-3 > * + * {
+	margin-block-start: 0.75rem;
+}
+
+// A stack whose children are 16px apart, which is space-y-4.
+.hz-section .hz-stack-4 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-4 > * + * {
+	margin-block-start: 1rem;
+}
+
+// A stack whose children are 24px apart, which is space-y-6.
+.hz-section .hz-stack-6 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-6 > * + * {
+	margin-block-start: 1.5rem;
+}
+
+.hz-stack-4 > .hz-indent-top-2,
+.hz-stack-6 > .hz-indent-top-2 {
+	margin-block-start: 0.5rem;
+}
+
+.hz-stack-4 > .hz-indent-top-4,
+.hz-stack-6 > .hz-indent-top-4 {
+	margin-block-start: 1rem;
+}
+
+.hz-stack-4 > .hz-indent-top-5,
+.hz-stack-6 > .hz-indent-top-5 {
+	margin-block-start: 1.25rem;
+}
+
+// A stack whose children are 32px apart, which is space-y-8.
+.hz-section .hz-stack-8 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-8 > * + * {
+	margin-block-start: 2rem;
+}
+
+// A stack whose children are 48px apart, which is space-y-12.
+.hz-section .hz-stack-12 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-12 > * + * {
+	margin-block-start: 3rem;
+}
+
+// Actions.
+//
+// The design states two button sizes: px-6 py-3.5, which is 24px and 14px, and
+// px-5 py-3, which is 20px and 12px. The theme button preset is the first of
+// those two with a 14px type size, so both are restated per class.
+.hz-section .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.625;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.hz-section .hz-btn-lg .wp-block-button__link {
+	padding: 0.875rem 1.5rem;
+}
+
+.hz-section .hz-btn-amber .wp-block-button__link {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--black);
+}
+
+.hz-section .hz-btn-amber .wp-block-button__link:hover,
+.hz-section .hz-btn-amber .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--accent-hover);
+	color: var(--wp--preset--color--black);
+}
+
+.hz-section .hz-btn-dark .wp-block-button__link {
+	background-color: var(--wp--preset--color--surface-2);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.hz-section .hz-btn-dark .wp-block-button__link:hover,
+.hz-section .hz-btn-dark .wp-block-button__link:focus {
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--accent);
+}
+
+.hz-section .hz-btn-outline .wp-block-button__link {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.hz-section .hz-btn-outline .wp-block-button__link:hover,
+.hz-section .hz-btn-outline .wp-block-button__link:focus {
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--accent);
+}
+
+.hz-section .hz-btn-nudge .wp-block-button__link {
+	padding: 0.5rem 0.875rem;
+}
+
+// The closing band puts two of its three actions beside the resume button as
+// bare anchors rather than as button blocks, so the same sizes and grounds are
+// restated for an anchor carrying the button classes.
+.hz-section a.hz-link.hz-btn-lg {
+	padding: 0.875rem 1.5rem;
+}
+
+.hz-section a.hz-link.hz-btn-dark,
+.hz-section a.hz-link.hz-btn-outline {
+	background-color: var(--wp--preset--color--surface-2);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.hz-section a.hz-link.hz-btn-dark:hover,
+.hz-section a.hz-link.hz-btn-dark:focus,
+.hz-section a.hz-link.hz-btn-outline:hover,
+.hz-section a.hz-link.hz-btn-outline:focus {
+	color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// A bare text link in the design's link voice: mono 12px at 600 in amber.
+.hz-section a.hz-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.625;
+	color: var(--wp--preset--color--accent);
+	text-decoration: none;
+}
+
+.hz-section a.hz-link:hover,
+.hz-section a.hz-link:focus {
+	color: var(--wp--preset--color--accent-hover);
+}
+
+// 02 What I build.
+//
+// Left is the five capability selector cards on #111113, split by 1px #262626
+// hairlines, each p-6. Right is the detail panel on #111113 with p-8 md:p-10.
+.hz-capabilities__list {
+	display: flex;
+	flex-direction: column;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-capability {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border-left: 2px solid transparent;
+	color: var(--wp--preset--color--text);
+}
+
+.hz-capability + .hz-capability {
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-capability-selected {
+	background-color: var(--wp--preset--color--surface-2);
+	border-left-color: var(--wp--preset--color--accent);
+}
+
+.hz-capability__title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.4;
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .hz-capability__summary {
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-capability__state {
+	flex-shrink: 0;
+	margin-block-start: 0.25rem;
+}
+
+.hz-section .hz-capabilities__detail-head > * {
+	margin-block: 0;
+}
+
+.hz-capabilities__detail-title {
+	margin-block-start: 0.25rem;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-capabilities__detail-title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+.hz-grid-2 {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0.75rem;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-grid-2 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// A mechanism tile: p-4 on #171719 with a 1px hairline and an 11px index.
+.hz-tile {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-section .hz-tile > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-tile > * + * {
+	margin-block-start: 0.375rem;
+}
+
+.is-style-section .hz-tile__index {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.6875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--accent);
+}
+
+.is-style-section .hz-tile__text {
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text);
+}
+
+.hz-rule-top {
+	padding-top: 1.5rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// 03 Technical skills.
+//
+// Left is the node map panel, right is the breakdown panel. The node map is an
+// SVG at aspect-[5/4], which is aspect-ratio 5 / 4, plus a row of seven tabs.
+.hz-stack__map-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding-bottom: 1rem;
+	margin-block-end: 1rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-stack__map,
+.hz-section .hz-stack__svg {
+	display: block;
+	width: 100%;
+	aspect-ratio: 5 / 4;
+	margin-block: auto;
+}
+
+// Text inside the node map. The design states Syne at 13px for the centre node,
+// IBM Plex Mono at 11px for a domain label and 9px for its count.
+.hz-section .hz-svg-label,
+.hz-section .hz-svg-count,
+.hz-section .hz-svg-name {
+	font-family: var(--wp--preset--font-family--mono);
+}
+
+.hz-section .hz-svg-label {
+	font-size: 0.6875rem;
+	font-weight: 600;
+}
+
+.hz-section .hz-svg-count {
+	font-size: 0.5625rem;
+}
+
+.hz-section .hz-svg-name {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+}
+
+.hz-stack__tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+	padding-top: 1rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-tab {
+	display: inline-block;
+	padding: 0.375rem 0.75rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+	text-decoration: none;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-tab:hover,
+.hz-tab:focus {
+	color: var(--wp--preset--color--text);
+	border-color: var(--wp--preset--color--text-faint);
+}
+
+.hz-tab-selected {
+	font-weight: 600;
+	color: var(--wp--preset--color--black);
+	background-color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+.hz-tab-selected:hover,
+.hz-tab-selected:focus {
+	color: var(--wp--preset--color--black);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// A domain heading inside the breakdown panel. md:text-3xl is 30px.
+.is-style-section .hz-domain__title {
+	font-size: 1.5rem;
+	line-height: 1.3333;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .hz-domain__title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+// The 41 skill entries, two columns, 16px apart.
+.hz-skill-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+	padding-top: 0.5rem;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-skill-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.hz-skill {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-skill:hover {
+	border-color: var(--wp--preset--color--line-strong);
+}
+
+.hz-skill__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.is-style-section .hz-skill__name {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .hz-skill__context {
+	margin-block: 0.5rem 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-stack__proof {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-top: 1.25rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// 04 Selected work.
+//
+// Band A is flat #0A0A0B, band B is the 48px dark grid.
+// The design gives section 04 no padding on the outer group and 80px then 112px
+// on each band instead, so the padding moves down one level. The outer group
+// still wears is-style-section for the rhythm vocabulary, and its padding is
+// restated to zero here rather than removed from the variation.
+.wp-block-group.hz-work.is-style-section {
+	padding-block: 0;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-work > .hz-work__band-a,
+.hz-work > .hz-work__band-b {
+	padding-block: 5rem;
+}
+
+@include from( $bp-md ) {
+
+	.hz-work > .hz-work__band-a,
+	.hz-work > .hz-work__band-b {
+		padding-block: 7rem;
+	}
+}
+
+// Band A sits on the flat base ground with a rule under it. Band B wears the
+// 48px dark grid variation and carries no rule.
+.hz-work__band-a {
+	background-color: var(--wp--preset--color--base);
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-work__band-b {
+	border-bottom: 0;
+}
+
+.hz-work__rk-head {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+@include from( $bp-lg ) {
+
+	.hz-work__rk-head {
+		flex-direction: row;
+		align-items: flex-end;
+		justify-content: space-between;
+	}
+}
+
+.is-style-section .hz-work__rk-name {
+	font-size: 1.875rem;
+	line-height: 1.2;
+	letter-spacing: -0.025em;
+	font-weight: 800;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-work__rk-name {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .hz-work__rk-name {
+		font-size: 3rem;
+		line-height: 1;
+	}
+}
+
+.is-style-section .hz-work__rk-subtitle {
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 600;
+	color: var(--wp--preset--color--accent);
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-work__rk-subtitle {
+		font-size: 1.25rem;
+		line-height: 1.4;
+	}
+}
+
+.hz-section .hz-work__rk-overview {
+	max-width: 48rem;
+	margin-block: 0;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-work__rk-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+	flex-shrink: 0;
+}
+
+.hz-work__b-head {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding-bottom: 2rem;
+	margin-block-end: 0;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-lg ) {
+
+	.hz-work__b-head {
+		flex-direction: row;
+		align-items: flex-end;
+		justify-content: space-between;
+	}
+}
+
+.is-style-section .hz-work__b-title {
+	font-size: 1.875rem;
+	line-height: 1.2;
+	letter-spacing: -0.025em;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-work__b-title {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+.hz-work__b-intro {
+	max-width: 48rem;
+}
+
+.hz-work__archive-link {
+	align-self: flex-start;
+	flex-shrink: 0;
+}
+
+@include from( $bp-lg ) {
+
+	.hz-work__archive-link {
+		align-self: flex-end;
+	}
+}
+
+.hz-work__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+}
+
+@include from( $bp-lg ) {
+
+	.hz-work__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.hz-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-card:hover {
+	border-color: var(--wp--preset--color--accent);
+}
+
+.hz-card__body {
+	padding: 1.5rem;
+}
+
+@include from( $bp-md ) {
+
+	.hz-card__body {
+		padding: 2rem;
+	}
+}
+
+.hz-section .hz-card__body > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-card__body > * + * {
+	margin-block-start: 1.25rem;
+}
+
+.hz-card__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.is-style-section .hz-card__title {
+	font-size: 1.25rem;
+	line-height: 1.4;
+	letter-spacing: -0.025em;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .hz-card__title {
+		font-size: 1.5rem;
+		line-height: 1.3333;
+	}
+}
+
+.is-style-section .hz-card__desc {
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-card__scheme {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-card:hover .hz-card__scheme {
+	border-color: var(--wp--preset--color--line-strong);
+}
+
+.hz-card__scheme-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-block-end: 0.625rem;
+}
+
+.is-style-section .hz-card__scheme-label {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.6875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-faint);
+}
+
+.hz-card__nodes {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+.is-style-section .hz-card__node {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .hz-card__node-sep {
+	padding-inline: 0.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--accent);
+}
+
+.hz-card__foot {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1rem 1.5rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-card__foot {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		padding-inline: 1.5rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.hz-card__foot {
+		padding-inline: 2rem;
+	}
+}
+
+.hz-card__tech {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.25rem 0.5rem;
+}
+
+.hz-work__conf {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1.25rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-work__conf {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+.hz-section .hz-work__conf p {
+	max-width: 56rem;
+	margin-block: 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// 05 Experience.
+//
+// A 2px #262626 rail at pl-6 sm:pl-10, with a 16px square node on the rail and a
+// card on #111113 at p-6 sm:p-8 md:p-10.
+.hz-timeline {
+	position: relative;
+	padding-left: 1.5rem;
+	margin-block: 0;
+	border-left: 2px solid var(--wp--preset--color--line);
+}
+
+.hz-section .hz-timeline > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-timeline > * + * {
+	margin-block-start: 3rem;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-timeline {
+		padding-left: 2.5rem;
+	}
+}
+
+.hz-role {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-role {
+		padding: 2rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.hz-role {
+		padding: 2.5rem;
+	}
+}
+
+.hz-role__node {
+	position: absolute;
+	top: 2rem;
+	left: -2.0625rem;
+	width: 1rem;
+	height: 1rem;
+	background-color: var(--wp--preset--color--base);
+	border: 2px solid var(--wp--preset--color--accent);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-role__node {
+		left: -3.0625rem;
+	}
+}
+
+.hz-role__node-current {
+	background-color: var(--wp--preset--color--accent);
+}
+
+.hz-role__head {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding-bottom: 1.25rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.hz-role__head {
+		flex-direction: row;
+		align-items: baseline;
+		justify-content: space-between;
+	}
+}
+
+.is-style-section .hz-role__title {
+	font-size: 1.5rem;
+	line-height: 1.3333;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-role__title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+// Responsibilities, two columns, 12px apart, each marked by a 6px amber square
+// sitting 8px from the top of its tile.
+.hz-resp-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0.75rem;
+}
+
+@include from( $bp-md ) {
+
+	.hz-resp-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.is-style-section li.hz-resp {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.625rem;
+	padding: 1rem;
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+	list-style: none;
+}
+
+.is-style-section li.hz-resp::before {
+	content: "";
+	flex-shrink: 0;
+	width: 0.375rem;
+	height: 0.375rem;
+	margin-block-start: 0.5rem;
+	background-color: var(--wp--preset--color--accent);
+}
+
+.hz-role__tech {
+	padding-top: 1rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// 06 Engineering approach.
+//
+// Left is the five stage selector rows, right is the deep dive panel.
+.hz-approach__stages {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+}
+
+// A stage row. The design states it as a p-5 bordered flex row with the stage
+// number, the stage name in uppercase Syne and a one line headline stacked on
+// the left, and the SELECTED or VIEW state on the right. It is markup the
+// reader can activate, so the bordered surface is on the anchor and the state
+// label sits beside it.
+.hz-stage {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-block: 0;
+}
+
+.hz-stage__link {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	gap: 0.25rem;
+	padding: 1.25rem;
+	text-align: left;
+	text-decoration: none;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--text);
+}
+
+.hz-stage__link:hover {
+	border-color: var(--wp--preset--color--text-faint);
+}
+
+.hz-stage-selected .hz-stage__link,
+.hz-stage-selected .hz-stage__link:hover {
+	background-color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--black);
+}
+
+.hz-stage__name {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.4;
+	letter-spacing: 0.025em;
+	text-transform: uppercase;
+}
+
+.hz-stage__headline {
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-stage__state {
+	flex-shrink: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.625;
+}
+
+// The design states the selected row as text-on-amber at 90 percent opacity for
+// the headline, which is the only place a partial colour appears in this file.
+.hz-stage-selected .hz-stage__number,
+.hz-stage-selected .hz-stage__state {
+	color: var(--wp--preset--color--base);
+}
+
+.hz-stage-selected .hz-stage__headline {
+	color: var(--wp--preset--color--base);
+	opacity: 0.9;
+}
+
+// The connector between two stage rows.
+.hz-arrow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-block: 0.5rem;
+	color: var(--wp--preset--color--accent);
+}
+
+.hz-arrow svg {
+	display: block;
+	width: 1rem;
+	height: 1rem;
+}
+
+// An architectural question tile: p-4 on #171719 marked by an 8px amber square.
+.is-style-section li.hz-question {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	padding: 1rem;
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+	list-style: none;
+}
+
+.is-style-section li.hz-question::before {
+	content: "";
+	flex-shrink: 0;
+	width: 0.5rem;
+	height: 0.5rem;
+	margin-block-start: 0.375rem;
+	background-color: var(--wp--preset--color--accent);
+}
+
+.is-style-section .hz-questions {
+	margin-block: 0;
+	padding-inline-start: 0;
+}
+
+.is-style-section .hz-questions > li + li {
+	margin-block-start: 0.625rem;
+}
+
+.hz-approach__foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-top: 1.25rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// 07 About.
+//
+// gap-12 on the body, not gap-8. The design states gap-12 on this section only.
+.hz-about__body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 3rem;
+	align-items: start;
+}
+
+@include from( $bp-lg ) {
+
+	.hz-about__body {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.hz-about__lead {
+		grid-column: span 5;
+	}
+
+	.hz-about__main {
+		grid-column: span 7;
+	}
+}
+
+.hz-section .hz-about__identity {
+	padding-top: 0.5rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-about__cta {
+	padding-top: 1rem;
+}
+
+.hz-snap-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+	padding-top: 1rem;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-snap-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.hz-snap {
+	padding: 1.25rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-section .hz-snap > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-snap > * + * {
+	margin-block-start: 0.25rem;
+}
+
+.is-style-section .hz-snap__value {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .hz-snap__meta {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// 08 Hiring call to action.
+//
+// The band is pure black with no texture, and the content sits on a #0A0A0B card
+// at p-8 sm:p-12 md:p-16, capped at max-w-3xl.
+.hz-hiring__card {
+	position: relative;
+	padding: 2rem;
+	overflow: hidden;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-hiring__card {
+		padding: 3rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.hz-hiring__card {
+		padding: 4rem;
+	}
+}
+
+.hz-hiring__inner {
+	max-width: 48rem;
+}
+
+.hz-section .hz-hiring__inner > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-hiring__inner > * + * {
+	margin-block-start: 1.5rem;
+}
+
+.is-style-section .hz-hiring__lede {
+	font-size: 1rem;
+	line-height: 1.625;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-hiring__lede {
+		font-size: 1.125rem;
+		line-height: 1.5556;
+	}
+}
+
+.hz-hiring__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+	padding-top: 1rem;
+}

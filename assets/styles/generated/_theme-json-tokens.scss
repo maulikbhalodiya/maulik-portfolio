@@ -30,7 +30,7 @@ $palette-text-on-paper: text-on-paper;
 $palette-accent: accent;
 // Signal Amber Hover is owned by theme.json
 $palette-accent-hover: accent-hover;
-// Signal Gold (light surfaces only) is owned by theme.json
+// Ink on Paper (light surfaces only) is owned by theme.json
 $palette-accent-on-paper: accent-on-paper;
 // Hairline Dark is owned by theme.json
 $palette-line: line;
@@ -66,8 +66,8 @@ $spacing-70: 70;
 $spacing-80: 80;
 
 // Layout widths, derived from settings.layout
-// from settings.layout.contentSize: 48rem
-$content-width: 768px;
+// from settings.layout.contentSize: 90rem
+$content-width: 1440px;
 // from settings.layout.wideSize: 90rem
 $wide-width: 1440px;
 

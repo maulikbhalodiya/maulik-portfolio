@@ -1,0 +1,493 @@
+// Hero and eyebrow layer.
+//
+// THE HERO HAD NO HEIGHT, NO CENTRING AND ONE COLUMN. The design states all
+// three explicitly in src/pages/HomePage.tsx:
+//
+//   min-h-screen pt-24 pb-16 md:pt-28 md:pb-24 flex items-center
+//     max-w-[1440px] mx-auto px-6 md:px-10 w-full
+//       grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center
+//         left  lg:col-span-6 space-y-8
+//         right lg:col-span-6   (an interactive 3D component)
+//
+// min-h-screen plus flex plus items-center is what makes the identity block sit
+// optically centred in the first viewport rather than starting at the top of it.
+// Without all three the hero is a short stack of text that scrolls away
+// immediately, which is the difference the design is actually making.
+//
+// THE RIGHT HAND COLUMN IS HERE. It holds maulik-portfolio/hero-ecosystem, a
+// server registered block rendered from inc/hero-ecosystem.php that draws the
+// design's Hero3DEcosystem node graph on a 2D canvas, with the hover
+// highlighting, click to select, keyboard arrow navigation and inspector
+// readout that the React component has. The block ships its own scoped styles
+// as an inline style element, because this partial is not allowed to style a
+// block it does not own and a block cannot be styled through theme.json from a
+// partial. Only the sizing rules the column needs live here.
+//
+
+@use '../abstracts' as *;
+
+// THE 12 COLUMN GRID IS NOT THE THEME'S OWN GRID LAYOUT. content/pages/home.html
+// is post_content and the migration script must not be run, so the hero grid is
+// written with real block markup and laid out here. The column count and the gap
+// are the design's; at 1024px and above the left column takes 6 of 12, which is
+// exactly half the 1440px measure minus one 48px gap.
+
+$hero-column-gap: 3rem;
+
+/* stylelint-disable selector-class-pattern --
+   eyebrow, eyebrow-text, hero-subhead and hero-actions are fixed by the class
+   strings that content/pages/*.html and patterns/*.php emit. This file cannot
+   change those strings. The utility-shaped w-2 h-2 bg-accent triple is likewise
+   a fixed class string written inline inside a core/paragraph. */
+
+// The hero padding is not the standard section padding. The design states it
+// separately, pt-24 pb-16 stepping to md:pt-28 md:pb-24, which is 96px above and
+// 64px below at mobile, 112px above and 96px below from 768px. The top padding is
+// also what clears the fixed 64px header band without the header overlapping the
+// eyebrow, which is why the header needs no offset on body.
+//
+// Padding is restated here rather than inherited from is-style-section because
+// the hero's two values differ from each other and from the section default, and
+// padding-block would collapse them to one.
+//
+// The selector carries BOTH the variation class and the hero class, which is one
+// class more than .wp-block-group.is-style-section in _rhythm.scss. That extra
+// class is load bearing. The two rules are otherwise the same specificity, and
+// _rhythm.scss is emitted after this partial, so a two class selector here would
+// lose the cascade and the section would come out symmetric at 7rem, which is
+// what it measured as before this was written.
+.wp-block-group.is-style-section.hero-section {
+	display: flex;
+	align-items: center;
+	min-height: 100vh;
+	padding-block: 6rem 4rem;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.is-style-section.hero-section {
+		padding-block: 7rem 6rem;
+	}
+}
+
+.wp-block-group.hero__grid {
+	width: 100%;
+}
+
+// THE COLUMNS MUST BE ABLE TO SHRINK. A grid item's automatic minimum size is
+// its content's intrinsic minimum, which means it refuses to be narrower than
+// its contents rather than overflowing them. The panel inside the right hand
+// column is nowrap by design, so the column was held to its intrinsic width and
+// pushed its right edge 12px past the grid, which pushed document.scrollWidth
+// past the viewport. minmax(0, 1fr) on the track does not help: the track was
+// already correct at 656px and it was the item that overflowed the track.
+//
+// Every ancestor of the canvas that is itself a grid or flex item carries this,
+// because the rule only takes effect on those. The canvas is additionally capped
+// so that no pixel width can ever reassert a minimum on any of them.
+//
+// max-width:100% ON THE COLUMN IS THE DECLARATION THAT ACTUALLY DOES THE WORK,
+// and min-width:0 alone is not sufficient here. Measured in Chrome at 1440x1200
+// against the harness: with min-width:0 alone the column still computed to
+// 707.984px with a right edge of 1451.98, and scrollWidth stayed 1452. The panel
+// is a flex column whose header is nowrap, and its intrinsic width resolves
+// against the grid area in a way that the automatic minimum size of the item
+// does not fully clamp. max-width:100% resolves against the grid area itself,
+// which is exactly 656px, and it caps the used width there. Verified: with
+// max-width:100% the column is 656 with a right edge of 1400 and scrollWidth
+// returns to the viewport width.
+//
+// Both are kept. min-width:0 lets the column shrink below the track when the
+// measure demands it, and max-width:100% stops it exceeding the track when the
+// contents demand more.
+.wp-block-group.hero__grid,
+.wp-block-group.hero__col,
+.wp-block-group.hero__col--visual {
+	min-width: 0;
+}
+
+.wp-block-group.hero__col--visual {
+	max-width: 100%;
+}
+
+.wp-block-group.hero__col--visual .wp-block-maulik-portfolio-hero-ecosystem {
+	min-width: 0;
+	max-width: 100%;
+}
+
+.wp-block-group.hero__col--visual .maulik-hero-canvas {
+	display: block;
+	max-width: 100%;
+}
+
+.wp-block-group.hero__col {
+	margin-block: 0;
+}
+
+@include from( $bp-lg ) {
+
+	.wp-block-group.hero__grid {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: $hero-column-gap;
+		align-items: center;
+	}
+
+	.wp-block-group.hero__col {
+		grid-column: span 6;
+	}
+}
+
+// The h1 at the design's xl step.
+//
+// The design states the hero heading as text-4xl sm:text-5xl xl:text-6xl, which
+// is a step, not a ramp: 36px below 640px, 48px from 640px, and 60px from
+// 1280px, with nothing in between. The theme.json hero preset is a fluid clamp,
+// so it passes through the 48px to 60px range continuously and reaches 60px
+// somewhere around 1180px rather than at 1280px.
+//
+// This states the top step explicitly. The value is the clamp's own maximum,
+// 3.75rem, so it cannot disagree with the preset; what it changes is the width
+// at which the preset stops growing, which is the one thing the design pins and
+// a fluid clamp cannot.
+@include from( $bp-xl ) {
+
+	h1,
+	.has-hero-font-size {
+		font-size: 3.75rem;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Eyebrow.
+//
+// The class was emitted sixteen times across the content files with no rule
+// anywhere, so every one of those lines was rendering at body size, in the body
+// font, in body white. The design value is font-mono-tech text-xs, which is
+// IBM Plex Mono at 12px.
+//
+// Line height is stated as 1rem rather than left to normal. The design gives the
+// eyebrow no leading of its own, so it inherits, and a mono face at 12px on a
+// 1.625 body leading leaves a visibly loose line above a 60px heading. 16px is
+// the line box the design's own layout puts the text in and it is what the
+// twelve pixel text actually needs.
+//
+// THE SELECTOR REPEATS .wp-block-group ON PURPOSE. A bare .eyebrow is one class.
+// base/_typography.scss states .is-style-section p as one class and one type,
+// which beats it, and the eyebrow was therefore rendering at the section's 18px
+// body size in the secondary text colour rather than at the design's 12px amber.
+// This is the same one extra class the section padding rule uses, and for the
+// same reason: it wins without base/_typography.scss being edited.
+
+.wp-block-group .eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 16px;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.wp-block-group .eyebrow .eyebrow-text {
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+	color: inherit;
+}
+
+// The 8px amber square that opens every eyebrow. The class string is
+// w-2 h-2 bg-accent, carried inline inside the paragraph because a span cannot
+// be a block of its own. The accent flips to the gold on-paper token inside the
+// two light surfaces, because the palette declares amber as dark surfaces only.
+.w-2.h-2.bg-accent {
+	display: inline-block;
+	width: 0.5rem;
+	height: 0.5rem;
+	flex-shrink: 0;
+	background-color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.is-style-surface-cream-editorial .w-2.h-2.bg-accent,
+.wp-block-group.is-style-surface-warm-editorial .w-2.h-2.bg-accent {
+	background-color: var(--wp--preset--color--accent-on-paper);
+}
+
+.wp-block-group.is-style-surface-cream-editorial .eyebrow,
+.wp-block-group.is-style-surface-warm-editorial .eyebrow,
+.wp-block-group.is-style-surface-cream-editorial .eyebrow-text,
+.wp-block-group.is-style-surface-warm-editorial .eyebrow-text {
+	color: var(--wp--preset--color--accent-on-paper);
+}
+
+// ---------------------------------------------------------------------------
+// Identity line.
+//
+// The design states it as font-mono-tech text-sm sm:text-base font-semibold in
+// amber, with no decorative square in front of it. That is why it is not an
+// eyebrow and does not carry the eyebrow class: it is a second voice, and
+// treating it as an eyebrow is how the two come to look the same.
+
+//
+// The selector repeats .wp-block-group for the same reason the section padding
+// rule above does. base/_typography.scss states .is-style-section p at one
+// class and one type, which is a higher specificity than a bare .hero-subhead,
+// so the shared rule was winning on both size and colour and this line was
+// rendering at the section's 18px body size in body muted rather than at the
+// design's amber.
+.wp-block-group.hero__col .hero-subhead {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.5;
+	color: var(--wp--preset--color--accent);
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.hero__col .hero-subhead {
+		font-size: 1rem;
+	}
+}
+
+.wp-block-group.is-style-surface-cream-editorial .hero-subhead,
+.wp-block-group.is-style-surface-warm-editorial .hero-subhead {
+	color: var(--wp--preset--color--accent-on-paper);
+}
+
+// ---------------------------------------------------------------------------
+// The supporting paragraph.
+//
+// The design states it as text-base sm:text-lg leading-relaxed in the secondary
+// text colour, capped to max-w-xl. The 36rem cap is what is missing: the
+// section reading measure only reaches direct children of the section, and this
+// paragraph is one level deeper inside a grid column, so it ran to the full
+// 656px of the column instead of stopping at 576px.
+//
+// The class is written into content/pages/home.html by this change. It is stated
+// on .hero__col rather than on a bare .hero__lede so that it outranks the
+// shared section paragraph rule without that rule being edited.
+
+.wp-block-group.hero__col .hero__lede {
+	margin-block: 0;
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+	max-width: 36rem;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.hero__col .hero__lede {
+		font-size: 1.125rem;
+	}
+}
+
+// The primary call to action pair. The design sets flex-wrap with a 16px gap and
+// aligns the items to the centre; the block gap already does the gap, so this
+// only has to say align.
+.wp-block-buttons.hero-actions {
+	align-items: center;
+}
+
+// THE BUTTONS. The design states both calls to action as font-mono-tech text-xs
+// sm:text-sm font-semibold at px-6 py-3.5, primary on amber over black, secondary
+// on the raised surface with a 1px emphasis border.
+//
+// WordPress puts its own button padding on .wp-block-button__link through
+// :where(), and the outline variation puts a second set through a
+// :root :where() pair, so the default 0.667em and 1.333em padding was winning
+// on the secondary button and nothing in the theme stated the design's spacing.
+// Padding, family, size and weight are all restated here on a selector that
+// carries the hero actions class, which the core selectors do not.
+//
+// Zero radius is inherited from base/_reset.scss, which states it universally,
+// so it is not repeated here. There is no text transform in the design and the
+// buttons inherit none, which is stated so a later block style cannot add one.
+.wp-block-buttons.hero-actions .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.875rem 1.5rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: none;
+	white-space: nowrap;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-buttons.hero-actions .wp-block-button__link {
+		font-size: 0.875rem;
+	}
+}
+
+.wp-block-buttons.hero-actions .wp-block-button__link {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--black);
+	border: 0;
+}
+
+.wp-block-buttons.hero-actions .wp-block-button__link:hover,
+.wp-block-buttons.hero-actions .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--accent-hover);
+	color: var(--wp--preset--color--black);
+}
+
+// The secondary call to action. The design's surface here is the panel surface
+// #111113, not the raised #171719 the outline variation and components/_block.scss
+// both default to. The selector carries is-style-outline as well as the hero
+// actions class so that it outranks components/_block.scss without that file
+// being edited.
+.wp-block-buttons.hero-actions .wp-block-button.is-style-outline .wp-block-button__link {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.wp-block-buttons.hero-actions .wp-block-button.is-style-outline .wp-block-button__link:hover,
+.wp-block-buttons.hero-actions .wp-block-button.is-style-outline .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// ---------------------------------------------------------------------------
+// The recruiter summary strip.
+//
+// The design states it as a bordered flex row, pt-6 border-t on the hairline,
+// column below 640px and row from 640px, with the social icon pair on the leading
+// side and the role text on the trailing side.
+
+// The vertical rhythm of the left column.
+//
+// THE COLUMN CARRIES TWO THINGS IT SHOULD NOT. It inherits the section's 3.5rem
+// block gap as a margin on its children, and it carries the section's own
+// top and bottom padding because both classes sit on the same element. The
+// design's left column is space-y-8, which is 32px, with space-y-4, 16px,
+// inside the identity cluster.
+//
+// This restates the gap on the column's direct children and zeroes the padding.
+// Core's :root :where(.is-layout-constrained) > * rule puts the block gap back
+// as a margin on every child of a constrained group, so the value has to be
+// stated on the children themselves to replace it, not on the parent.
+.wp-block-group.hero__col {
+	padding-block: 0;
+}
+
+.wp-block-group.hero__col > * {
+	margin-block-start: 2rem;
+}
+
+.wp-block-group.hero__col > :first-child {
+	margin-block-start: 0;
+}
+
+// The identity cluster, which the design wraps in space-y-4.
+.wp-block-group.hero__col .hero__cluster > * {
+	margin-block-start: 1rem;
+}
+
+.wp-block-group.hero__col .hero__cluster > :first-child {
+	margin-block-start: 0;
+}
+
+// The h1 brings its own bottom margin from the heading preset, which measured at
+// 40.2px. That margin sits between the h1 and the identity line and adds to the
+// cluster's own 16px, so the gap between them came out at 40.19px instead of the
+// design's uniform 16px. The rhythm here is a single gap on the leading edge of
+// each child, so the trailing margin is removed and the spacing comes from one
+// place. Scoped to the hero's cluster, and it does not touch any other heading.
+.wp-block-group.hero__col .hero__cluster h1 {
+	margin-block-end: 0;
+}
+
+// The strip. It is the last child of the column and carries the design's
+// pt-6 border-t, so its own top margin is replaced by the padding the design
+// asks for rather than stacking on top of it.
+.wp-block-group.hero__col .hero__strip {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 1.5rem;
+	padding-top: 1.5rem;
+	margin-block-start: 2rem;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.hero__col .hero__strip {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+// The two channel icons. Sized and coloured as the design's own icon row states:
+// a 40px box, a transparent hairline border, secondary text at rest and bright
+// text on hover. The row is hidden below 640px, which is where the design hides
+// it.
+.wp-block-group.hero__col .hero__socials {
+	display: none;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block: 0;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.hero__col .hero__socials {
+		display: flex;
+	}
+}
+
+// box-sizing is stated because the box is 40px overall, not 40px of content
+// plus the border. These links sit outside the hero panel, so the panel's own
+// universal border-box rule does not reach them, and without this the measured
+// box is 42 by 42 rather than the design's 40 by 40.
+.wp-block-group.hero__col .hero__socials .hero__social-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: 2.5rem;
+	height: 2.5rem;
+	color: var(--wp--preset--color--text-muted);
+	border: 1px solid transparent;
+	transition:
+		color 0.2s ease,
+		border-color 0.2s ease;
+}
+
+.wp-block-group.hero__col .hero__socials .hero__social-link:hover,
+.wp-block-group.hero__col .hero__socials .hero__social-link:focus {
+	color: var(--wp--preset--color--text);
+	border-color: var(--wp--preset--color--line-strong);
+}
+
+.wp-block-group.hero__col .hero__socials .hero__social-link svg {
+	display: block;
+	width: 1rem;
+	height: 1rem;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.wp-block-group.hero__col .hero__role {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 16px;
+	color: var(--wp--preset--color--text-faint);
+}
+
+/* stylelint-enable selector-class-pattern */

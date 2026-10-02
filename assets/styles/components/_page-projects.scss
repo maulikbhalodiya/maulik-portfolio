@@ -1,0 +1,643 @@
+@use '../abstracts' as *;
+
+// The Projects archive page.
+//
+// Sources, all read and traced:
+//   design-reference/src/pages/ProjectsArchivePage.tsx  the four sections
+//   design-reference/src/components/InnerPageHero.tsx    the hero frame
+//   design-reference/src/data/portfolioData.ts            the copy and the data
+//   design-reference/node_modules/tailwindcss/theme.css   the line heights
+//
+// MEASURED AGAINST THE DESIGN AT 1440 AND 390. Every number below is the
+// rendered value of the Tailwind utility the design states, with
+// --spacing: 0.25rem per step:
+//
+//   py-6   = 24px    the filter row
+//   py-16  = 64px    mobile step
+//   py-20  = 80px    the independent section at md
+//   py-24  = 96px    the professional section at md, and the hero, which
+//                    .section-hero already supplies in _rhythm.scss
+//
+// HEADINGS ARE NOT UNIFORM. The hero h1 is 60px, the independent h2 is 30px at
+// sm and 24px below it, and the professional h2 is 36px at sm and 30px below.
+// The theme h2 preset is a fluid clamp with a 36px floor, so both body steps are
+// stated here rather than inherited.
+//
+// ZERO BORDER RADIUS, ZERO BOX SHADOW. The design spine is square corners, so
+// nothing in this file sets either property.
+//
+// THE FOUR GRID TEXTURES ARE NOT TOUCHED HERE. This page wears the 48px dark
+// grid on the hero and on the professional section and nothing else. The 32, 64
+// and 96px textures stay registered and unused.
+//
+// NO LIGHT SURFACE ON THIS PAGE. Every ground here is base, surface or
+// surface-2, and the two editorial textures are never worn.
+
+/* stylelint-disable selector-class-pattern --
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by content/pages/projects.html. */
+
+// 01 Hero.
+//
+// InnerPageHero.tsx line 44 and line 45: py-16 md:py-24 on bg-dark-grid with a
+// 1px #262626 rule under it, then max-w-[1440px] px-6 md:px-10 inside.
+// .section-hero in _rhythm.scss already carries the 64px then 96px, so only the
+// rule and the internals are stated here.
+.pj-hero {
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// grid grid-cols-1 lg:grid-cols-12 gap-10 items-end, so 40px between the two
+// columns, aligned to their bottom edges.
+.pj-hero__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2.5rem;
+	align-items: end;
+}
+
+@include from( $bp-lg ) {
+
+	.pj-hero__grid {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+}
+
+// space-y-5 on the left cell, lg:col-span-7. 20px between its children.
+.pj-hero__main {
+	min-width: 0;
+}
+
+.pj-hero__main > * {
+	margin-block: 0;
+}
+
+.pj-hero__main > * + * {
+	margin-block-start: 1.25rem;
+}
+
+@include from( $bp-lg ) {
+
+	.pj-hero__main {
+		grid-column: span 7;
+	}
+
+	.pj-hero__aside {
+		grid-column: span 5;
+	}
+}
+
+// The amber square that opens the identifier line is 8px on a side.
+.pj-eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+}
+
+.pj-eyebrow__dot {
+	display: inline-block;
+	flex-shrink: 0;
+	width: 0.5rem;
+	height: 0.5rem;
+	background-color: var(--wp--preset--color--accent);
+}
+
+// text-4xl sm:text-5xl md:text-6xl font-display font-extrabold tracking-tight
+// with leading-[1.08]. The theme h1 preset already lands on 60px at 1440, so the
+// weight, the tracking and the leading are what this rule adds.
+.pj-hero .wp-block-heading {
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 800;
+	line-height: 1.08;
+	letter-spacing: -0.025em;
+	color: var(--wp--preset--color--text);
+}
+
+// text-base sm:text-lg text-[#D8D5CA] leading-relaxed max-w-3xl, so 16px then
+// 18px at 1.5556 within 768px.
+
+.pj-hero__desc {
+	max-width: 48rem;
+	margin-block: 0;
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+@include from( $bp-sm ) {
+
+	.pj-hero__desc {
+		font-size: 1.125rem;
+		line-height: 1.5556;
+	}
+}
+
+// pt-2 font-mono-tech text-xs text-[#77746C] with gap-x-2.5 gap-y-1, which is
+// 10px across and 4px down.
+.pj-hero__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.25rem 0.625rem;
+	padding-block-start: 0.5rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.pj-hero__meta-sep {
+	color: var(--wp--preset--color--text-faint);
+}
+
+// p-6 bg-[#111113] border border-[#262626] space-y-4.
+.pj-panel {
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.pj-panel > * {
+	margin-block: 0;
+}
+
+.pj-panel > * + * {
+	margin-block-start: 1rem;
+}
+
+// font-mono-tech text-xs text-[#FACC15] border-b border-[#262626] pb-3.
+.pj-panel__title {
+	padding-block-end: 0.75rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+}
+
+// space-y-3 text-xs text-[#D8D5CA] leading-relaxed.
+.pj-panel__list > * {
+	margin-block: 0;
+}
+
+.pj-panel__list > * + * {
+	margin-block-start: 0.75rem;
+}
+
+.pj-panel__item {
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.pj-panel__key {
+	font-family: var(--wp--preset--font-family--mono);
+	font-weight: 600;
+	color: var(--wp--preset--color--text);
+}
+
+// 02 Filter row.
+//
+// ProjectsArchivePage.tsx line 105 and line 106: py-6 on #0A0A0B with a 1px
+// #262626 rule under it, then a flex row that stacks below md.
+//
+// INTERACTIVITY. The design switches the visible set in the browser. Block
+// markup cannot, so the selected filter is rendered server side and every
+// unselected label is an anchor to the section it reveals. There is no button
+// on this page that does nothing.
+.pj-filters {
+	padding-block: 1.5rem;
+	background-color: var(--wp--preset--color--base);
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.pj-filters__row {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+@include from( $bp-md ) {
+
+	.pj-filters__row {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+.pj-filters__label {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+.pj-filters__list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+// px-3.5 py-2 text-xs font-mono-tech border, so 14px by 8px, at 34px tall.
+.pj-tab {
+	display: inline-block;
+	padding: 0.5rem 0.875rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	text-decoration: none;
+	white-space: nowrap;
+	color: var(--wp--preset--color--text-muted);
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.pj-tab:hover,
+.pj-tab:focus {
+	color: var(--wp--preset--color--text);
+	border-color: var(--wp--preset--color--text-faint);
+}
+
+// The selected state: bg-[#FACC15] text-[#000000] border-[#FACC15] at weight 600.
+.pj-tab-selected,
+.pj-tab-selected:hover,
+.pj-tab-selected:focus {
+	font-weight: 600;
+	color: var(--wp--preset--color--black);
+	background-color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// 03 Independent Development.
+//
+// ProjectsArchivePage.tsx line 142: py-16 md:py-20 on #0A0A0B with a rule under
+// it, which is 64px then 80px, matching the measured 80/80 at 1440.
+.wp-block-group.pj-indep {
+	padding-block: 4rem;
+	background-color: var(--wp--preset--color--base);
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.pj-indep {
+		padding-block: 5rem;
+	}
+}
+
+// flex flex-wrap items-center justify-between gap-4 border-b pb-4.
+.pj-indep__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-block-end: 1rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.pj-indep__head-main > * {
+	margin-block: 0;
+}
+
+.pj-indep__head-main > * + * {
+	margin-block-start: 0.25rem;
+}
+
+// text-2xl sm:text-3xl font-display font-bold text-[#FFFDF4], so 24px then 30px.
+.pj-indep__title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.pj-indep__title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+.pj-indep__note {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// p-8 md:p-10 bg-[#111113] border border-[#343434] grid grid-cols-1
+// lg:grid-cols-12 gap-8 items-center, which is 32px then 40px of padding and a
+// 32px gutter.
+.pj-indep__card {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	align-items: center;
+	padding: 2rem;
+	margin-block-start: 2rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+@include from( $bp-md ) {
+
+	.pj-indep__card {
+		padding: 2.5rem;
+	}
+}
+
+@include from( $bp-lg ) {
+
+	.pj-indep__card {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.pj-indep__body {
+		grid-column: span 8;
+	}
+
+	.pj-indep__actions {
+		grid-column: span 4;
+	}
+}
+
+// space-y-5 inside the left cell.
+.pj-indep__body > * {
+	margin-block: 0;
+}
+
+.pj-indep__body > * + * {
+	margin-block-start: 1.25rem;
+}
+
+// font-mono-tech text-xs text-[#FACC15] flex flex-wrap items-center gap-2.
+.pj-indep__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+}
+
+// text-3xl sm:text-4xl font-display font-bold, so 30px then 36px.
+.pj-indep__name {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.875rem;
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.pj-indep__name {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+// text-lg font-display font-semibold text-[#FACC15], 18px at 1.5556.
+.pj-indep__subtitle {
+	margin-block: 0.5rem 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.125rem;
+	font-weight: 600;
+	line-height: 1.5556;
+	color: var(--wp--preset--color--accent);
+}
+
+.pj-indep__overview {
+	margin-block: 0;
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// p-4 bg-[#0A0A0B] border border-[#262626] space-y-2.
+.pj-scheme {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.pj-scheme > * {
+	margin-block: 0;
+}
+
+.pj-scheme > * + * {
+	margin-block-start: 0.5rem;
+}
+
+// text-[11px] text-[#77746C] for the schematic caption.
+.pj-scheme__caption {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.6875rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+.pj-scheme__text {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text);
+}
+
+// flex flex-col sm:flex-row lg:flex-col gap-3.
+.pj-indep__actions {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+@include from( $bp-sm ) {
+
+	.pj-indep__actions {
+		flex-direction: row;
+	}
+}
+
+@include from( $bp-lg ) {
+
+	.pj-indep__actions {
+		flex-direction: column;
+	}
+}
+
+// px-5 py-3.5 at 20px by 14px, so 44px tall, and 46px with the 1px rule the
+// design puts on the secondary button.
+.wp-block-button__link.pj-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.875rem 1.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.pj-btn-amber {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--black);
+}
+
+.pj-btn-amber:hover,
+.pj-btn-amber:focus {
+	background-color: var(--wp--preset--color--accent-hover);
+	color: var(--wp--preset--color--black);
+}
+
+.pj-btn-dark {
+	background-color: var(--wp--preset--color--surface-2);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.pj-btn-dark:hover,
+.pj-btn-dark:focus {
+	color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// 04 Professional Engineering Work.
+//
+// ProjectsArchivePage.tsx line 225: py-16 md:py-24 on the 48px dark grid, which
+// is 64px then 96px. is-style-section would state 80px then 112px, so the
+// variation stays on for its rhythm vocabulary and the padding is restated here
+// at a higher specificity. No rule under this band, the design gives it none.
+.wp-block-group.is-style-section.pj-work {
+	padding-block: 4rem;
+	border-bottom: 0;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.is-style-section.pj-work {
+		padding-block: 6rem;
+	}
+}
+
+// flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b pb-6.
+.pj-work__head {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding-block-end: 1.5rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-lg ) {
+
+	.pj-work__head {
+		flex-direction: row;
+		align-items: end;
+		justify-content: space-between;
+	}
+}
+
+// space-y-2 max-w-3xl.
+.pj-work__intro {
+	max-width: 48rem;
+	min-width: 0;
+}
+
+.pj-work__intro > * {
+	margin-block: 0;
+}
+
+.pj-work__intro > * + * {
+	margin-block-start: 0.5rem;
+}
+
+// text-3xl sm:text-4xl font-display font-bold text-[#FFFDF4], so 30px then 36px.
+.pj-work__title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.875rem;
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.pj-work__title {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+// text-sm sm:text-base text-[#D8D5CA] leading-relaxed, so 14px then 16px.
+.pj-work__lede {
+	margin-block: 0;
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+@include from( $bp-sm ) {
+
+	.pj-work__lede {
+		font-size: 1rem;
+		line-height: 1.625;
+	}
+}
+
+.pj-work__count {
+	flex-shrink: 0;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+// grid grid-cols-1 lg:grid-cols-2 gap-8, set 48px below the header by the
+// design's space-y-12.
+.pj-work__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	margin-block-start: 3rem;
+}
+
+@include from( $bp-lg ) {
+
+	.pj-work__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// 05 The filter anchor target.
+//
+// The professional band is the destination of most of the filter labels. A
+// scroll margin keeps the section title clear of the fixed header without
+// moving any measured padding.
+.pj-work {
+	scroll-margin-block-start: 5rem;
+}
+
+/* stylelint-enable selector-class-pattern */

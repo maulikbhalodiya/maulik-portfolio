@@ -9,6 +9,6 @@
 			"background": "var:preset|color|paper-warm",
 			"text": "var:preset|color|text-on-paper"
 		},
-		"css": "background-image: linear-gradient(to right, rgba(10, 10, 11, 0.04) 1px, transparent 1px);\nbackground-size: 96px 96px;\n& a{color: var(--wp--preset--color--accent-on-paper);}\n& a:visited{color: var(--wp--preset--color--accent-on-paper);}\n& a:hover{color: var(--wp--preset--color--accent-on-paper);}\n& a:focus-visible{outline: 2px solid var(--wp--preset--color--accent-on-paper);outline-offset: 3px;}"
+		"css": "background-image: linear-gradient(to right, rgba(10, 10, 11, 0.04) 1px, transparent 1px);\nbackground-size: 96px 96px;\n& a{color: var(--wp--preset--color--accent-on-paper);}\n& a:visited{color: var(--wp--preset--color--accent-on-paper);}\n& a:hover{color: var(--wp--preset--color--accent-on-paper);}"
 	}
 }

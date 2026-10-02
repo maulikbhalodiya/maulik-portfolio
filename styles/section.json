@@ -7,10 +7,10 @@
 	"styles": {
 		"spacing": {
 			"padding": {
-				"top": "clamp(4rem, 8vw, 6rem)",
-				"bottom": "clamp(4rem, 8vw, 6rem)"
+				"top": "5rem",
+				"bottom": "5rem"
 			},
-			"blockGap": "var(--wp--preset--spacing--50)"
+			"blockGap": "3.5rem"
 		}
 	}
 }

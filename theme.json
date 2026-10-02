@@ -79,8 +79,8 @@
 				},
 				{
 					"slug": "accent-on-paper",
-					"color": "#8a6a00",
-					"name": "Signal Gold (light surfaces only)"
+					"color": "#0a0a0b",
+					"name": "Ink on Paper (light surfaces only)"
 				},
 				{
 					"slug": "line",
@@ -142,7 +142,7 @@
 				{
 					"slug": "x-large",
 					"name": "Display",
-					"size": "clamp(1.75rem, 1.2rem + 2.4vw, 2.5rem)"
+					"size": "clamp(2.25rem, 1.5rem + 3vw, 3rem)"
 				},
 				{
 					"slug": "hero",
@@ -212,7 +212,7 @@
 			"sticky": false
 		},
 		"layout": {
-			"contentSize": "48rem",
+			"contentSize": "90rem",
 			"wideSize": "90rem"
 		},
 		"custom": {
@@ -259,14 +259,22 @@
 					"fontFamily": "var:preset|font-family|display",
 					"fontWeight": "800",
 					"lineHeight": "1.08",
-					"letterSpacing": "-0.02em"
+					"letterSpacing": "-0.025em"
 				}
 			},
 			"h1": {
-				"typography": { "fontSize": "var:preset|font-size|hero" }
+				"typography": {
+					"fontSize": "var:preset|font-size|hero",
+					"lineHeight": "1.06",
+					"letterSpacing": "-0.025em"
+				}
 			},
 			"h2": {
-				"typography": { "fontSize": "var:preset|font-size|x-large" }
+				"typography": {
+					"fontSize": "var:preset|font-size|x-large",
+					"fontWeight": "700",
+					"lineHeight": "1"
+				}
 			},
 			"h3": {
 				"typography": {
@@ -277,9 +285,11 @@
 			"link": {
 				"color": { "text": "var:preset|color|accent" },
 				"typography": { "textDecoration": "none" },
+				":visited": {
+					"color": { "text": "var:preset|color|accent" }
+				},
 				":hover": {
-					"color": { "text": "var:preset|color|accent-hover" },
-					"typography": { "textDecoration": "underline" }
+					"color": { "text": "var:preset|color|accent-hover" }
 				},
 				":focus": {
 					"outline": {
@@ -296,15 +306,23 @@
 					"text": "var:preset|color|black"
 				},
 				"typography": {
+					"fontFamily": "var:preset|font-family|mono",
+					"fontSize": "var:preset|font-size|small",
 					"fontWeight": "600",
 					"textDecoration": "none"
 				},
 				"spacing": {
 					"padding": {
-						"top": "0.75rem",
-						"bottom": "0.75rem",
+						"top": "0.875rem",
+						"bottom": "0.875rem",
 						"left": "1.5rem",
 						"right": "1.5rem"
+					}
+				},
+				":visited": {
+					"color": {
+						"background": "var:preset|color|accent",
+						"text": "var:preset|color|black"
 					}
 				},
 				":hover": {
@@ -331,14 +349,15 @@
 			"core/site-title": {
 				"typography": {
 					"fontFamily": "var:preset|font-family|display",
-					"fontWeight": "800",
-					"fontSize": "var:preset|font-size|large",
-					"letterSpacing": "-0.02em"
+					"fontWeight": "700",
+					"fontSize": "1.125rem",
+					"letterSpacing": "-0.025em"
 				}
 			},
 			"core/navigation": {
 				"typography": {
-					"fontFamily": "var:preset|font-family|mono",
+					"fontFamily": "var:preset|font-family|body",
+					"fontWeight": "500",
 					"fontSize": "var:preset|font-size|small"
 				}
 			},

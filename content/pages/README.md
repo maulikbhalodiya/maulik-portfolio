@@ -90,7 +90,12 @@ in `styles/surface-*.json`. They were not guessed.
 | `is-style-surface-cream-editorial` | 96px editorial | `styles/surface-cream-editorial.json`, `theme.json` `grid.cream` |
 | `is-style-surface-warm-editorial` | 64px editorial | `styles/surface-warm-editorial.json`, `theme.json` `grid.warm` |
 | `is-style-section` | section padding | `styles/section.json` |
-| `is-style-section-tight` | tight section padding | `styles/section-tight.json` |
+
+There is no fourth section variation. The design states three section paddings and
+only three, and a fourth tight variation was removed rather than kept with no
+design behind it. Runs of blocks that sit inside a section carry the plain
+`section-inner` class from assets/styles/components/_rhythm.scss, which sets the
+inner stack gap and no page padding.
 
 Surface names are written as `is-style-` because that is the class WordPress emits
 when a variation registered from `styles/` is applied. Writing the bare name

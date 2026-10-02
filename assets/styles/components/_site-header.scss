@@ -1,25 +1,320 @@
-// Site header navigation.
-// The Resume item is amber whether or not it is the current page, because it
-// opens the resume viewer rather than navigating. It needs a class rather than a
-// colour attribute: core/navigation-link declares no color support and never
-// reads textColor from its own attributes, so a textColor attribute parses and
-// is then discarded without a warning. The class is emitted by
-// patterns/header.php.
-// The selectors are scoped to the dark grid surface because that is where the
-// header sits, matching the scope styles/surface-dark-grid.json declared for
-// this rule before block css stopped being emitted. The two class specificity
-// matches the surface rule in components/_texture-dark-grid.scss so the two
-// cannot be separated by a cascade accident.
-
+@use '../abstracts' as *;
 /* stylelint-disable selector-class-pattern --
-   The double underscore is a BEM element marker, and the class string is fixed
-   by patterns/header.php, which this file cannot change. */
-.wp-block-group.is-style-surface-dark-grid .site-header__nav-resume,
-.wp-block-group.is-style-surface-dark-grid .site-header__nav-resume:visited {
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by patterns/header.php, patterns/footer.php and the content
+   files, none of which this stylesheet can change. */
+
+
+// Site header.
+//
+// The design header, from components/Header.tsx:
+//
+//   fixed top-0 left-0 right-0 z-40 transition-colors duration-200
+//   rest    bg-transparent border-b border-transparent, no blur
+//   scrolled  past 24px: bg-[#0A0A0B]/92 backdrop-blur-md border-b #262626
+//   inner  max-w-[1440px] mx-auto px-6 md:px-10 h-16 flex items-center
+//          justify-between gap-6
+//   nav   hidden lg:flex items-center gap-7 text-sm font-medium
+//   item  py-1 border-b-2, active #FACC15 border, inactive #D8D5CA, hover
+//         border #343434
+//   resume  font-semibold text-[#FACC15]
+//   social  w-10 h-10, 1px transparent border, hover #FACC15 on #171719
+//
+// FIXED MEANS FIXED. The design header is position fixed and the page body
+// carries no offset, because every section in the design opens with enough top
+// padding to clear the 64px band on its own. That is why there is no padding-top
+// on body here and why adding one would double the space under the hero.
+//
+// THE BAND IS EXACTLY 64 PIXELS, BORDER INCLUDED. The design's h-16 is a height
+// on the inner element of a bar that also carries a one pixel bottom border, so
+// the whole fixed band has to come to 64 and not 65. A height on the bar itself,
+// set to the border box, with the inner filling it, is what produces that. A
+// min-height on the inner plus a border produced 65, measured in Chrome at
+// 1440 wide, which puts every fixed element below it one pixel out of
+// registration with the design for the length of the page.
+//
+// THE RESTING BAND IS TRANSPARENT, AND THAT IS THE POINT. Core ships no
+// scroll listener, so the unscrolled state has to be expressed somewhere. The
+// class the script toggles is on the bar itself and is named in one place,
+// assets/js/site-header.js, which adds it past 24 pixels and removes it at or
+// below. The border is a real one pixel border in both states, transparent in
+// the resting state, so the bar keeps its 64 pixels when it is transparent and
+// the page does not shift when it becomes opaque. Only colour transitions are
+// declared, because the design declares transition-colors and the blur is not a
+// colour. The reduced motion layer in base/_motion.scss collapses the duration
+// for a visitor who has asked for less motion.
+//
+// THE ACTIVE ITEM IS KEYED ON A CLASS THIS THEME EMITS, NOT ON current-menu-item.
+// The old rule used current-menu-item and was dead code on every page. Core only
+// attaches that class to a navigation-link that carries an id whose post type
+// matches the queried object, and every link in this header is a custom link
+// with an absolute URL because that is what a block theme pattern has to be.
+// patterns/header.php now compares each item's path against the request path and
+// emits site-header__nav-item--current on the winner, in the same pass that hands
+// Core the id it needs for its own current-menu-item and aria-current. The two
+// come from one comparison, so they cannot disagree, and exactly one item is ever
+// marked because no item path is a prefix of another.
+//
+// CORE ALSO SHIPS A COLOUR RULE THAT BEATS THE NAV LINK RULE BELOW. It is
+// .wp-block-navigation .wp-block-navigation-item__content.wp-block-navigation-item__content
+// at three classes, and it sets color: inherit. The inactive colour therefore
+// needs more than two classes to land, and it is written with the child and
+// element combinators below so that it wins outright rather than by load order.
+// Without that the inactive items inherit the body colour and the active state
+// has nothing to be active against.
+//
+// THE SOCIAL ROW CARRIES TWO CHANNELS, NOT THREE. The design has LinkedIn,
+// GitHub and Mail. This theme has a written no email rule, enforced by a repo
+// wide CI grep for mailto and for address patterns, and patterns/channel-links
+// .php states that a mail icon is both a liability and a broken promise. So the
+// two verified external channels from that pattern are reused here and the mail
+// affordance is not added. The URLs are the same two the pattern uses.
+//
+// THE RESUME ITEM IS AMBER WHETHER OR NOT IT IS THE CURRENT PAGE, because it
+// is a different kind of action rather than another destination in the same
+// series. It needs a class rather than a colour attribute: core/navigation-link
+// declares no color support and never reads textColor from its own attributes,
+// so a textColor attribute parses and is then discarded without a warning. The
+// class is emitted by patterns/header.php.
+//
+// THE CLASS IS ON THE LIST ITEM, NOT ON THE ANCHOR. core/navigation-link declares
+// className support in block.json, so WordPress applies it through
+// get_wrapper_attributes(), which puts it on the list item. Selecting it as a
+// compound on the anchor is the mistake that made the old rule unmatchable even
+// after the surface scope was corrected.
+
+$header-height: 4rem;
+$header-inset: 1.5rem;
+$header-inset-md: 2.5rem;
+$header-gap: 1.75rem;
+$social-size: 2.5rem;
+
+.wp-block-group.site-header {
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 40;
+	box-sizing: border-box;
+	height: $header-height;
+	background-color: transparent;
+	border-bottom: 1px solid transparent;
+	transition:
+		background-color $motion-duration $motion-ease,
+		border-color $motion-duration $motion-ease;
+}
+
+// Past the design's 24 pixel threshold. The class is added and removed by
+// assets/js/site-header.js and by nothing else.
+.wp-block-group.site-header.is-scrolled {
+	background-color: rgba(10, 10, 11, 0.92);
+	border-bottom-color: var(--wp--preset--color--line);
+	backdrop-filter: blur(12px);
+}
+
+.wp-block-group.site-header__inner {
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.5rem;
+	max-width: $wide-width;
+	height: 100%;
+	min-height: 0;
+	padding-inline: $header-inset;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.site-header__inner {
+		padding-inline: $header-inset-md;
+	}
+}
+
+// The wordmark. Syne at 18px, weight 700, tightening on hover.
+.site-header__title {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.125rem;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	white-space: nowrap;
+	color: var(--wp--preset--color--text);
+	transition: color $motion-duration $motion-ease;
+}
+
+a.site-header__title:hover,
+a.site-header__title:focus {
 	color: var(--wp--preset--color--accent);
 }
 
-.wp-block-group.is-style-surface-dark-grid .site-header__nav-resume:hover {
-	color: var(--wp--preset--color--accent-hover);
+// The nav container. Plus Jakarta Sans, 14px, weight 500. theme.json used to
+// force the mono family onto core/navigation, which is the wrong voice for a
+// primary nav: mono is the technical metadata voice and is reserved for the
+// eyebrow, the identity line and the footer legal row.
+.site-header__nav {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.875rem;
+	font-weight: 500;
 }
+
+// The inactive item. #D8D5CA with no underline, becoming #FFFDF4 with a #343434
+// underline on hover.
+//
+// EVERY RULE IN THIS GROUP REPEATS THE WHOLE SELECTOR, CONTAINER AND LIST ITEM
+// INCLUDED, so that they all carry the same specificity and none of them can be
+// quietly outranked by another. The rule below is three classes and two
+// elements. An earlier version of the active and the Resume rule stopped at the
+// class and so came in one element behind it, and the measured result in Chrome
+// was an active item rendering in the inactive grey with no underline at all and
+// a Resume item rendering grey. A selector that loses on specificity is not a
+// selector that works. The child and element combinators are also what beat
+// Core's own color: inherit rule, which is three classes deep; see the note at
+// the top of this file.
+.site-header__nav .wp-block-navigation__container > li > a.wp-block-navigation-item__content {
+	display: inline-block;
+	padding-block: 0.25rem;
+	border-bottom: 2px solid transparent;
+	color: var(--wp--preset--color--text-muted);
+	white-space: nowrap;
+	transition:
+		color $motion-duration $motion-ease,
+		border-color $motion-duration $motion-ease;
+}
+
+.site-header__nav .wp-block-navigation__container > li > a.wp-block-navigation-item__content:hover {
+	color: var(--wp--preset--color--text);
+	border-bottom-color: var(--wp--preset--color--line-strong);
+}
+
+// The active item, as the design states it at Header.tsx:88 to 90: #FFFDF4 text
+// with a two pixel amber underline. It sits after the hover rule and ties with it
+// on specificity on purpose, so that hovering the page you are already on does
+// not quietly swap the amber underline for the hover hairline.
+.site-header__nav .wp-block-navigation__container > li.site-header__nav-item--current > a.wp-block-navigation-item__content {
+	color: var(--wp--preset--color--text);
+	border-bottom-color: var(--wp--preset--color--accent);
+}
+
+// The Resume item. Always amber, always weight 600, and the underline is amber
+// at reduced strength so that it reads as present but not as the current page.
+// It follows the active rule so that the amber wins the text colour.
+.site-header__nav .wp-block-navigation__container > li.site-header__nav-resume > a.wp-block-navigation-item__content,
+.site-header__nav .wp-block-navigation__container > li.site-header__nav-resume > a.wp-block-navigation-item__content:visited {
+	color: var(--wp--preset--color--accent);
+	font-weight: 600;
+	border-bottom-color: rgba(250, 204, 21, 0.4);
+}
+
+.site-header__nav .wp-block-navigation__container > li.site-header__nav-resume > a.wp-block-navigation-item__content:hover {
+	color: var(--wp--preset--color--accent-hover);
+	border-bottom-color: var(--wp--preset--color--accent);
+}
+
+// Resume while it is also the page being viewed: the solid amber underline, as
+// the design's active branch states, not the reduced strength one.
+.site-header__nav .wp-block-navigation__container > li.site-header__nav-resume.site-header__nav-item--current > a.wp-block-navigation-item__content {
+	border-bottom-color: var(--wp--preset--color--accent);
+}
+
+// The icon row. Two channels, at the design's 40px box.
+.site-header__social {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	flex-shrink: 0;
+}
+
+.site-header__social-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: $social-size;
+	height: $social-size;
+	color: var(--wp--preset--color--text-muted);
+	background-color: transparent;
+	border: 1px solid transparent;
+	transition:
+		color $motion-duration $motion-ease,
+		background-color $motion-duration $motion-ease,
+		border-color $motion-duration $motion-ease;
+}
+
+.site-header__social-link:hover {
+	color: var(--wp--preset--color--accent);
+	background-color: var(--wp--preset--color--surface-2);
+	border-color: var(--wp--preset--color--line);
+}
+
+.site-header__social-link .wp-block-social-link__service-icon {
+	width: 1rem;
+	height: 1rem;
+	fill: currentcolor;
+}
+
+// ---------------------------------------------------------------------------
+// The desktop nav.
+//
+// CORE'S OWN BREAKPOINT IS 600px, AT WHICH IT REVEALS THE CONTAINER AND HIDES
+// THE TOGGLE. THE DESIGN'S IS 1024px. BOTH OF CORE'S RULES ARE OVERRIDDEN HERE
+// IN BOTH DIRECTIONS, at a higher specificity than Core's own selectors, which
+// are .wp-block-navigation__responsive-container:not(.hidden-by-default):not
+// (.is-menu-open) and, for the toggle,
+// .wp-block-navigation__responsive-container-open:not(.always-shown).
+//
+// The social row is visible from 640px, the design's sm, and hidden below it.
+
+.site-header__social {
+	display: none;
+}
+
+@include from( $bp-sm ) {
+
+	.site-header__social {
+		display: flex;
+	}
+}
+
+.site-header__nav .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
+	display: none;
+}
+
+.site-header__nav .wp-block-navigation__responsive-container-open:not(.always-shown) {
+	display: inline-flex;
+}
+
+@include from( $bp-lg ) {
+
+	.site-header__nav .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
+		display: block;
+	}
+
+	.site-header__nav .wp-block-navigation__responsive-container-open:not(.always-shown) {
+		display: none;
+	}
+
+	.site-header__nav .wp-block-navigation__container {
+		display: flex;
+		align-items: center;
+		gap: $header-gap;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// PRINT.
+//
+// The design hides the header and the footer when printing, through the
+// no-print class that both the bar and the footer already carry, defined at
+// src/index.css:89. Neither pattern's rule reached the stylesheet, so the class
+// was inert and a printed resume came out with a fixed black bar and a black
+// footer block on it.
+//
+// The rule lives here rather than in base/ because the print layer that base
+// owns is a different concern, and because the header is the first element that
+// can push a page onto a second sheet. It is scoped to the print media query, so
+// it changes nothing on screen. The important flag is the design's own.
+@media print {
+
+	.no-print {
+		display: none !important;
+	}
+}
+
 /* stylelint-enable selector-class-pattern */

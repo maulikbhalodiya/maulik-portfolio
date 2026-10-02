@@ -1,0 +1,229 @@
+@use '../abstracts' as *;
+/* stylelint-disable selector-class-pattern --
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by patterns/header.php, patterns/footer.php and the content
+   files, none of which this stylesheet can change. */
+
+
+// Site footer.
+//
+// EVERY CLASS IN THIS FILE WAS EMITTED BY patterns/footer.php AND HAD NO RULE.
+// The markup described an asymmetric 5/2/3/2 grid and it rendered as a stack of
+// paragraphs at full width in the default body type.
+//
+// The design, from src/components/Footer.tsx:
+//
+//   footer  bg-[#000000] text-[#FFFDF4] border-t border-[#262626]
+//     inner   max-w-[1440px] mx-auto px-6 md:px-10 py-14
+//       grid     grid-cols-1 md:grid-cols-12 gap-10 pb-12
+//                 border-b border-[#262626]
+//         brand   md:col-span-5 space-y-3
+//         explore md:col-span-2
+//         dev     md:col-span-3
+//         connect md:col-span-2
+//       legal  pt-8 flex sm:flex-row justify-between text-xs text-[#77746C]
+//
+// The column split is 5 / 2 / 3 / 2 and that is deliberate. Do not balance it to
+// three/three/three/three. The identity block genuinely has more to say than a
+// list of three links and the grid says so before a word has been read.
+//
+// THE GRID IS ONE AT A TIME AND TWELVE FROM 768px, WHICH IS THE DESIGN'S md. It
+// is not a flex row at every width. A four column footer at 640px wide gives
+// each column about 130px, which wraps every link label onto two lines.
+//
+// py-14 is 56px and pb-12 is 48px. Both are written as literals rather than
+// through a spacing preset because theme.json's spacing scale has no 56px step
+// and adding one to express a single value would widen the scale for every block
+// in the editor.
+//
+// THERE IS NO SEPARATOR RULE IN THIS FILE ANY MORE, AND THAT IS A FIX. There was
+// one, for a core/separator that patterns/footer.php no longer authors. The
+// hairline under the columns is the grid's own border-bottom, which is where the
+// design puts it, and a rule for a block that is not in the markup is a rule that
+// would quietly double the line the day somebody inserted one.
+//
+// THE PARAGRAPH RULES BELOW ALL CARRY FOUR CLASSES, AND THEY HAVE TO. The base
+// typography layer sets .site-footer p, which is one class and one element, and
+// from 640px it sets that at 18px in the secondary text colour. A rule that
+// targets an element directly always beats one the element would have inherited
+// from, so the 12px legal row was rendering at 18px in the wrong colour even
+// though its container said 12px. Putting font-size and color on the paragraphs
+// themselves at a higher specificity is the only thing that wins that, and it is
+// why the container rule below is not trusted to carry the size on its own.
+
+$footer-padding-block: 3.5rem;
+$footer-grid-gap: 2.5rem;
+$footer-grid-padding: 3rem;
+$footer-legal-padding: 2rem;
+
+// The footer carries no is-style-* rhythm variation, because it is a template
+// part rather than page content and page rhythm does not apply to it. The
+// design gives it py-14 directly on the footer element, so the top and bottom
+// padding is stated here rather than inherited from a variation.
+.wp-block-group.site-footer {
+	padding-block: $footer-padding-block;
+	border-top: 1px solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--text);
+}
+
+.wp-block-group.site-footer .site-footer__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: $footer-grid-gap;
+	padding-bottom: $footer-grid-padding;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.wp-block-group.site-footer .site-footer__col {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	margin-block: 0;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.site-footer .site-footer__grid {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.wp-block-group.site-footer .site-footer__col--identity {
+		grid-column: span 5;
+	}
+
+	.wp-block-group.site-footer .site-footer__col--explore {
+		grid-column: span 2;
+	}
+
+	.wp-block-group.site-footer .site-footer__col--development {
+		grid-column: span 3;
+	}
+
+	.wp-block-group.site-footer .site-footer__col--connect {
+		grid-column: span 2;
+	}
+}
+
+// The wordmark in the footer is larger than the one in the header: text-2xl
+// against text-lg, both Syne at weight 700.
+.wp-block-group.site-footer .site-footer__brand {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: -0.025em;
+	color: var(--wp--preset--color--text);
+}
+
+a.site-footer__brand:hover,
+a.site-footer__brand:focus {
+	color: var(--wp--preset--color--accent);
+}
+
+// The identity line. Mono at 12px in the secondary text colour. The design
+// states text-xs, not the 16px weight 600 amber of the hero identity line, so
+// the two are deliberately different and this file does not merge them.
+.wp-block-group.site-footer .site-footer__identity-line {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 20px;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// The descriptive line under the identity. Body face, not mono, because the
+// design sets it as prose: text-sm at 14px in the faint text colour, capped to
+// the design's max-w-md reading width, at a relaxed leading. This line used to
+// carry an employer name in the mono technical voice, which the design has no
+// equivalent for, so it now says what the work is.
+.wp-block-group.site-footer .site-footer__summary {
+	margin-block: 0;
+	max-width: 28rem;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-faint);
+}
+
+// The column headings are eyebrows: mono, 12px, amber.
+.wp-block-group.site-footer .site-footer__heading {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 16px;
+	letter-spacing: normal;
+	color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.site-footer .site-footer__link {
+	margin-block: 0;
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
+
+.wp-block-group.site-footer .site-footer__link a,
+.wp-block-group.site-footer .site-footer__link a:visited {
+	color: var(--wp--preset--color--text-muted);
+	transition: color $motion-duration $motion-ease;
+}
+
+.wp-block-group.site-footer .site-footer__link a:hover,
+.wp-block-group.site-footer .site-footer__link a:focus {
+	color: var(--wp--preset--color--accent);
+}
+
+// The legal row. gap-4 is 16px and pt-8 is 32px, and the row stacks into a
+// column below 640px exactly as the design's flex-col sm:flex-row does.
+.wp-block-group.site-footer .site-footer__legal {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 1rem;
+	padding-top: $footer-legal-padding;
+	font-size: 0.75rem;
+	color: var(--wp--preset--color--text-faint);
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.site-footer .site-footer__legal {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+// THE LEGAL PARAGRAPHS CARRY THEIR OWN SIZE AND COLOUR. The design wants 12px in
+// the faint text colour for both of them, and .site-footer p in the base layer
+// would otherwise hand them 18px in the secondary colour from 640px up. The
+// size and the colour are stated on the paragraphs, not inherited, because that
+// is the only way to beat a rule that targets the element. The copyright stays in
+// the body face and the technical line stays in mono, which is the design's split
+// at Footer.tsx:174 to 178.
+.wp-block-group.site-footer .site-footer__legal .site-footer__copyright {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text-faint);
+}
+
+.wp-block-group.site-footer .site-footer__legal .site-footer__technical {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text-faint);
+	// Tabular figures, as the design's font-mono-tech utility sets. The base
+	// typography layer only applies this to code and to the mono font family
+	// class, and the legal row states its family here rather than through a
+	// class, so the property is stated here too.
+	font-variant-numeric: tabular-nums;
+}
+
+/* stylelint-enable selector-class-pattern */

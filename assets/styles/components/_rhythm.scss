@@ -1,27 +1,67 @@
-// Section rhythm.
-// The vertical spacing of the two group variations that wrap a run of blocks.
-// These are the canonical is-style-* selectors, matching the markup WordPress
-// emits when an editor applies the variation:
-//   <div class="wp-block-group is-style-section">
-//   <div class="wp-block-group is-style-section-tight">
-// The block class is included so the rule cannot be beaten by a single-class
-// utility without depending on stylesheet order between this file and the
-// global stylesheet, which is not guaranteed.
-// Padding is written as padding-block because both variations declare top and
-// bottom only. Left and right padding is inherited from the theme-wide page
-// padding in theme.json, and hard coding it here would duplicate that value and
-// let the two drift.
-// The rhythm values are the documented source in styles/section.json and
-// styles/section-tight.json, which are the authoritative record for these two
-// variations. blockGap is the theme standard spacing step, spacing--50, the
-// same value the root layout uses in theme.json.
+@use '../abstracts' as *;
 
+// Standard body sections. The design gives every homepage and inner page body
+// section the same vertical rhythm, py-20 then md:py-28, which is 80px then
+// 112px. styles/section.json supplies the 5rem base, matching the design's
+// py-20, and this rule supplies the desktop step the variation cannot express,
+// because a block style variation carries no media query of its own.
+// The block class is included so a single class utility cannot beat it without
+// depending on stylesheet order, which is not guaranteed.
 .wp-block-group.is-style-section {
-	padding-block: clamp(4rem, 8vw, 6rem);
-	--wp--style--block-gap: var(--wp--preset--spacing--50);
+	padding-block: 5rem;
 }
 
-.wp-block-group.is-style-section-tight {
-	padding-block: clamp(2.5rem, 5vw, 4rem);
-	--wp--style--block-gap: var(--wp--preset--spacing--50);
+@include from( $bp-md ) {
+
+	.wp-block-group.is-style-section {
+		padding-block: 7rem;
+	}
 }
+
+// Inner page heroes. The design gives every route other than home a shorter
+// first band than the home page body sections, so that an inner page still
+// shows a good deal of its own content in the first viewport.
+.wp-block-group.section-hero {
+	padding-block: 4rem;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.section-hero {
+		padding-block: 6rem;
+	}
+}
+
+// The closing call to action band. Taller than a standard section at both sizes.
+.wp-block-group.section-cta {
+	padding-block: 6rem;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.section-cta {
+		padding-block: 8rem;
+	}
+}
+
+// A run of blocks inside a section that has already been padded. No padding of
+// its own, only the inner stack gap. This is what replaced is-style-section-tight
+// in content/pages/*.html, and it deliberately carries no padding: the design's
+// tight runs are tight stacks, not tighter page edges.
+.section-inner {
+	--wp--style--block-gap: 3rem;
+}
+
+// The design's other inner stack width, 56px, used where a section holds one
+// wide block after another rather than a tight cluster. A class rather than a
+// variation, because it adds no padding and so is not a section rhythm at all.
+.section-inner-wide {
+	--wp--style--block-gap: 3.5rem;
+}
+
+/* stylelint-disable selector-class-pattern --
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by patterns/header.php, patterns/footer.php and the content
+   files, none of which this stylesheet can change. */
+
+/* stylelint-enable selector-class-pattern */
