@@ -51,9 +51,11 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_nodes' ) ) {
 	 * elevation are the layout maths consumed by the projection in the view
 	 * script, so they are reproduced exactly rather than approximated.
 	 *
-	 * The label, category, summary and metrics are rendered server side so the
-	 * inspector readout and the accessible node tabs carry real content before
-	 * any JavaScript runs.
+	 * The label, category and summary are rendered server side so the inspector
+	 * readout and the accessible node tabs carry real content before any
+	 * JavaScript runs. metrics is carried in the data because it is part of the
+	 * design reference's own node shape, but Hero3DEcosystem.tsx never renders
+	 * it, so nothing here prints it either.
 	 *
 	 * @since 0.3.0
 	 *
@@ -183,6 +185,15 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_css' ) ) {
 	function maulik_portfolio_hero_ecosystem_css() {
 		$scope = '.wp-block-maulik-portfolio-hero-ecosystem';
 
+		// $bp-sm. abstracts/_breakpoints.scss states $bp-sm as 640px, and the
+		// responsive rules elsewhere in this theme reach that width through the
+		// from() mixin in abstracts/_mixins.scss, which emits
+		// @media (min-width: #{$width}). This block may not ship a Sass partial,
+		// so the mixin is not callable from here and the value it would emit is
+		// stated once, by name, instead. Changing the breakpoint means changing
+		// $bp-sm in one place; this constant is the single point that names it.
+		$bp_sm = '640px';
+
 		// min-width:0 is load bearing and is not optional styling. The panel is a
 		// grid item descendant and its header is nowrap by design, so without an
 		// explicit zero the panel contributes a min-content width large enough to
@@ -201,13 +212,69 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_css' ) ) {
 			. 'justify-content:space-between;gap:16px;padding:12px 16px;border-bottom:1px solid #262626;'
 			. 'background:rgba(10,10,11,0.8);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);'
 			. 'color:#D8D5CA;white-space:nowrap;}'
-			. $scope . ' .maulik-hero-header-title{display:flex;align-items:center;gap:8px;overflow:hidden;'
-			. 'text-overflow:ellipsis;}'
+			// The panel's own font-size is inherited, and inheritance loses here.
+		// base/_typography.scss states `.is-style-section p`, one class and one
+		// type, at font-size 1rem and line-height 1.625. Every paragraph in this
+		// panel is inside a section, so that rule applied directly to them and
+		// beat the value they were inheriting: the header title and the three
+		// readout paragraphs all rendered at 16px on a 26px line box rather than
+		// the design's text-xs 12px. The WordPress spacing rule put 16px of block
+		// margin on the title as well, so the panel's two overlays were not the
+		// design's size at all.
+		//
+		// The consequence was the defect that was reported. The footer is an
+		// opaque rgba(10,10,11,0.92) panel with a backdrop blur sitting on top
+		// of the canvas, and it measured 311px where the design measures
+		// 157.5px. On a 498px canvas that left a 104px band of canvas visible
+		// between the header and the footer, and the scene's centre, which the
+		// script places at height/2 - 10, fell at 239px, behind the footer. Only
+		// the upper part of the drawing showed. The same inflation was 221px
+		// against the design's 138px at 768 and 1440, where it cost visibility
+		// without putting the centre out of sight.
+		//
+		// 12px is text-xs in Hero3DEcosystem.tsx. The title takes the design's
+		// 16px line box and the two prose paragraphs take leading-relaxed,
+		// 1.625, which is the 19.5px the design's own summary paragraph measured
+		// at 390. Stated on the scope plus the class, which is two classes, so
+		// these outrank the one class plus one type above.
+		// The design's coordinate label is the div at
+		// src/components/Hero3DEcosystem.tsx:377, and its own class list is
+		// "font-mono-tech text-xs text-[#D8D5CA] flex items-center gap-2". It
+		// carries no whitespace-nowrap and no truncate, so the mechanism there is
+		// the absence of both: the label simply wraps wherever the line runs out,
+		// and at 640 and above it never runs out, so it reads as one line there
+		// without anything having been switched on.
+		//
+		// Stating that mechanism rather than its result is what keeps the two
+		// widths in agreement. Below 640 the design wraps to four lines and the
+		// header measures 12 + 64 + 12 + 1 = 89; at 640 and above it is one line
+		// and the header measures 12 + 16 + 12 + 1 = 53. Measured on the design
+		// at 390: header 89.00, label 64.00, white-space normal, overflow
+		// visible, text-overflow clip. Measured at 768 and 1440: header 53.00,
+		// label 16.00.
+		//
+		// Ours stated nowrap and ellipsis unconditionally, so below 640 the same
+		// 136.8px of available width truncated "Engineering Ecosystem, 3D Spatial
+		// Architecture" to a single ellipsised line and the header measured 53,
+		// 36px short of the design. white-space is inherited, so the header's own
+		// nowrap has to be undone on the label here, and from 640 upwards the
+		// label's nowrap, overflow and ellipsis are restored.
+		. $scope . ' .maulik-hero-header-title{display:flex;align-items:center;gap:8px;margin:0;'
+			. 'font-size:12px;line-height:16px;white-space:normal;overflow:visible;text-overflow:clip;}'
+			. '@media (min-width:' . $bp_sm . '){' . $scope . ' .maulik-hero-header-title'
+			. '{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}'
+		. $scope . ' .maulik-hero-header-title > span{font-size:inherit;line-height:inherit;}'
 			. $scope . ' .maulik-hero-header-dot{width:8px;height:8px;flex:0 0 8px;display:inline-block;'
 			. 'background:#FACC15;}'
 			. $scope . ' .maulik-hero-header-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto;}'
-			. $scope . ' .maulik-hero-button{padding:5px 10px;border:1px solid #262626;background:#171719;'
-			. 'color:#D8D5CA;font:inherit;line-height:1.4;cursor:pointer;white-space:nowrap;'
+			// The design's header button is px-2.5 py-1 text-xs at
+		// Hero3DEcosystem.tsx:386, which is 4px of vertical padding on a 16px
+		// line, so the control is 26px and the panel header is 53px. The 5px
+		// padding and the 1.4 leading stated here made it 28.8px and the header
+		// 53.8px, on all three widths. Measured on the design at 768: header
+		// 53.00, pause button 26.00, reset button 28.00.
+		. $scope . ' .maulik-hero-button{padding:4px 10px;border:1px solid #262626;background:#171719;'
+			. 'color:#D8D5CA;font:inherit;line-height:1.3333;cursor:pointer;white-space:nowrap;'
 			. 'display:inline-flex;align-items:center;gap:6px;transition:color .15s ease,border-color .15s ease;}'
 			. $scope . ' .maulik-hero-button:hover{border-color:#77746C;color:#FACC15;}'
 			. $scope . ' .maulik-hero-button:focus-visible{outline:2px solid #FACC15;outline-offset:1px;}'
@@ -251,7 +318,12 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_css' ) ) {
 			// 16.8px. Nothing else in the panel changes: the canvas, the node data,
 			// the selection behaviour and the teardown are all below or above this
 			// one declaration and none of them read it.
-			. $scope . ' .maulik-hero-tab{padding:5px 10px;border:1px solid #262626;background:#171719;'
+			// The design's tab is px-2.5 py-1 at Hero3DEcosystem.tsx:433, which is 4px of
+		// vertical padding, not the 5px that was stated here. That made the control
+		// 28px tall against the design's 26px, and with the pb-1 the tablist took
+		// 31.98px against the design's 30.00px. Measured on the design at 1440, 768
+		// and 390: tabs 30.00 on all three.
+		. $scope . ' .maulik-hero-tab{padding:4px 10px;border:1px solid #262626;background:#171719;'
 			. 'color:#D8D5CA;font:inherit;line-height:1.3333;cursor:pointer;white-space:nowrap;'
 			. 'flex:0 0 auto;transition:color .15s ease,border-color .15s ease;}'
 			. $scope . ' .maulik-hero-tab:hover{border-color:#77746C;color:#FFFDF4;}'
@@ -259,14 +331,21 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_css' ) ) {
 			. $scope . ' .maulik-hero-tab[aria-selected="true"]{background:#FACC15;border-color:#FACC15;'
 			. 'color:#000;font-weight:600;}'
 			. $scope . ' .maulik-hero-readout{display:flex;flex-direction:column;gap:12px;padding-top:4px;}'
-			. '@media (min-width:640px){' . $scope . ' .maulik-hero-readout{flex-direction:row;'
+			. '@media (min-width:' . $bp_sm . '){' . $scope . ' .maulik-hero-readout{flex-direction:row;'
 			. 'align-items:center;justify-content:space-between;}}'
-			. $scope . ' .maulik-hero-readout-title{color:#FACC15;}'
+			// The inspect slot is a fixed container the view script writes into, so
+			// it stays in the markup for every node. The design only emits that
+			// child at all when the active node is the one carrying an inspect
+			// action, at Hero3DEcosystem.tsx:455, and an absent child contributes
+			// no gap. An empty flex child still contributes one, so the readout
+			// measured 12px taller than the design at 390, where it is a column
+			// and the gap is vertical. :empty keeps the container for the script
+			// and takes it out of the flow when it has nothing in it.
+			. $scope . ' .maulik-hero-readout > [data-maulik-hero-inspect-slot]:empty{display:none;}'
+			. $scope . ' .maulik-hero-readout-title{margin:0;color:#FACC15;font-size:12px;line-height:16px;}'
 			. $scope . ' .maulik-hero-readout-summary{margin:4px 0 0;max-width:576px;color:#D8D5CA;'
-			. '-webkit-user-select:text;user-select:text;}'
-			. $scope . ' .maulik-hero-readout-metrics{margin:4px 0 0;color:#77746C;'
-			. '-webkit-user-select:text;user-select:text;}'
-			. $scope . ' .maulik-hero-inspect{padding:6px 12px;border:1px solid rgba(250,204,21,0.5);'
+			. 'font-size:12px;line-height:1.625;-webkit-user-select:text;user-select:text;}'
+				. $scope . ' .maulik-hero-inspect{padding:6px 12px;border:1px solid rgba(250,204,21,0.5);'
 			. 'background:#171719;color:#FACC15;font:inherit;line-height:1.4;cursor:pointer;'
 			. 'white-space:nowrap;flex:0 0 auto;align-self:flex-start;text-decoration:none;'
 			. 'transition:background .15s ease,color .15s ease;}'
@@ -406,14 +485,13 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_render' ) ) {
 				. '<div class="maulik-hero-readout" id="maulik-hero-panel" role="tabpanel" aria-live="polite">'
 				. '<div><p class="maulik-hero-readout-title" data-maulik-hero-readout-title>%3$s</p>'
 				. '<p class="maulik-hero-readout-summary" data-maulik-hero-readout-summary>%4$s</p>'
-				. '<p class="maulik-hero-readout-metrics" data-maulik-hero-readout-metrics>%5$s</p></div>'
-				. '<div data-maulik-hero-inspect-slot>%6$s</div>'
+				. '</div>'
+				. '<div data-maulik-hero-inspect-slot>%5$s</div>'
 				. '</div></div>',
 			esc_attr__( 'Inspect engineering ecosystem nodes', 'maulik-portfolio' ),
 			$tabs,
 			esc_html( $active['label'] . ' · ' . $active['category'] ),
 			esc_html( $active['summary'] ),
-			esc_html( $active['metrics'] ),
 			$inspect
 		);
 

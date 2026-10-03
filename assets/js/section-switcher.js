@@ -752,7 +752,80 @@
 		if ( fromVisitor ) {
 			this.stopTimer();
 			this.startTimer();
+			this.revealPanel( tabs[ index ] );
 		}
+	};
+
+	/**
+	 * Bring the swapped detail panel into view when the layout stacks it.
+	 *
+	 * WHAT THIS IS FOR. Sections 02 and 06 put their detail panel below their
+	 * controls once the twelve column body collapses, which is below 1024px. At
+	 * 390 the five capability tabs occupy 941px and the panel begins 2670px down
+	 * the page, so a visitor who taps a tab swaps content that is entirely below
+	 * the fold and sees nothing happen. CSS cannot fix that: the stacking itself
+	 * is already correct, and the design stacks it the same way. Only a script
+	 * knows which panel a tap selected.
+	 *
+	 * This is an addition, not design parity. The design reference has no such
+	 * behaviour. Its onClick for both sections is the setState and nothing else,
+	 * so the panel stays below the fold there too. The owner asked for the scroll,
+	 * so it is here, and it is called out as an addition in the change report.
+	 *
+	 * WHY IT IS GATED ON GEOMETRY RATHER THAN ON A WIDTH. Both sections already
+	 * stack correctly at mobile, which was measured against the design rather
+	 * than assumed. So there is no layout fix to make and no media query to
+	 * invent. Whether the panel needs revealing is a question about where the two
+	 * boxes actually are, so it is asked about the boxes. That is self adjusting:
+	 * at 1440 the panel and the controls share a top edge and nothing happens,
+	 * and no width constant has to be kept in step with _breakpoints.scss.
+	 *
+	 * WHY ROTATING SECTIONS ARE EXCLUDED. Section 03 is the only strip that
+	 * rotates, and a timer driven scroll would fight the visitor and the
+	 * prefers-reduced-motion contract for no benefit. Excluding it by this.rotates
+	 * leaves exactly sections 02 and 06, which are the two the request names.
+	 *
+	 * WHY ONLY WHEN THE PANEL IS BELOW THE FOLD. A visitor reading a panel that
+	 * is already on screen must not have the page moved under them by a tap on a
+	 * control further up. The panel is taller than a phone viewport, so what
+	 * matters is where its top edge is, not whether any part of it is visible.
+	 *
+	 * @param {HTMLElement} tab The tab that was selected.
+	 * @return {void}
+	 */
+	SectionSwitcher.prototype.revealPanel = function ( tab ) {
+		if ( this.rotates ) {
+			return;
+		}
+
+		const panel = this.panelForTab( tab );
+
+		if ( ! panel || 'function' !== typeof panel.scrollIntoView ) {
+			return;
+		}
+
+		const panelBox = panel.getBoundingClientRect();
+		const stripBox = this.strip.getBoundingClientRect();
+
+		/*
+		 * Stacked means the panel starts below the whole control strip. The two
+		 * halves are one pixel either side of the line so a fractional layout
+		 * cannot read as exactly flush and trigger a scroll on a side by side
+		 * layout. The 32px is the design's own gap-8 between the two columns
+		 * once they are stacked, so there is a wide margin either way.
+		 */
+		if ( panelBox.top < stripBox.bottom - 1 ) {
+			return;
+		}
+
+		if ( panelBox.top < panel.ownerDocument.defaultView.innerHeight ) {
+			return;
+		}
+
+		panel.scrollIntoView( {
+			block: 'start',
+			behavior: this.prefersReducedMotion ? 'auto' : 'smooth',
+		} );
 	};
 
 	/**

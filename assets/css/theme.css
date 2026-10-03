@@ -432,6 +432,7 @@ a,
 }
 
 .wp-block-group.hero__col--visual {
+  width: 100%;
   max-width: 100%;
 }
 
@@ -3903,6 +3904,11 @@ a,
   margin-block-start: 0.5rem;
 }
 
+.hz-approach .hz-row__title {
+  font-size: 1.875rem;
+  line-height: 1.2;
+}
+
 .hz-section .hz-label {
   margin-block: 0;
   font-family: var(--wp--preset--font-family--mono);
@@ -4075,6 +4081,17 @@ a,
   padding: 0.5rem 0.875rem;
 }
 
+.hz-section .hz-work__cta-arrow {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.hz-section .hz-work__cta-mark {
+  width: 1rem;
+  height: 1rem;
+  color: var(--wp--preset--color--accent);
+}
+
 .hz-section a.hz-link.hz-btn-lg {
   padding: 0.875rem 1.5rem;
 }
@@ -4193,6 +4210,15 @@ a,
   color: var(--wp--preset--color--text-muted);
 }
 
+.hz-section .hz-capability__body > * {
+  display: block;
+  margin-block: 0;
+}
+
+.hz-section .hz-capability__body > *:not(:last-child) {
+  margin-block-end: 0.375rem;
+}
+
 .hz-section .hz-capabilities__detail-head > * {
   margin-block: 0;
 }
@@ -4216,6 +4242,10 @@ a,
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
+}
+
+.hz-section .hz-grid-2 > * {
+  margin-block-start: 0;
 }
 
 @media (min-width: 640px) {
@@ -5173,6 +5203,10 @@ a,
   border: 1px solid var(--wp--preset--color--line);
 }
 
+.hz-section .hz-role > * {
+  margin-block-start: 0;
+}
+
 @media (min-width: 640px) {
   .hz-role {
     padding: 2rem;
@@ -5231,6 +5265,28 @@ a,
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
+  /*
+   * The UA list indent, cancelled.
+   *
+   * WHY THIS IS HERE AND NOT ON THE ITEM. Measured on the live site at 390, the
+   * list box sat at left 75 and the tiles at left 115, so the tiles were 40px
+   * right of the label above them and of the hz-role__tech paragraph below
+   * them, which both start at 75. The 40px is not on the tile: li.hz-resp
+   * carries padding 1rem and gap 0.625rem, and those match HomePage.tsx:555
+   * exactly. It is on the ul, from the browser default padding inline start of
+   * 40px, which nothing in the theme cancels because the only list rules in the
+   * project are scoped to other lists.
+   *
+   * The design has no ul here at all. HomePage.tsx:551 is a div carrying
+   * grid grid cols 1 md grid cols 2 gap 3, so its grid has padding 0px, measured
+   * 0px at 390, 768 and 1440. With this one declaration the tiles start at the
+   * same left edge as the label and the paragraph at all three widths.
+   *
+   * Written as the logical property so the cancellation travels with writing
+   * mode. There is still one declared padding value here, the 1rem on the
+   * tile, and it is the design's p-4.
+   */
+  padding-inline-start: 0;
 }
 
 @media (min-width: 768px) {
@@ -5454,6 +5510,10 @@ a,
   align-items: start;
 }
 
+.hz-section .hz-about__body > * {
+  margin-block-start: 0;
+}
+
 @media (min-width: 1024px) {
   .hz-about__body {
     grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -5472,6 +5532,10 @@ a,
   font-size: 0.75rem;
   line-height: 1.3333;
   color: var(--wp--preset--color--text-muted);
+}
+
+.hz-section .hz-about__lead .hz-about__identity {
+  margin-block-start: 1rem;
 }
 
 .hz-about__cta {
@@ -5928,14 +5992,21 @@ a.site-header__title:focus {
   border-bottom-color: var(--wp--preset--color--accent);
 }
 
-.site-header__social {
+.wp-block-social-links.site-header__social,
+.wp-block-social-links.site-header__menu-social {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   flex-shrink: 0;
 }
 
-.site-header__social-link {
+.wp-block-social-links .wp-social-link.wp-social-link.site-header__social-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -5947,13 +6018,13 @@ a.site-header__title:focus {
   transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1), background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.site-header__social-link:hover {
+.wp-block-social-links .wp-social-link.site-header__social-link:hover {
   color: var(--wp--preset--color--accent);
   background-color: var(--wp--preset--color--surface-2);
   border-color: var(--wp--preset--color--line);
 }
 
-.site-header__social-link svg {
+.wp-block-social-links .wp-social-link.site-header__social-link svg {
   display: block;
   width: 1rem;
   height: 1rem;
@@ -5961,7 +6032,7 @@ a.site-header__title:focus {
   vertical-align: middle;
 }
 
-.site-header__social-link .wp-block-social-link-anchor {
+.wp-block-social-links .wp-social-link.site-header__social-link .wp-block-social-link-anchor {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5969,15 +6040,44 @@ a.site-header__title:focus {
   height: 100%;
 }
 
-.site-header__social {
+.wp-block-social-links.site-header__social {
   display: none;
 }
 
 @media (min-width: 640px) {
-  .site-header__social {
+  .wp-block-social-links.site-header__social {
     display: flex;
   }
 }
+.site-header__menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  margin: 0;
+  color: var(--wp--preset--color--text);
+  background-color: var(--wp--preset--color--surface);
+  border: 1px solid var(--wp--preset--color--line);
+  cursor: pointer;
+  transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1), background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.site-header__menu-toggle:hover,
+.site-header__menu-toggle:focus {
+  color: var(--wp--preset--color--accent);
+  background-color: var(--wp--preset--color--surface-2);
+  border-color: var(--wp--preset--color--accent);
+}
+
+.site-header__menu-toggle-icon {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
 .site-header__nav .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
   display: none;
 }
@@ -5998,7 +6098,83 @@ a.site-header__title:focus {
     align-items: center;
     gap: 1.75rem;
   }
+  .site-header__nav .site-header__menu-social,
+  .site-header__nav .site-header__menu-toggle {
+    display: none;
+  }
 }
+.wp-block-group.site-header .site-header__nav.wp-block-navigation .wp-block-navigation__responsive-container.is-menu-open {
+  background-color: var(--wp--preset--color--base);
+  color: var(--wp--preset--color--text);
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content {
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: none;
+  gap: 1.5rem;
+  padding-block: 0;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  gap: 0;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container > li,
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container > li > a.wp-block-navigation-item__content {
+  display: block;
+  width: 100%;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container > li > a.wp-block-navigation-item__content {
+  padding-block: 0.875rem;
+  border-bottom: 0;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container > li.site-header__nav-item--current > a.wp-block-navigation-item__content,
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container > li.site-header__nav-resume > a.wp-block-navigation-item__content {
+  border-bottom: 0;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .site-header__menu-social {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-close {
+  width: 100%;
+  max-width: none;
+  min-height: 100%;
+  box-sizing: border-box;
+  padding: 1.5rem;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-dialog {
+  position: static;
+  width: 100%;
+  max-width: none;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-close.wp-block-navigation__responsive-container-close.wp-block-navigation__responsive-container-close {
+  display: none;
+}
+
 @media print {
   .no-print {
     display: none !important;

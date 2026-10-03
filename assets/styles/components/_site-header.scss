@@ -63,12 +63,32 @@
 // Without that the inactive items inherit the body colour and the active state
 // has nothing to be active against.
 //
-// THE SOCIAL ROW CARRIES TWO CHANNELS, NOT THREE. The design has LinkedIn,
-// GitHub and Mail. This theme has a written no email rule, enforced by a repo
-// wide CI grep for mailto and for address patterns, and patterns/channel-links
-// .php states that a mail icon is both a liability and a broken promise. So the
-// two verified external channels from that pattern are reused here and the mail
-// affordance is not added. The URLs are the same two the pattern uses.
+// THE SOCIAL ROW CARRIES THREE CHANNELS: LINKEDIN, GITHUB AND EMAIL. The design
+// has all three and so does this row. The third is the design's Email link, and
+// the owner decided to publish the design's email address, having been told it
+// had been spam listed once and ruling that it ships anyway. That decision is
+// settled and is not to be reopened.
+//
+// THE CI GATE WAS NARROWED, NOT REMOVED. The four workflows under .github/
+// permit exactly that one address, maulikbhalodiya9999@gmail.com, and reject
+// every other mailto and every other raw address. So the constraint here is one
+// address in the theme and not a blanket ban on mail, which is what the older
+// reading of this file said and what no longer holds.
+//
+// NOTHING IN THIS STYLESHEET CHANGED FOR IT, and that is why the third channel
+// needs no rule of its own. core/social-link cannot render mail: it keys its
+// icon off the service name against Core's fixed table of services, so an
+// authored service "mail" yields an empty anchor with no mark in it. The Email
+// entry is therefore emitted by patterns/header.php as a wp:html list item
+// carrying the same wp-social-link wp-social-link site-header__social-link
+// classes the rules below key on, which is exactly why it inherits the
+// identical box and the identical mark as its two siblings. Its anchor carries
+// no target and no rel, matching the hero, because a mailto opens a local mail
+// client rather than a browsing context.
+//
+// The bar's copy and the mobile panel's copy are rendered by one shared closure
+// in patterns/header.php, so the two cannot drift, and both carry these three
+// links in the design's order.
 //
 // THE RESUME ITEM IS AMBER WHETHER OR NOT IT IS THE CURRENT PAGE, because it
 // is a different kind of action rather than another destination in the same
@@ -82,12 +102,53 @@
 // get_wrapper_attributes(), which puts it on the list item. Selecting it as a
 // compound on the anchor is the mistake that made the old rule unmatchable even
 // after the surface scope was corrected.
+//
+// ---------------------------------------------------------------------------
+// THE OPEN MOBILE MENU. WHAT "SHOWS OUT OF THE SCREEN" ACTUALLY WAS.
+//
+// MEASURED IN CHROME AT 390x844 WITH THE MENU OPEN, BEFORE THIS CHANGE:
+//   panel rect              left 0, right 390, width 390, top 0, bottom 844
+//   panel position          fixed, no transform on any ancestor
+//   documentElement         scrollWidth 390 against clientWidth 390, over by 0
+//   the list inside it      left 314, right 390, WIDTH 76
+// So the panel itself was never off screen and it never widened the page. Both of
+// the two obvious causes were measured and both are absent: no ancestor carries a
+// transform, a filter, a backdrop-filter, a perspective or a contain, so the
+// position: fixed panel is genuinely relative to the viewport, and scrollWidth
+// equals clientWidth, so nothing is clipped by the page.
+//
+// What was off screen was the CONTENT. Core renders the overlay content as a
+// column flex box and aligns its children with
+// var(--navigation-layout-justification-setting). patterns/header.php carried
+// "layout":{"type":"flex","justifyContent":"right"} on core/navigation, Core
+// turned that into --navigation-layout-justification-setting: flex-end, and the
+// list came out 76 pixels wide, shrink wrapped and pinned to the right edge with
+// every anchor white-space: nowrap inside it, so the labels ran past x=390 and
+// were cut off by the right edge of the screen. The panel was also painted white
+// with black text, from Core's .wp-block-navigation:not(.has-background) rule.
+//
+// TWO FIXES, IN TWO PLACES, AND NEITHER IS HERE ALONE.
+//   The right alignment was removed at the source, in patterns/header.php, by
+//   dropping justifyContent from the navigation block. Restoring it in CSS
+//   would be treating the symptom.
+//   The fill and the geometry are set here, because that is where they belong,
+//   and they have to outrank Core rather than merely be written after it.
+//
+// CORE'S TWO RULES THAT FILL THE OVERLAY ARE AT FIVE CLASSES AND THEY WIN.
+//   .wp-block-navigation:not(.has-background)
+//     .wp-block-navigation__responsive-container.is-menu-open:not(.disable-default-overlay)
+//     { background-color: #fff; color: #000; }
+// Five class level selectors. A plain declaration at two or three classes is
+// discarded, which is exactly what the owner is describing. Every selector below
+// therefore names the bar, the nav and the open state together, which is six,
+// and outranks Core outright rather than by load order.
 
 $header-height: 4rem;
 $header-inset: 1.5rem;
 $header-inset-md: 2.5rem;
 $header-gap: 1.75rem;
 $social-size: 2.5rem;
+$toggle-size: 2.75rem;
 
 .wp-block-group.site-header {
 	position: fixed;
@@ -237,15 +298,40 @@ a.site-header__title:focus {
 	border-bottom-color: var(--wp--preset--color--accent);
 }
 
-// The icon row. Two channels, at the design's 40px box.
-.site-header__social {
+// THE ICON ROW IS core/social-links, AND CORE SHIP RULES FOR THAT BLOCK AT FOUR
+// CLASSES. Two consequences, both measured and both handled here rather than left
+// to load order.
+//
+//   .wp-block-social-links .wp-block-social-link.wp-social-link at three classes
+//   sets display: inline-block on every link and wins over the single class rule
+//   below it, and .wp-block-social-links.is-style-logos-only .wp-social-link
+//   paints each service in its own brand colour at three classes. The row link
+//   selector below is written .wp-social-link.wp-social-link, Core's own idiom
+//   for the same job, so it sits at four classes and wins on merit.
+//
+//   The bar row and the row inside the open menu are the same three links at the
+//   same 40px box, so they share one set of declarations and differ only in
+//   whether they are shown. That is why the class appears on the wrapper as
+//   well as on each link, and why the Email item, which is not a core/social-link,
+//   carries the same two link classes and is styled by the same rules.
+
+// The icon row. Three channels, LinkedIn, GitHub and Email, at the design's 40px
+// box.
+.wp-block-social-links.site-header__social,
+.wp-block-social-links.site-header__menu-social {
 	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
 	align-items: center;
+	justify-content: flex-start;
 	gap: 0.375rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
 	flex-shrink: 0;
 }
 
-.site-header__social-link {
+.wp-block-social-links .wp-social-link.wp-social-link.site-header__social-link {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -260,13 +346,13 @@ a.site-header__title:focus {
 		border-color $motion-duration $motion-ease;
 }
 
-.site-header__social-link:hover {
+.wp-block-social-links .wp-social-link.site-header__social-link:hover {
 	color: var(--wp--preset--color--accent);
 	background-color: var(--wp--preset--color--surface-2);
 	border-color: var(--wp--preset--color--line);
 }
 
-// The two header social marks are 16px, and this rule was measuring 24px.
+// The header social marks are 16px, and this rule was measuring 24px.
 //
 // THE OLD SELECTOR WAS .site-header__social-link .wp-block-social-link__
 // service-icon, AND THAT CLASS IS NEVER IN THE MARKUP. It belongs to the icon
@@ -280,7 +366,14 @@ a.site-header__title:focus {
 // primitive's floor, because this row is a fixed 40px box and a glyph that
 // outgrows it is the visible symptom. flex-shrink is stated for the same reason
 // every icon in this theme states it: the row is nowrap.
-.site-header__social-link svg {
+// The 16 pixel box has to be stated at three classes. Core ships
+// .wp-block-social-links .wp-social-link svg at two classes plus the element
+// and sets width and height to 1em, and 1em on a .wp-block-social-links row is
+// 24 pixels because Core sets font-size: 24px on it. With the single class
+// selector that was here before, that Core rule won outright: measured in Chrome
+// at 1440 the two marks came out 24 by 24 after this row became a
+// core/social-links block, against 16 by 16 before it did.
+.wp-block-social-links .wp-social-link.site-header__social-link svg {
 	display: block;
 	width: 1rem;
 	height: 1rem;
@@ -303,9 +396,11 @@ a.site-header__title:focus {
 //
 // The accessible name is not restated here. Core already renders the social
 // link label as screen reader only text inside the anchor, which is why the
-// anchor reports a name of LinkedIn and GitHub today, and the mark itself is
-// aria-hidden. This rule changes the geometry and nothing else.
-.site-header__social-link .wp-block-social-link-anchor {
+// anchors report a name of LinkedIn, GitHub and Email today, and the mark itself
+// is aria-hidden. This rule changes the geometry and nothing else.
+// Core also ships .wp-block-social-links .wp-social-link a at two classes, and
+// it sets line-height: 0, so the same outranking applies here.
+.wp-block-social-links .wp-social-link.site-header__social-link .wp-block-social-link-anchor {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -325,15 +420,65 @@ a.site-header__title:focus {
 //
 // The social row is visible from 640px, the design's sm, and hidden below it.
 
-.site-header__social {
+// THE BAR ROW IS SHOWN FROM THE DESIGN'S sm AND NOT BELOW IT, which is the
+// design's own hidden sm:flex on the bar row against lg:hidden on the mobile
+// panel. Below sm the only channel links on screen are the ones inside the open
+// menu, so the two copies are never on screen at the same width.
+.wp-block-social-links.site-header__social {
 	display: none;
 }
 
 @include from( $bp-sm ) {
 
-	.site-header__social {
+	.wp-block-social-links.site-header__social {
 		display: flex;
 	}
+}
+
+// THE MENU TOGGLE INSIDE THE OPEN MENU. The design's own control, at its own
+// 44 by 44 box, on a #111113 fill with a #262626 border.
+//
+// It is not Core's close button. Core renders that one first inside the dialog,
+// before the content, so on screen it would be a control that sits last but is
+// first to Tab. This one is authored as the last inner block of the navigation by
+// patterns/header.php, which makes it last in the DOM and therefore last in the
+// tab sequence, and Core's own is hidden below so exactly one toggle is on
+// screen. It closes the menu through Core's own data-wp-on--click action, so it
+// adds no script and no global.
+.site-header__menu-toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: $toggle-size;
+	height: $toggle-size;
+	padding: 0;
+	margin: 0;
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+	cursor: pointer;
+	transition:
+		color $motion-duration $motion-ease,
+		background-color $motion-duration $motion-ease,
+		border-color $motion-duration $motion-ease;
+}
+
+.site-header__menu-toggle:hover,
+.site-header__menu-toggle:focus {
+	color: var(--wp--preset--color--accent);
+	background-color: var(--wp--preset--color--surface-2);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// The mark is 20 pixels, which is the design's w-5 h-5. The width and height
+// attributes on the svg say 20 as well, so the box is stated twice on purpose:
+// this project has rendered icons at 45 and 120 pixels when the box was missing,
+// and Core's own close mark ships at 24 attributes with no stylesheet box.
+.site-header__menu-toggle-icon {
+	display: block;
+	width: 1.25rem;
+	height: 1.25rem;
+	flex-shrink: 0;
 }
 
 .site-header__nav .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
@@ -359,6 +504,143 @@ a.site-header__title:focus {
 		align-items: center;
 		gap: $header-gap;
 	}
+
+	// THE TWO MOBILE MENU PIECES ARE NOT IN THE DESKTOP HEADER. Both are inner
+	// blocks of core/navigation, so Core renders them into the same container
+	// that is the desktop nav row, and the container is displayed here. Without
+	// these two the channel links would sit inside the desktop nav row and the
+	// close toggle would sit inside the desktop bar.
+	.site-header__nav .site-header__menu-social,
+	.site-header__nav .site-header__menu-toggle {
+		display: none;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// THE OPEN OVERLAY.
+//
+// Everything in this section is scoped to .is-menu-open, which is a class Core
+// only adds while the menu is open, and the menu can only be opened below
+// $bp-lg, where the container is display: none otherwise and the toggle that
+// opens it is display: none. So none of it can reach the desktop header.
+//
+// CORE'S OWN GEOMETRY IS KEPT WHERE IT IS CORRECT. The panel is position: fixed
+// with inset 0, and the measurement above confirmed no ancestor creates a
+// containing block for it, so it is a true full-viewport sheet. What is restated
+// here is the fill, the colour and the width of the content inside it, because
+// those are the parts that were wrong.
+
+// THE FILL. The selector is the full chain on purpose, as the note at the top
+// of this file says it has to be: the two class version of this selector was
+// measured losing to Core's five class rule and leaving the sheet white at both
+// 390 and 768, which is the other half of what the owner photographed.
+//
+// .wp-block-group.site-header .site-header__nav.wp-block-navigation is four
+// class level selectors, and the two Core needs add two more, so this is six
+// against Core's five. Core also declares color: #000 on the same rule for the
+// same reason, and both are restated here.
+.wp-block-group.site-header .site-header__nav.wp-block-navigation .wp-block-navigation__responsive-container.is-menu-open {
+	background-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--text);
+}
+
+// CORE SETS align-items ON THE OVERLAY CONTENT FROM
+// --navigation-layout-justification-setting, WHICH IS SET BY THE BLOCK'S OWN
+// justifyContent ATTRIBUTE. That attribute has been removed from
+// patterns/header.php, so the variable is gone. The two declarations below state
+// the outcome explicitly, because "the variable is not set any more" is a fact
+// about a file in another directory and this stylesheet should not have to
+// trust it to lay out a full screen sheet.
+//
+// stretch rather than flex-start is what makes the list full width. shrink
+// wrapped at flex-end is the 76 pixel column the owner photographed.
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content {
+	align-items: stretch;
+	justify-content: flex-start;
+	width: 100%;
+	max-width: none;
+	gap: 1.5rem;
+	padding-block: 0;
+}
+
+// The list, at the same reason. Without this the anchors inside it are
+// white-space: nowrap inside a shrink wrapped box and run off the right edge.
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container {
+	align-items: stretch;
+	justify-content: flex-start;
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	padding: 0;
+	flex-direction: column;
+	gap: 0;
+}
+
+// Each row is the full width of the sheet, so the tap target is the row and not
+// the six characters in it. display: block is needed for that; the desktop rule
+// keeps the anchors inline-block, and the desktop list is display: flex at
+// $bp-lg, which is below this width and cannot reach here.
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container > li,
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container > li > a.wp-block-navigation-item__content {
+	display: block;
+	width: 100%;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container > li > a.wp-block-navigation-item__content {
+	padding-block: 0.875rem;
+	border-bottom: 0;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container > li.site-header__nav-item--current > a.wp-block-navigation-item__content,
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__container > li.site-header__nav-resume > a.wp-block-navigation-item__content {
+	border-bottom: 0;
+}
+
+// The three channel links sit above the six links in the open menu, in the same
+// 40 pixel boxes the bar uses, and they are the first thing Tab reaches because
+// Core focuses the first element in the overlay content when the menu opens.
+.wp-block-navigation__responsive-container.is-menu-open .site-header__menu-social {
+	display: flex;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+// THE PANEL IS A FLEX COLUMN AND ITS ONLY CHILD IS CORE'S .responsive-close
+// WRAPPER, WHICH CORE GIVES width: 100% AND max-width: var(--wp--style--global-
+// --wide-size). At 1440 that wide size is wider than the sheet and the wrapper
+// centres, which is fine, but the dialog inside it was measured 188 pixels tall
+// with the list hard against the right edge. min-height lets the sheet fill the
+// screen; the padding is the design's p-6, and it is on the wrapper rather than
+// on Core's container so that Core's own clamp padding is not fighting it.
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-close {
+	width: 100%;
+	max-width: none;
+	min-height: 100%;
+	box-sizing: border-box;
+	padding: 1.5rem;
+}
+
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-dialog {
+	position: static;
+	width: 100%;
+	max-width: none;
+	min-height: 100%;
+	box-sizing: border-box;
+}
+
+// CORE'S OWN CLOSE BUTTON IS NOT DISPLAYED AT THIS WIDTH. It is rendered as the
+// first child of the dialog, before the content, so it is first in the DOM and
+// therefore first to Tab, and the authored toggle at the end of the content is
+// the one the owner asked to see last. Hiding Core's leaves exactly one toggle on
+// screen, which is the one at the end. The selector repeats the class three
+// times, which is Core's own idiom and outranks the rules it ships for it.
+.wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-close.wp-block-navigation__responsive-container-close.wp-block-navigation__responsive-container-close {
+	display: none;
 }
 
 // ---------------------------------------------------------------------------

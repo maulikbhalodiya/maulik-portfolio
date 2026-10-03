@@ -493,6 +493,26 @@ publication.** Every mailto must become the contact form. This also removes the
 header's `aria-label` "Send an email" affordance problem, since a mail icon
 implies a mail client.
 
+**Superseded, 2026-10-02.** The defect above was recorded, and the remedy it
+prescribed was carried out, but the remedy has since been reversed by decision.
+The owner was told the address had been spam listed once in production and ruled
+that it ships anyway: the design's Email link is part of the design, and
+substituting a contact form for it is itself the substitution the project's
+standing rule forbids. The `aria-label` objection is answered as well, because
+the shipped Email anchor is named by the design's own word, `Email`, and it
+carries no `target` and no `rel`, since a `mailto:` opens a local mail client
+rather than a browsing context.
+
+What holds now: exactly one address exists in the theme,
+`maulikbhalodiya9999@gmail.com`, and it is published in four places, the footer
+Connect column, the section 08 CTA, the hero strip, and the mobile menu channel
+row in the header. The mobile row renders three links, LinkedIn, GitHub and
+Email, in the design's order, and it is rendered by one shared closure so the
+desktop bar and the mobile panel cannot drift. CI was narrowed rather than
+removed: `ci.yml`, `ai-review.yml`, `ai-audit.yml` and `live-deploy.yml` permit
+that one address and reject every other `mailto:` or raw address. Contact still
+runs through the contact page as well.
+
 ### 14.2 No skip link
 
 There is no skip-to-content link. `main#main-content` exists, so the target is

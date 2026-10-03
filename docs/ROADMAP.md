@@ -108,12 +108,19 @@ getting them wrong means redoing every page.
 - [ ] Résumé item always amber, opens the modal
 - [ ] Mobile menu, `aria-expanded`, `aria-controls`, Escape closes and restores
       focus
-- [ ] **No mail icon.** Every mailto becomes the contact form
+- [ ] **Mail icon included.** Superseded 2026-10-02. The original rule was that
+      no mail icon appears and every mailto becomes the contact form. The owner
+      ruled that the design's email address ships, because the design's Email link
+      is part of the design and replacing it is itself a substitution. CI was
+      narrowed, not removed: the four workflows under `.github/` permit exactly
+      one address, `maulikbhalodiya9999@gmail.com`, and reject any other
 
 ### 2.2 Footer
 - [ ] Pure black, 5/2/3/2 asymmetric grid. **Do not balance it**
 - [ ] Group headings amber
-- [ ] No email link anywhere
+- [ ] Email link in the Connect column, carrying the design's own single
+      address. This supersedes the earlier "no email link anywhere" rule for the
+      same owner decision of 2026-10-02 recorded under 2.1
 
 ### 2.3 Homepage, 8 sections
 - [ ] 01 Hero, name, identity line, CTAs, orbit canvas

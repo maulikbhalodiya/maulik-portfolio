@@ -316,6 +316,25 @@
 	margin-block-start: 0.5rem;
 }
 
+// Section 06's panel heading is text-3xl in the design, which is 30px on a 36px
+// line at every width, and the media query above already lands 30px from
+// $bp-sm. Below $bp-sm the shared rule dropped it to 24px on a 32px line, so the
+// five lines of the heading measured 159.92 against the design's 180.00 and
+// cost section 06 twenty pixels at mobile.
+//
+// Stated here rather than on its own rule so it lands in the same selector the
+// gap above uses. That selector is two classes, the same specificity as the
+// shared rule it has to beat, so source order is what carries it, and this rule
+// is later in the file. Scoped to .hz-approach because section 03 states its
+// panel heading as text-2xl, 24px, at mobile and already measures against that.
+// Both sections' headings carry hz-row__title, so the shared rule cannot take
+// section 06's value. Note that .is-style-section and .hz-approach sit on the
+// same element, so a selector chaining the two matches nothing.
+.hz-approach .hz-row__title {
+	font-size: 1.875rem;
+	line-height: 1.2;
+}
+
 // Mono 12px amber, the design's label voice. The design states every one of these
 // as text-xs and none of them carries a leading, so the line is 16px.
 .hz-section .hz-label {
@@ -513,6 +532,38 @@
 	padding: 0.5rem 0.875rem;
 }
 
+// The 14px arrow on the Selected Development Work GitHub action.
+//
+// WHY THIS STATES A SIZE. components/_icon.scss owns icon sizing and has three
+// values: 1rem, 0.875rem and 0.75rem. It says in writing that the 0.875rem one
+// belongs to the RankKernel back link alone and is stated where it is used, so
+// this file states it here rather than editing that file's contract.
+//
+// HomePage.tsx:414 is the only place in the design that draws a button arrow at
+// w-3.5 h-3.5, which is 14px. Measured on the served design at 1440 the two
+// actions are 193.61px and 188.81px wide, and 142.81 plus one 8px gap plus the
+// 14px arrow is 164.81, which is the second of those two only once the design's
+// own leading GitHub glyph is accounted for. The 16px default in _icon.scss
+// would make it 166.81 and miss.
+//
+// The selector is scoped under .hz-section and names the class, so it outranks
+// both .hz-icon and the a svg floor regardless of which partial is emitted
+// first. _index.scss forwards sections before icon, so a bare class here would
+// lose the tie and silently render at 16px.
+.hz-section .hz-work__cta-arrow {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+// The design puts two glyphs on the section 04 repository button: a 16px
+// GitHub mark before the label and the 14px arrow after it. The mark is amber
+// there and the arrow is not, so the colour rides on the mark alone.
+.hz-section .hz-work__cta-mark {
+	width: 1rem;
+	height: 1rem;
+	color: var(--wp--preset--color--accent);
+}
+
 // The closing band puts two of its three actions beside the resume button as
 // bare anchors rather than as button blocks, so the same sizes and grounds are
 // restated for an anchor carrying the button classes.
@@ -678,6 +729,23 @@
 	color: var(--wp--preset--color--text-muted);
 }
 
+// The design stacks these three lines with space-y-1.5, which is 6 pixels, and
+// writes each of them as a block. The number and the summary were inline here,
+// so each one sat in an anonymous line box strutted by the body's own 24 pixel
+// line height rather than by its own. That is where the extra 5 pixels per row
+// came from: the row measured a 100 pixel body against the design's 95, and it
+// was not a margin, because all three carried margin-block: 0 already. Stating
+// them as blocks with the design's 6 pixels between them reproduces 16 + 6 + 28
+// + 6 + 39, which is 95.
+.hz-section .hz-capability__body > * {
+	display: block;
+	margin-block: 0;
+}
+
+.hz-section .hz-capability__body > *:not(:last-child) {
+	margin-block-end: 0.375rem;
+}
+
 .hz-section .hz-capabilities__detail-head > * {
 	margin-block: 0;
 }
@@ -703,6 +771,16 @@
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
 	gap: 0.75rem;
+}
+
+// The tiles are placed by the grid and the grid's gap-3 is the whole of the
+// space between them. The group carries is-layout-flow, so Core was adding
+// 24px of margin-block-start to every tile after the first, which is what made
+// the rows 119.5 tall against the design's 95.5 and carried the mobile residual
+// in the detail panel. Two classes outrank the Core rule at
+// :root :where(.is-layout-flow) > *, which is one.
+.hz-section .hz-grid-2 > * {
+	margin-block-start: 0;
 }
 
 @include from( $bp-sm ) {
@@ -2088,6 +2166,18 @@
 	border: 1px solid var(--wp--preset--color--line);
 }
 
+// The card is a flex column and the design spaces its blocks 24px apart, which
+// the gap above already does. Core's flow rule was also handing the first block
+// a 24px margin-block-start on top of that, because the group carries
+// is-layout-flow, so the card opened 24px lower than the design's 41px
+// (1px border plus 40px padding). The margin is what was wrong here, not the gap:
+// the node marker is absolutely positioned, so it is not a flex item and the gap
+// never applied to it. Two classes outrank the Core rule at
+// :root :where(.is-layout-flow) > *, which is one.
+.hz-section .hz-role > * {
+	margin-block-start: 0;
+}
+
 @include from( $bp-sm ) {
 
 	.hz-role {
@@ -2178,6 +2268,29 @@
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
 	gap: 0.75rem;
+
+	/*
+	 * The UA list indent, cancelled.
+	 *
+	 * WHY THIS IS HERE AND NOT ON THE ITEM. Measured on the live site at 390, the
+	 * list box sat at left 75 and the tiles at left 115, so the tiles were 40px
+	 * right of the label above them and of the hz-role__tech paragraph below
+	 * them, which both start at 75. The 40px is not on the tile: li.hz-resp
+	 * carries padding 1rem and gap 0.625rem, and those match HomePage.tsx:555
+	 * exactly. It is on the ul, from the browser default padding inline start of
+	 * 40px, which nothing in the theme cancels because the only list rules in the
+	 * project are scoped to other lists.
+	 *
+	 * The design has no ul here at all. HomePage.tsx:551 is a div carrying
+	 * grid grid cols 1 md grid cols 2 gap 3, so its grid has padding 0px, measured
+	 * 0px at 390, 768 and 1440. With this one declaration the tiles start at the
+	 * same left edge as the label and the paragraph at all three widths.
+	 *
+	 * Written as the logical property so the cancellation travels with writing
+	 * mode. There is still one declared padding value here, the 1rem on the
+	 * tile, and it is the design's p-4.
+	 */
+	padding-inline-start: 0;
 }
 
 @include from( $bp-md ) {
@@ -2478,6 +2591,17 @@
 	align-items: start;
 }
 
+// The two columns are placed by the grid, not by margins, and the grid's own
+// gap-12 is the whole of the space between them. The body carries
+// is-layout-flow, so Core was adding 24px of margin-block-start to the second
+// column on top of that gap: at 1440 it pushed the main column down and made
+// the body's box 477.97 against the design's 454, and at 390 it turned the
+// stacked row gap into 72 against the design's 48. Two classes outrank the Core
+// rule at :root :where(.is-layout-flow) > *, which is one.
+.hz-section .hz-about__body > * {
+	margin-block-start: 0;
+}
+
 @include from( $bp-lg ) {
 
 	.hz-about__body {
@@ -2501,6 +2625,22 @@
 	font-size: 0.75rem;
 	line-height: 1.3333;
 	color: var(--wp--preset--color--text-muted);
+}
+
+// The design's About lead column is a space-y-4 stack, so every child after the
+// first sits 16 pixels lower. The margin-block above takes that paragraph's own
+// block margins to zero, which is what the 8 pixels of padding replace, but it
+// also cancels the stack gap the design states there. This paragraph measured 0
+// pixels below the heading against the design's 16, which cost section 07
+// sixteen pixels.
+//
+// Restating the gap against the block that owns it, matching the restatement
+// below for .hz-about__main, keeps the padding and the stack. Specificity is
+// three classes, which outranks both the zero above and the Core flow rule at
+// :root :where(.is-layout-flow) > *, and hz-about__identity appears once in the
+// file, so no other stack is touched.
+.hz-section .hz-about__lead .hz-about__identity {
+	margin-block-start: 1rem;
 }
 
 .hz-about__cta {

@@ -87,6 +87,40 @@
  * but only because none of these strings currently contain a character that
  * they escape, which is a coincidence and not a property.
  *
+ * THE ORDER INSIDE core/navigation IS THE ORDER THE OVERLAY RENDERS IN, and it is
+ * the order the owner asked for: the three channels first, then the six nav links,
+ * then the close toggle last. Core builds the overlay from the inner blocks in
+ * their authored order (get_inner_blocks_html walks $inner_blocks and only opens
+ * a <ul> around the blocks that render an <li>), so the order below is the order
+ * on screen. The social row therefore has to be an INNER BLOCK of the navigation
+ * and not a sibling group in the bar: a sibling is outside the overlay and is
+ * covered by it the moment the menu opens.
+ *
+ * THE CLOSE TOGGLE IS AUTHORED HERE RATHER THAN TAKEN FROM CORE. Core renders its
+ * own close button as the FIRST child of the dialog, before the content, and it
+ * cannot be moved from a pattern: there is no attribute for it and no filter on
+ * this file. A control that is first in the DOM and last on screen is a tab order
+ * that reads backwards. So the authored button below is the last inner block,
+ * which puts it last in the DOM and therefore last in the tab sequence, and Core's
+ * own close button is hidden at mobile widths by _site-header.scss so that exactly
+ * one toggle is on screen at a time.
+ *
+ * It closes the menu through Core's own action, data-wp-on--click, which the
+ * Interactivity API resolves against the core/navigation store that the <nav>
+ * already carries. No script is added by this theme for it, no inline handler is
+ * written, and no global is created: the button is bound, not programmed.
+ *
+ * THE NAVIGATION BLOCK NO LONGER CARRIES justifyContent. It carried right, and
+ * Core turns that attribute into --navigation-layout-justification-setting, which
+ * it then applies to align-items on the open overlay content. The result, measured
+ * in Chrome at 390 before this change, was a list 76 pixels wide pinned to the
+ * right edge with every link overflowing past x=390 and clipped by the screen
+ * edge. That was the whole of the reported "the menu shows out of the screen":
+ * the panel itself measured 390 by 844 and fully inside the viewport, and the
+ * panel never widened the page. The attribute has no meaning at desktop, where
+ * the list is shrink wrapped inside a space-between bar, so removing it changes
+ * nothing there.
+ *
  * get_home_url() TAKES ITS BLOG ID FIRST. get_home_url( '/resume/' ) passes a
  * path as $blog_id, which is typed int|null, so the path is cast away and every
  * link silently resolves to the bare homepage. That is a live trap in this
@@ -110,22 +144,56 @@ defined( 'ABSPATH' ) || exit;
  * carries, and the amber lives in the stylesheet.
  */
 /**
- * The two verified external channels, repeated here for the header icon row.
+ * The three design channels, repeated here for the header icon row.
  *
- * THE DESIGN CARRIES THREE: LINKEDIN, GITHUB AND MAIL. THIS ARRAY CARRIES TWO.
+ * EMITTED TWICE, ONCE IN THE BAR AND ONCE IN THE OPEN MOBILE MENU, AND NEVER BOTH
+ * AT ONCE. This mirrors the design, which carries the same three channels in the
+ * bar from Tailwind sm upwards and again inside its mobile panel below lg, so the
+ * two copies are never on screen together: the bar's copy is hidden below $bp-sm
+ * by _site-header.scss, the panel's copy lives inside the overlay, which is only
+ * rendered at all while the menu is open.
  *
- * patterns/channel-links.php states, and a repo wide CI grep enforces, that this
- * theme has no email affordance anywhere: not a mailto, not an address, not an
- * aria-label and not a mail icon. The address behind the prototype's mail icon
- * was published and spam listed, and the icon promised a mail client that the
- * site deliberately does not offer. So the header takes the same two channels
- * the pattern takes and the design's third affordance is not reproduced. Contact
- * runs through the contact page.
+ * LinkedIn and GitHub are core/social-link with openInNewTab, because
+ * core/social-link has no target attribute of its own: render_block_core_
+ * social_link reads the target off the PARENT's openInNewTab context and is the
+ * only thing that emits target="_blank" for those two services. The authored rel
+ * stays noopener noreferrer on both, and Core appends its own noopener nofollow
+ * on top of it when openInNewTab is on.
  *
- * The URLs must match patterns/channel-links.php exactly. They are duplicated
- * rather than shared because that pattern registers its own block and returns
- * nothing, and because a pattern cannot be required from another pattern at the
- * point patterns run, which is init.
+ * THE DESIGN CARRIES THREE, AND SO DOES THIS ARRAY: LINKEDIN, GITHUB AND MAIL.
+ * Mail is the one entry that is NOT a core/social-link, and it cannot be one.
+ * That block keys its icon off the service name against a fixed table of social
+ * services, and mail is not in it, so an authored core/social-link with
+ * service "mail" renders an empty anchor with no mark in it. The glyph is the
+ * design's own, taken from the rendered SVG at Header.tsx:277 rather than
+ * retyped, and it is emitted as a wp:html list item carrying the same two
+ * classes the stylesheet keys the box and the mark on.
+ *
+ * NO target AND NO rel, matching the design's Email anchor at Header.tsx:273 and
+ * the hero's. A mailto opens a local client rather than a browsing context, so
+ * there is no new browsing context to isolate. Because the entry is not a
+ * core/social-link, the parent's openInNewTab cannot reach it either, so the
+ * absence is structural rather than something left out.
+ *
+ * ONE ADDRESS ONLY. This is the same single address patterns/footer.php:299 and
+ * the hero use, and the repo wide CI gates in .github/workflows/ci.yml permit
+ * exactly that one mailto and that one raw address, so the header introduces
+ * no second one. There is deliberately no bare address here and no address in
+ * an aria-label: the accessible name is the design's own, the word Email, as
+ * screen reader only text inside the anchor, which is how Core names the other
+ * two as well.
+ *
+ * The first two URLs are the ones patterns/channel-links.php carries, and they
+ * are duplicated rather than shared because that pattern registers its own
+ * block and returns nothing, and because a pattern cannot be required from
+ * another pattern at the point patterns run, which is init. The third entry is
+ * here only, which is why that pattern still declares two.
+ *
+ * THE ORDER HERE IS THE DESIGN'S ORDER AND IT IS ALSO THE PANEL'S: LinkedIn,
+ * GitHub, then Mail. The design puts these three after its six nav rows rather
+ * than before them, and this file puts them first, because the owner asked for
+ * the channels first and the toggle last. The within-row order is the design's
+ * either way.
  */
 $maulik_portfolio_header_channels = array(
 	array(
@@ -138,7 +206,74 @@ $maulik_portfolio_header_channels = array(
 		'label'   => __( 'GitHub', 'maulik-portfolio' ),
 		'url'     => 'https://github.com/maulikbhalodiya',
 	),
+
+	/*
+	 * The mail entry, and it is declared with its own 'mailto' key rather
+	 * than through 'url'. See the note above the array: it is not a
+	 * core/social-link, it is emitted by the branch below that tests for
+	 * this key, and the branch is tested first so that isset() on 'url'
+	 * cannot claim it. Same ordering as the footer.
+	 */
+	array(
+		'label'  => __( 'Email', 'maulik-portfolio' ),
+		'mailto' => 'mailto:maulikbhalodiya9999@gmail.com',
+	),
 );
+
+/**
+ * Renders every channel as the markup that goes inside one core/social-links
+ * list, so the bar's copy and the panel's copy are emitted by the same code.
+ *
+ * Two entries are core/social-link block comments, which is what Core renders
+ * into the list item, the anchor and the mark. The third is a wp:html list
+ * item, because Core has no mail service and would render an empty anchor for
+ * one.
+ *
+ * @param array $channels The channel array above.
+ * @return string Block comments and list items, ready to echo.
+ */
+$maulik_portfolio_render_header_channels = static function ( array $channels ) {
+	$markup = '';
+
+	foreach ( $channels as $channel ) {
+		/*
+		 * THE MAILTO BRANCH IS TESTED FIRST, exactly as it is in the footer.
+		 * isset() on 'url' below would otherwise claim this entry, and the
+		 * design's email anchor carries neither target nor rel, which is only
+		 * reachable on the branch that adds neither.
+		 */
+		if ( isset( $channel['mailto'] ) ) {
+			$markup .= '<!-- wp:html -->' . "\n";
+			$markup .= '<li class="wp-social-link wp-social-link site-header__social-link"><a class="wp-block-social-link-anchor" href="' . esc_url( $channel['mailto'] ) . '">';
+
+			/*
+			 * THE DESIGN'S OWN MAIL GLYPH, lifted from the rendered SVG rather
+			 * than retyped, so the paths are the ones the design ships. The
+			 * mark carries width and height attributes of 16, which is both the
+			 * design's w-4 h-4 at Header.tsx:277 and the size _site-header.scss
+			 * pins the other two marks to, so this one cannot be the 45 or 120
+			 * pixel mark an unmarked glyph measures at.
+			 */
+			$markup .= '<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>';
+
+			// The accessible name, and the design's own: the word Email. It is
+			// screen reader only, which is how Core names the other two links,
+			// so all three announce the same way.
+			$markup .= '<span class="wp-block-social-link-label screen-reader-text">' . esc_html( $channel['label'] ) . '</span>';
+			$markup .= '</a></li>' . "\n";
+			$markup .= '<!-- /wp:html -->' . "\n";
+
+			continue;
+		}
+
+		$markup .= '<!-- wp:social-link {"service":' . wp_json_encode( $channel['service'] )
+			. ',"label":' . wp_json_encode( $channel['label'] )
+			. ',"url":' . wp_json_encode( $channel['url'] )
+			. ',"rel":"noopener noreferrer","className":"site-header__social-link"} /-->' . "\n";
+	}
+
+	return $markup;
+};
 
 $maulik_portfolio_nav_items = array(
 	array(
@@ -225,8 +360,23 @@ if ( '' !== $maulik_portfolio_request_uri ) {
 	<div class="wp-block-group site-header__inner">
 		<!-- wp:site-title {"level":0,"className":"site-header__title"} /-->
 
-		<!-- wp:navigation {"className":"site-header__nav","overlayMenu":"mobile","layout":{"type":"flex","justifyContent":"right"}} -->
+		<!-- wp:navigation {"className":"site-header__nav","overlayMenu":"mobile","layout":{"type":"flex"}} -->
 		<nav class="wp-block-navigation site-header__nav">
+			<?php
+			/*
+			 * THE CHANNELS COME FIRST INSIDE THE NAVIGATION. This is the first
+			 * inner block of core/navigation, so it is the first thing in the open
+			 * overlay, which is the order the owner asked for. It is emitted here
+			 * and not in the bar because the overlay covers the bar while it is
+			 * open: a sibling group in the bar is not in the menu at any width.
+			 */
+			?>
+			<!-- wp:social-links {"openInNewTab":true,"className":"site-header__menu-social","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+			<ul class="wp-block-social-links site-header__menu-social">
+				<?php echo $maulik_portfolio_render_header_channels( $maulik_portfolio_header_channels ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every interpolated value is escaped inside the closure, or is a block comment carrying wp_json_encode()d JSON. ?>
+			</ul>
+			<!-- /wp:social-links -->
+
 			<?php
 			foreach ( $maulik_portfolio_nav_items as $maulik_portfolio_nav_item ) :
 				$maulik_portfolio_nav_label = $maulik_portfolio_nav_item['label'];
@@ -289,16 +439,47 @@ if ( '' !== $maulik_portfolio_request_uri ) {
 				<?php endif; ?>
 				} /-->
 			<?php endforeach; ?>
+
+			<?php
+			/*
+			 * THE CLOSE TOGGLE, LAST. It is the final inner block of the
+			 * navigation, so it is the final child of the overlay content, which
+			 * is what makes it last in the DOM and therefore last in the tab
+			 * sequence rather than first on screen and last in the DOM.
+			 *
+			 * data-wp-on--click resolves against the core/navigation store that
+			 * the <nav> above already declares, so this is a binding and not a
+			 * script: no file, no inline handler, no global. The same store
+			 * restores focus to the opening button when the menu closes.
+			 *
+			 * aria-expanded is true and is true honestly: this control exists
+			 * only inside the overlay, which is display:none until it is open.
+			 *
+			 * The mark carries width and height attributes AND the class that
+			 * pins it to 20 pixels, which is the design's w-5 h-5 at
+			 * Header.tsx:194. The 24 pixel attribute Core hands the same glyph
+			 * is what this theme's icon floor already measured as 20.
+			 */
+			?>
+			<!-- wp:html -->
+			<button type="button" class="site-header__menu-toggle" aria-expanded="true" aria-label="<?php echo esc_attr__( 'Close menu', 'maulik-portfolio' ); ?>" data-wp-on--click="actions.closeMenuOnClick"><svg class="site-header__menu-toggle-icon" width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m13.06 12 6.47-6.47-1.06-1.06L12 10.94 5.53 4.47 4.47 5.53 10.94 12l-6.47 6.47 1.06 1.06L12 13.06l6.47 6.47 1.06-1.06L13.06 12Z"></path></svg></button>
+			<!-- /wp:html -->
 		</nav>
 		<!-- /wp:navigation -->
 
-		<!-- wp:group {"tagName":"div","className":"site-header__social","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"}} -->
-		<div class="wp-block-group site-header__social">
-			<?php foreach ( $maulik_portfolio_header_channels as $maulik_portfolio_header_channel ) : ?>
-				<!-- wp:social-link {"service":<?php echo wp_json_encode( $maulik_portfolio_header_channel['service'] ); ?>,"label":<?php echo wp_json_encode( $maulik_portfolio_header_channel['label'] ); ?>,"url":<?php echo wp_json_encode( $maulik_portfolio_header_channel['url'] ); ?>,"rel":"noopener noreferrer","className":"site-header__social-link"} /-->
-			<?php endforeach; ?>
-		</div>
-		<!-- /wp:group -->
+		<?php
+		/*
+		 * THE BAR'S COPY OF THE SAME THREE CHANNELS. This is the desktop row and
+		 * it is hidden below the design's sm by _site-header.scss, so it and the
+		 * copy inside the overlay are never both on screen. It is rendered by the
+		 * same closure as the panel's copy, so the two cannot drift apart.
+		 */
+		?>
+		<!-- wp:social-links {"openInNewTab":true,"className":"site-header__social","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+		<ul class="wp-block-social-links site-header__social">
+			<?php echo $maulik_portfolio_render_header_channels( $maulik_portfolio_header_channels ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- See the note on the panel's copy above. ?>
+		</ul>
+		<!-- /wp:social-links -->
 	</div>
 	<!-- /wp:group -->
 </header>

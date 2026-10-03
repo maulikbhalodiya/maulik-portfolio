@@ -37,6 +37,28 @@ the inner text of one original comment, in the order it appeared in the file.
 	A template is block markup. It is parsed, not executed, so it cannot call
 	esc_html__() and its literal text is NOT translatable.
 ```
+
+### Correction, 2026-10-02: the `THERE IS NO EMAIL ADDRESS ON THIS SITE` paragraph above is superseded
+
+The archived comment is kept verbatim, as this directory requires, but its
+`THERE IS NO EMAIL ADDRESS ON THIS SITE. No mail link, no plaintext address, no
+obfuscated address, in this template, in any pattern, or anywhere else in the theme`
+rule is no longer in force. See the same dated correction in
+`docs/theme-notes/footer.md`, which carries the identical rule and the identical
+correction; the two notes agree from here on.
+
+What holds now: the design's single address, `maulikbhalodiya9999@gmail.com`, is
+published in four places, the footer Connect column, the section 08 `Email Me` call
+to action, the hero strip and the mobile menu channel row. No other address exists
+and no other `mailto` exists. The contact page's own channels are still this site's
+contact page, LinkedIn, GitHub and the resume, and the form is still the form with
+an intent dropdown, not a mail link, and it still cannot deliver a submission.
+
+The reason for the reversal is the owner's standing rule that design or colour
+related work uses exactly what the demo design uses, with no substitutions. The
+owner was told the address had been spam-listed in production and ruled that it
+ships anyway. That decision is settled and is not to be reopened.
+
 ## Comment 2 of 3 (originally at templates/page-contact.html line 89)
 
 ```text

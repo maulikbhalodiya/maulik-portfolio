@@ -156,7 +156,23 @@ $hero-column-gap: 3rem;
 	min-width: 0;
 }
 
+// THE VISUAL COLUMN FILLS ITS TRACK, AND IT NEEDS SAYING.
+//
+// WordPress prints auto inline margins with !important on every child of a
+// constrained layout group, and both hero columns are children of the grid,
+// which is one. Auto inline margins on a grid item take the place of stretching,
+// so the item is sized to its fit-content width rather than to its grid area.
+// It read as 656 at 1440 only because the panel's own header was wide enough to
+// demand it, and it was 16px type before the ecosystem panel's typography was
+// corrected, so the demand and the track agreed by coincidence. With the header
+// at the design's 12px the demand fell to 622 and the column measured 622 wide
+// with a right edge at 1383, short of the design's 1400.
+//
+// width:100% resolves against the grid area, which is exactly 656, so the
+// column fills its track whatever the panel inside it asks for. max-width:100%
+// stays as the guard in the other direction.
 .wp-block-group.hero__col--visual {
+	width: 100%;
 	max-width: 100%;
 }
 
