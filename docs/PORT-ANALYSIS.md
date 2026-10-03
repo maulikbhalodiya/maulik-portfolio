@@ -364,7 +364,7 @@ design's voice. Keep it.
 |---|---|---|
 | `mailto:` plus the raw address | mailto | 9, all to be removed |
 | `https://github.com/maulikbhalodiya` | external | 6 |
-| `https://www.linkedin.com/in/maulikbhalodiya/` | external | 7 |
+| `https://www.linkedin.com/in/maulik-bhalodiya-` | external | 7 |
 | Google Fonts CSS2, 3 families | third-party asset | 1, render-blocking |
 
 Plus 6 plaintext duplicates of the LinkedIn and GitHub handles that are

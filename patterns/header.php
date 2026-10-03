@@ -87,14 +87,26 @@
  * but only because none of these strings currently contain a character that
  * they escape, which is a coincidence and not a property.
  *
- * THE ORDER INSIDE core/navigation IS THE ORDER THE OVERLAY RENDERS IN, and it is
- * the order the owner asked for: the three channels first, then the six nav links,
- * then the close toggle last. Core builds the overlay from the inner blocks in
- * their authored order (get_inner_blocks_html walks $inner_blocks and only opens
- * a <ul> around the blocks that render an <li>), so the order below is the order
- * on screen. The social row therefore has to be an INNER BLOCK of the navigation
- * and not a sibling group in the bar: a sibling is outside the overlay and is
- * covered by it the moment the menu opens.
+ * THE ORDER INSIDE core/navigation IS THE ORDER THE OVERLAY RENDERS IN, and in
+ * the DOM it is the order the owner asked for: the three channels first, then the
+ * six nav links, then the close toggle last. Core builds the overlay from the
+ * inner blocks in their authored order (get_inner_blocks_html walks
+ * $inner_blocks and only opens a <ul> around the blocks that render an <li>), so
+ * the order below is the order in the document. The social row therefore has to
+ * be an INNER BLOCK of the navigation and not a sibling group in the bar: a
+ * sibling is outside the overlay and is covered by it the moment the menu opens.
+ *
+ * DOM ORDER AND POSITION ON SCREEN ARE NOT THE SAME THING HERE, AND THE TOGGLE IS
+ * WHERE THEY COME APART. The owner asked for the close control in the top right
+ * corner of the open menu rather than at the end of the column below the channel
+ * links. Doing that by moving the block would have made it the first thing Tab
+ * reaches, undoing the earlier request that the hamburger be last, so the block
+ * stays exactly where it is and the position is taken in CSS instead:
+ * _site-header.scss sets position: absolute with top and right of 1.5rem against
+ * .wp-block-navigation__responsive-container, the sheet itself, which Core
+ * positions fixed with inset 0 while the menu is open. The result is a control
+ * that is painted first and reached last, which is what was asked for. Nothing in
+ * this file moves.
  *
  * THE CLOSE TOGGLE IS AUTHORED HERE RATHER THAN TAKEN FROM CORE. Core renders its
  * own close button as the FIRST child of the dialog, before the content, and it
@@ -199,7 +211,7 @@ $maulik_portfolio_header_channels = array(
 	array(
 		'service' => 'linkedin',
 		'label'   => __( 'LinkedIn', 'maulik-portfolio' ),
-		'url'     => 'https://www.linkedin.com/in/maulikbhalodiya/',
+		'url'     => 'https://www.linkedin.com/in/maulik-bhalodiya-',
 	),
 	array(
 		'service' => 'github',
@@ -446,6 +458,16 @@ if ( '' !== $maulik_portfolio_request_uri ) {
 			 * navigation, so it is the final child of the overlay content, which
 			 * is what makes it last in the DOM and therefore last in the tab
 			 * sequence rather than first on screen and last in the DOM.
+			 *
+			 * LAST IN THE DOM AND TOP RIGHT ON SCREEN ARE NOT IN CONFLICT, and the
+			 * distinction is the whole reason nothing is reordered here. The owner
+			 * wants this control in the top right corner of the open menu, and the
+			 * owner also wants the hamburger to be the last tab stop. Those are a
+			 * document position and a painting position, and they are satisfied by
+			 * different mechanisms. Moving the block to the top of the navigation
+			 * would satisfy the first and break the second. _site-header.scss
+			 * therefore takes this button out of the flow and pins it to the top
+			 * right of the sheet, leaving this file exactly as it was.
 			 *
 			 * data-wp-on--click resolves against the core/navigation store that
 			 * the <nav> above already declares, so this is a binding and not a

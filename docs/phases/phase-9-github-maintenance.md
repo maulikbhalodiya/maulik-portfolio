@@ -59,8 +59,13 @@ from the site will read it.
 
 - [ ] `resume.md` says **Qrologic**, everything else says **Qrolic**. Standardise
 - [ ] Résumé contact line shows `github.com/XXXXXXXX`, a placeholder
-- [ ] LinkedIn shown with a trailing dash, `linkedin.com/in/maulik-bhalodiya-`.
-      The real URL has none. Verify.
+- [x] LinkedIn shown with a trailing dash, `linkedin.com/in/maulik-bhalodiya-`.
+      **Superseded 2026-10-03.** This item previously read "The real URL has none.
+      Verify." The owner has since stated the opposite: the trailing-dash form is
+      the real profile, and the trailing-dash-free URL resolves to a different
+      person also named Maulik Bhalodiya. The trailing-dash form is now in use.
+      Not machine-verifiable, since LinkedIn returns a bot challenge rather than
+      the profile page, so the owner's word is the authority here.
 
 ## 9.6 Ongoing
 

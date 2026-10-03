@@ -66,7 +66,7 @@ $maulik_portfolio_channels = array(
 	array(
 		'service' => 'linkedin',
 		'label'   => __( 'LinkedIn', 'maulik-portfolio' ),
-		'url'     => 'https://www.linkedin.com/in/maulikbhalodiya/',
+		'url'     => 'https://www.linkedin.com/in/maulik-bhalodiya-',
 	),
 	array(
 		'service' => 'github',

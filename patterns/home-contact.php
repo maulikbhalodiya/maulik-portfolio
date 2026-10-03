@@ -73,7 +73,7 @@ defined( 'ABSPATH' ) || exit;
 $maulik_portfolio_cta_channels = array(
 	array(
 		'label' => __( 'Connect on LinkedIn', 'maulik-portfolio' ),
-		'url'   => 'https://www.linkedin.com/in/maulikbhalodiya/',
+		'url'   => 'https://www.linkedin.com/in/maulik-bhalodiya-',
 	),
 );
 

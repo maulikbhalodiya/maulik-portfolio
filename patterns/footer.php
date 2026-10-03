@@ -259,7 +259,7 @@ $maulik_portfolio_footer_columns = array(
 			),
 			array(
 				'label' => __( 'LinkedIn', 'maulik-portfolio' ),
-				'url'   => 'https://www.linkedin.com/in/maulikbhalodiya/',
+				'url'   => 'https://www.linkedin.com/in/maulik-bhalodiya-',
 			),
 
 			/*

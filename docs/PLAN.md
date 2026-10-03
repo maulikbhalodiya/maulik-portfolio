@@ -163,7 +163,7 @@ both more honest and more impressive than either version.
 |---|---|
 | Resume 1 says `Qrologic Technologies` | **Qrolic.** Resume 2 and every other source use Qrolic. Standardise. |
 | Résumé contact line shows `github.com/XXXXXXXX` | Placeholder. Use the real profile URL. |
-| LinkedIn shown as `linkedin.com/in/maulik-bhalodiya-` with trailing dash | The real URL has no trailing dash. Verify before use. |
+| LinkedIn shown as `linkedin.com/in/maulik-bhalodiya-` with trailing dash | **Superseded 2026-10-03.** This row previously recorded "The real URL has no trailing dash. Verify before use." The owner has since stated the opposite: the trailing-dash form is the real profile, and the trailing-dash-free URL resolves to a different person also named Maulik Bhalodiya. The trailing-dash form is now in use. Not machine-verifiable: LinkedIn returns a bot challenge rather than the profile page, so the owner's word is the authority here. |
 | `+91 XXXXX XXXXX` | Placeholder. Phone is not published on the site at all. |
 
 ---

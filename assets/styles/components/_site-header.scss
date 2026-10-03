@@ -340,6 +340,17 @@ a.site-header__title:focus {
 	color: var(--wp--preset--color--text-muted);
 	background-color: transparent;
 	border: 1px solid transparent;
+
+	// Core prints this on every social link, inlined in the document rather
+	// than in this stylesheet, so a search of the theme finds nothing:
+	//
+	//   .wp-block-social-link { border-radius: 9999px; display: block }
+	//
+	// It renders as a fully rounded pill on the two core/social-link items.
+	// The Email entry is a wp:html block and does not carry the class, which is
+	// why it measures 0 and the other two measure 9999px. Four classes outrank
+	// Core's one, so no !important is needed to win.
+	border-radius: 0;
 	transition:
 		color $motion-duration $motion-ease,
 		background-color $motion-duration $motion-ease,
@@ -444,7 +455,9 @@ a.site-header__title:focus {
 // patterns/header.php, which makes it last in the DOM and therefore last in the
 // tab sequence, and Core's own is hidden below so exactly one toggle is on
 // screen. It closes the menu through Core's own data-wp-on--click action, so it
-// adds no script and no global.
+// adds no script and no global. Its top right position inside the open sheet is a
+// painting position taken further down this file, and moving it there changes no
+// attribute, no block and no order.
 .site-header__menu-toggle {
 	display: inline-flex;
 	align-items: center;
@@ -631,6 +644,59 @@ a.site-header__title:focus {
 	max-width: none;
 	min-height: 100%;
 	box-sizing: border-box;
+}
+
+// THE CLOSE TOGGLE IS PAINTED IN THE TOP RIGHT CORNER AND IS STILL LAST IN THE
+// DOM. Two things are true of it at once and only one of them is about markup.
+//
+//   It is LAST IN THE DOM, because patterns/header.php authors it as the final
+//   inner block of the navigation, so it is the last child of the overlay content
+//   and therefore the eighth or ninth tab stop, after the three channel links and
+//   the six nav items. That is deliberate and was asked for. Its position in the
+//   document is not being changed here, and no rule below reorders anything: a
+//   flex order or a re-authored block list would move it to the top of the tab
+//   sequence and undo that work.
+//
+//   It is at the TOP RIGHT of the sheet, which is a painting position and not a
+//   document position, and it is taken out of the flow to get there. The owner
+//   asked for the close control in the top right corner rather than at the end of
+//   the column after the channel links, and a flex order cannot do that without
+//   also pushing the whole panel down by the height of the button plus the gap.
+//
+// WHY ABSOLUTE AGAINST THE PANEL, AND NOT AGAINST THE DOCUMENT.
+//   The containing block is .wp-block-navigation__responsive-container, which is
+//   the sheet itself and which Core positions fixed with inset 0 while the menu
+//   is open. An element with no positioned ancestor would resolve top and right
+//   against the initial containing block, which is the document, and would then
+//   be measured against the scrolled page rather than against the menu.
+//   .is-menu-open is in the selector for the same reason the rest of this section
+//   carries it: it is the only state in which the sheet is a positioned sheet.
+//
+// WHY 1.5rem ON BOTH EDGES, WHICH IS THE SHEET'S OWN GUTTER.
+//   The gutter in the open sheet is the 1.5rem padding on
+//   __responsive-close, stated in the rule below, and the horizontal gutter is
+//   also the header bar's own $header-inset at this width. So the button's right
+//   edge lands on the same x as the right edge of the channel links and the list,
+//   and its top edge lands on the same y as the top of the sheet's content box.
+//   At 390 that measures 322..366 against a list that spans 24..366.
+//
+// THE CLEARANCE IS A MEASURED FACT, NOT AN ASSUMPTION. The sheet's content
+// carries Core's own padding-top of 56px inside the content box, so the first
+// visible content in the column, the three channel links, begins at y 80 and the
+// 44 pixel button ends at y 68. Twelve pixels of clear space, at 390 and at 768
+// alike, and no collision with the content, the channel links, or Core's own
+// close button, which is display: none at these widths anyway.
+//
+// TAKING IT OUT OF THE FLOW ALSO REMOVES IT FROM THE FLEX COLUMN'S HEIGHT, which
+// is why the content box is 68 pixels shorter after this than it was before: 44
+// for the button and 24 for the column gap. The list itself does not move. Its
+// top is set by the wrapper's padding and Core's padding-top, neither of which is
+// touched here, so it still starts at y 80 and still spans 24..366 at 390 and
+// 24..744 at 768.
+.wp-block-navigation__responsive-container.is-menu-open .site-header__menu-toggle {
+	position: absolute;
+	top: 1.5rem;
+	right: 1.5rem;
 }
 
 // CORE'S OWN CLOSE BUTTON IS NOT DISPLAYED AT THIS WIDTH. It is rendered as the
