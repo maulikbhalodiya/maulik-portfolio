@@ -399,10 +399,13 @@ if ( '' !== $maulik_portfolio_request_uri ) {
 				// that one comparison below covers /about, /about/ and /about//.
 				$maulik_portfolio_nav_route = '/' . trim( $maulik_portfolio_nav_item['path'], '/' );
 
-				if ( '' === $maulik_portfolio_nav_route ) {
-					$maulik_portfolio_nav_route = '/';
-				}
-
+				/*
+				 * No empty case to normalise here. The route is built by
+				 * concatenating a leading slash, so it is never an empty string:
+				 * the shortest it can be is '/'. The comparison below is therefore
+				 * the only one needed, and a test for '' here could never pass and
+				 * was dead weight rather than a live guard.
+				 */
 				if ( '/' === $maulik_portfolio_nav_route ) {
 					$maulik_portfolio_nav_is_current = ( '/' === $maulik_portfolio_current_path );
 				} else {

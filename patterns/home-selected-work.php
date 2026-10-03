@@ -267,7 +267,7 @@ function maulik_portfolio_join_dots( $items ) {
 							<!-- wp:group {"className":"hz-card__scheme-head","layout":{"type":"default"}} -->
 							<div class="wp-block-group hz-card__scheme-head">
 								<span class="hz-card__scheme-label"><?php echo esc_html__( 'Architecture Pipeline', 'maulik-portfolio' ); ?></span>
-								<span class="hz-card__scheme-label"><?php echo esc_html( count( $maulik_portfolio_project['nodes'] ) ); ?> <?php echo esc_html__( 'System Nodes', 'maulik-portfolio' ); ?></span>
+								<span class="hz-card__scheme-label"><?php echo esc_html( (string) count( $maulik_portfolio_project['nodes'] ) ); ?> <?php echo esc_html__( 'System Nodes', 'maulik-portfolio' ); ?></span>
 							</div>
 							<!-- /wp:group -->
 							<div class="hz-card__nodes">

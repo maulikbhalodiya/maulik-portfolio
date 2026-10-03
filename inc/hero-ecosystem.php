@@ -567,7 +567,7 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_register' ) ) {
 		register_block_type(
 			MAULIK_PORTFOLIO_HERO_ECOSYSTEM_BLOCK,
 			array(
-				'api_version'         => 3,
+				'api_version'         => '3',
 				'title'               => __( 'Hero Interactive Ecosystem', 'maulik-portfolio' ),
 				'category'            => 'design',
 				'icon'                => 'art',

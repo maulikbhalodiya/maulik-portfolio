@@ -7,7 +7,7 @@ One goal at a time. Each goal has a clear finish line. A goal is only
 
 ---
 
-## GOAL 1 — Home page complete  ·  `IN PROGRESS`
+## GOAL 1: Home page complete  ·  `IN PROGRESS`
 
 > Reproduce the approved design's Home page exactly, with working
 > interactions, and deliver it for your review before any other page is touched.
@@ -56,7 +56,7 @@ RankKernel node click.
 
 ---
 
-## GOAL 2 — About page  ·  `QUEUED`
+## GOAL 2: About page  ·  `QUEUED`
 
 Reproduce `/about/`. Entry condition: Goal 1 COMPLETE.
 
@@ -70,7 +70,7 @@ Reproduce `/about/`. Entry condition: Goal 1 COMPLETE.
 
 ---
 
-## GOAL 3 — Contact page  ·  `QUEUED`
+## GOAL 3: Contact page  ·  `QUEUED`
 
 Entry: Goal 1 COMPLETE.
 
@@ -83,7 +83,7 @@ Entry: Goal 1 COMPLETE.
 
 ---
 
-## GOAL 4 — RankKernel page  ·  `QUEUED`
+## GOAL 4: RankKernel page  ·  `QUEUED`
 
 Entry: Goal 1 COMPLETE.
 
@@ -98,7 +98,7 @@ Entry: Goal 1 COMPLETE.
 
 ---
 
-## GOAL 5 — Projects page polish  ·  `QUEUED`
+## GOAL 5: Projects page polish  ·  `QUEUED`
 
 Entry: Goal 1 COMPLETE. This page is nearly done.
 
@@ -112,7 +112,7 @@ Entry: Goal 1 COMPLETE. This page is nearly done.
 
 ---
 
-## GOAL 6 — Resume page  ·  `QUEUED`
+## GOAL 6: Resume page  ·  `QUEUED`
 
 Entry: Goal 1 COMPLETE. This page is nearly done.
 
@@ -126,7 +126,7 @@ Entry: Goal 1 COMPLETE. This page is nearly done.
 
 ---
 
-## GOAL 7 — Whole site review  ·  `QUEUED`
+## GOAL 7: Whole site review  ·  `QUEUED`
 
 Entry: all page goals COMPLETE.
 

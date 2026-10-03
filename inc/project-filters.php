@@ -233,8 +233,20 @@ if ( ! function_exists( 'maulik_portfolio_project_filters_register' ) ) {
 			)
 		);
 
+		/*
+		 * API VERSION 3 STAYS AN INTEGER. PHPStan checks this call against
+		 * the @type string on the api_version key in core's own
+		 * register_block_type() docblock, but the block.json specification
+		 * and core's /wp/v2/block-types schema both declare apiVersion an
+		 * integer, and the editor only ever compares it numerically
+		 * (apiVersion <= 2, apiVersion > 1). The docblock is the outlier,
+		 * so the value is left alone and the report is suppressed on the
+		 * argument line alone. PHPStan raises a non ignorable error when a
+		 * suppression stops matching, so this one cannot rot unnoticed.
+		 */
 		register_block_type(
 			MAULIK_PORTFOLIO_PROJECT_FILTERS_BLOCK,
+			// @phpstan-ignore argument.type
 			array(
 				'api_version'         => 3,
 				'title'               => __( 'Project Filters', 'maulik-portfolio' ),
