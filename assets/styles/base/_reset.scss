@@ -9,6 +9,24 @@
 // style could quietly override. Depth in this theme comes only from the surface
 // step from base to surface to surface-2 plus the line hairline.
 
+// Horizontal overflow guard.
+//
+// The design states overflow-x: hidden on body at index.css. This is a guard,
+// not a fix. It stops a decorative element or an oversized grid from producing
+// a horizontal scrollbar on the whole document, which on desktop means a
+// scrollbar the visitor did not ask for and on mobile means the whole page pans
+// sideways when they try to scroll vertically. It does not repair whatever is
+// too wide, it only stops the overflow from escaping the element that caused it,
+// so the cause still has to be found and fixed.
+//
+// Note what it deliberately does not do: it does not set width, and it does not
+// hide anything. A reader who pans the page still sees every pixel of the
+// content. The alternative, clipping the offending element, is what actually
+// loses content, and it is not a trade worth making for a scrollbar.
+body {
+	overflow-x: hidden;
+}
+
 *,
 *::before,
 *::after {
@@ -32,6 +50,28 @@ video,
 canvas,
 svg {
 	border-radius: 0;
+}
+
+// The skip link, and Core's screen-reader utility generally.
+//
+// Core ships .screen-reader-text:focus and .skip-link.screen-reader-text:focus
+// with a near-white background and a dark grey ink, neither of which is in the
+// design's palette. Both were measured rendering on a real page: focusing the
+// skip link with the keyboard produced a computed background of rgb(238, 238,
+// 238) and a computed colour of rgb(68, 68, 68). The skip link is the first
+// thing a keyboard visitor sees, so this is the most visible of the Core
+// defaults rather than the least.
+//
+// The replacement uses the palette rather than new greys: the raised panel as
+// the ground and the bright text as the ink, which is the same relationship the
+// header itself has, so the skip link reads as part of the site it belongs to
+// rather than as a foreign widget that happened to become visible.
+// The selector repeats .screen-reader-text so it outranks both Core rules, the
+// looser one and the skip-link specific one, without relying on print order.
+.screen-reader-text:focus,
+.skip-link.screen-reader-text:focus {
+	background-color: var(--wp--preset--color--surface-2);
+	color: var(--wp--preset--color--text);
 }
 
 // Motion preferences are handled in a later phase. This layer is concerned only
@@ -67,14 +107,10 @@ svg {
 	}
 
 	// Grid textures are a screen affordance. A printed grid reads as a printing
-	// defect, so all four are dropped for the printed page.
-	.dark-grid,
-	.dark-subgrid,
-	.cream-editorial,
-	.warm-editorial {
-		background-color: Canvas;
-		background-image: none;
-	}
+	// defect, so all four are dropped for the printed page. The resets for the
+	// surface rules themselves live in components/_print-surfaces.scss, because
+	// this block is emitted before the surface rules and so cannot outrank
+	// them at equal specificity.
 
 	// Text on paper must invert too, since the palette custom properties are
 	// still live and would otherwise force cream type onto white.

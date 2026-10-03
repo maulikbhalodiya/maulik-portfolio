@@ -1,4 +1,27 @@
 // Mixins.
-// Intentionally empty. Add a mixin here only when at least three call sites
-// genuinely need it. Premature abstraction in a small theme costs more in
-// indirection than it saves in duplication.
+//
+// The breakpoint mixin is here because the theme switches layout at four widths
+// and every component that steps does so by asking the same question. Writing
+// the query out at each call site would put the literal pixel value in a dozen
+// places, and a breakpoint change would then be a dozen edits.
+//
+// The argument is required and has no default on purpose. Every call site states
+// its own width, so the threshold that governs a rule is visible in the rule.
+// A defaulting mixin would hide exactly the value a reader needs.
+//
+// $breakpoint-sm and $breakpoint-xl come from abstracts/_breakpoints.scss.
+// $breakpoint-md and $breakpoint-lg come from abstracts/_variables.scss, which
+// forwards the generated token file, so they are used here without an @use of
+// their own.
+
+@use 'breakpoints' as bp;
+
+/// Apply rules from a minimum viewport width upwards.
+///
+/// @param {Length} $width Minimum viewport width.
+@mixin from( $width ) {
+
+	@media (min-width: #{$width}) {
+		@content;
+	}
+}

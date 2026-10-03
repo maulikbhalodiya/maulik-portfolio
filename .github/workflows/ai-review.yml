@@ -83,6 +83,21 @@ jobs:
             The theme targets WordPress 6.7 minimum, tested to 6.9, and PHP 7.4
             minimum.
 
+            EDITOR FIRST ARCHITECTURE, SO YOU DO NOT REPORT CORRECT CODE
+
+            The authored page lives in the WordPress Page's post_content, so that
+            Pages, then a page, then Edit shows the real page. Templates supply
+            page level structure and the WordPress hierarchy, template parts
+            supply global chrome such as header and footer, and the page body
+            comes from post_content. content/pages/*.html is the source of truth
+            for that post_content and the database is generated from it. A
+            core/post-content block sitting in a template does not by itself
+            make a page editor first: the test is whether the substantial page
+            composition is in post_content rather than in the template. Surface
+            and rhythm styling uses block style variations whose CSS is compiled
+            into the theme stylesheet and keyed on the is-style-* class
+            WordPress emits, so a missing bare-slug rule is not a finding.
+
             CRITICAL ARCHITECTURE RULES
 
             1. WordPress Coding Standards 3.4.1 or later is mandatory. At or below
@@ -123,12 +138,27 @@ jobs:
                Attribute values remain untrusted at render time and must be escaped
                per output context.
 
-            10. No custom post types, no taxonomies, no shortcodes, no form
-                handling, no register_block_type() in PHP. Project data lives in
-                block attributes inside post content.
+            10. No custom post types, no taxonomies, no shortcodes and no form
+                handling. Project data lives in block attributes inside post
+                content. A custom block is judged by one test: does its
+                render.php read a data model, meaning posts, meta or terms? If it
+                does, it belongs in a plugin and is out of scope. If it is
+                presentational only, such as a card, a badge or a flow, it belongs
+                in this theme. Do not report a presentational block as forbidden.
+            10a. A theme gets NO automatic block registration. Core scans no theme
+                blocks/ directory, so every block.json in this theme needs a
+                register_block_type() call in functions.php. Auto registration
+                from blocks/ is a @wordpress/scripts plugin convention. Server
+                side registration is also what makes theme.json styles apply to
+                a block at all.
 
-            11. Never emit a raw email address or a mailto link. Contact is a form
-                with an intent dropdown.
+            11. The design's own email address is published, by owner decision.
+                It appears in the footer Connect column and in the section 08
+                Email Me button. Do not report either as a violation, do not
+                propose replacing either with a /contact/ link, and do not
+                propose removing it. Any OTHER raw address or mailto is still
+                forbidden. Contact everywhere else is a form with an intent
+                dropdown.
 
             12. The site must be noindex while in development. The helper in
                 inc/seo.php is gated behind WP_DEBUG AND an explicit opt-in, so a
@@ -176,7 +206,10 @@ jobs:
             deleting a test or a CI assertion. Never propose code that would itself
             fail the gates, because your suggestions must pass phpcs.xml.dist with
             zero errors and zero warnings. Never use an em dash or an en dash in
-            your output. Never propose a raw email address or a mailto link. Never
+            your output. Never propose a raw email address or a mailto link other
+            than the design's own, which the owner has decided to publish. Never
+            propose removing the footer Email link or the section 08 Email Me
+            button. Never
             propose adding a custom post type, a shortcode or form handling.
 
   fix:
@@ -268,6 +301,20 @@ jobs:
             Fix findings. Do not redesign, do not add features, and do not change
             behaviour that was not the subject of a finding.
 
+            EDITOR FIRST ARCHITECTURE, DO NOT UNDO IT
+
+            The authored page lives in the WordPress Page's post_content, so that
+            Pages, then a page, then Edit shows the real page. Templates supply
+            page level structure and the WordPress hierarchy, template parts
+            supply global chrome, and the page body comes from post_content.
+            content/pages/*.html is the source of truth for that post_content and
+            the database is generated from it. A fix that moves page copy out of
+            post_content and back into a template reintroduces a bug, because it
+            hides the page from the editor. Surface and rhythm styling uses block
+            style variations whose CSS is compiled into the theme stylesheet and
+            keyed on the is-style-* class WordPress emits; do not rewrite that
+            CSS to target the bare variation slug.
+
             NON NEGOTIABLE CONSTRAINTS
 
             1. WordPress Coding Standards 3.4.1 or later. Never lower the constraint.
@@ -278,8 +325,15 @@ jobs:
             6. Never use an em dash or an en dash anywhere, including in comments
                and commit messages.
             7. Never emit a raw email address or a mailto link.
-            8. Never add a custom post type, a taxonomy, a shortcode, form
-               handling, or register_block_type() in PHP.
+            8. Never add a custom post type, a taxonomy, a shortcode or form
+               handling. A custom block is a different matter: judge it by one
+               test, which is whether its render.php reads a data model, meaning
+               posts, meta or terms. A block that queries data belongs in a
+               plugin and is out of scope. A presentational block, such as a card,
+               a badge or a flow, belongs in this theme and must NOT be removed
+               or rewritten. This is a code writing job, so deleting a correct
+               presentational block to satisfy a stale reading of this rule is a
+               regression.
             9. Never create block-templates/ or block-template-parts/. Block themes
                use templates/ and parts/.
             10. Every PHP file keeps defined( 'ABSPATH' ) || exit; after its
@@ -401,17 +455,33 @@ jobs:
             exit 1
           fi
 
-      - name: Assert no mailto links or raw email addresses
+      # NARROWED BY OWNER DECISION, NOT DELETED. The owner ruled that the demo
+      # design's own address ships in the footer Connect column and in the
+      # section 08 Email Me button. A blanket ban would now fail this review on
+      # correct code. Both checks still reject any OTHER address.
+      - name: Assert no mailto links or raw email addresses other than the design's own
         run: |
           set -euo pipefail
-          pattern="mail$(printf 'to')"':'
-          if git grep -nI -F "${pattern}" -- . ':(exclude)node_modules' ':(exclude)vendor'; then
-            echo "::error::A mailto link was found. Contact is a form with an intent dropdown."
+          allowed="mail$(printf 'to')"':maulikbhalodiya9999@'"gmail.com"
+          permitted="maulikbhalodiya9999@""gmail.com"
+          tok="mail$(printf 'to')"':[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+          found="$(git grep -oI -P "${tok}" -- . ':(exclude)node_modules' ':(exclude)vendor' \
+            ':(exclude)package-lock.json' \
+            | sed 's|^[^:]*:||' | sort -u || true)"
+          unexpected="$(printf '%s\n' "${found}" | grep -v -F -x "${allowed}" || true)"
+          if [ -n "${unexpected}" ]; then
+            echo "::error::A mailto link other than the design's own was found."
+            printf '%s\n' "${unexpected}"
             exit 1
           fi
-          if git grep -nI -P '[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
-            ':(exclude)node_modules' ':(exclude)vendor' ':(exclude)languages/*.pot'; then
-            echo "::error::A raw email address was found in the repository."
+          found="$(git grep -oI -P '[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
+            ':(exclude)node_modules' ':(exclude)vendor' ':(exclude)languages/*.pot' \
+            ':(exclude)package-lock.json' \
+            | sed 's|^[^:]*:||' | sort -u || true)"
+          unexpected="$(printf '%s\n' "${found}" | grep -v -F -x "${permitted}" || true)"
+          if [ -n "${unexpected}" ]; then
+            echo "::error::A raw email address other than the design's own was found."
+            printf '%s\n' "${unexpected}"
             exit 1
           fi
 

@@ -149,12 +149,29 @@ database schema.
 
 We hold ourselves to WordPress.org review standards as a discipline even though we are
 not submitting to the directory. That discipline is the point. Flag any proposed
-`register_post_type()`, `register_taxonomy()`, `add_shortcode()`, `register_block_type()`
-in PHP, or any handler for submitted form data.
+`register_post_type()`, `register_taxonomy()`, `add_shortcode()`, or any handler for
+submitted form data.
 
-`register_block_type()` deserves a specific note: for a block theme, block registration
-happens automatically from `blocks/*/block.json`. A manual PHP registration for a block
-that already has a `block.json` causes a duplicate registration warning.
+`register_block_type()` is **not** on that list, and the distinction matters, so read
+this before flagging one:
+
+- **A theme gets no automatic block registration.** Core scans no theme directory. A
+  `blocks/*/block.json` in this theme is registered by `functions.php` calling
+  `register_block_type()`, and there is no alternative. The auto registration everyone
+  describes is a `@wordpress/scripts` **plugin** convention, verified against core
+  source in `docs/RESEARCH-02-BLOCK-THEME.md` section 1. An agent that creates a
+  `blocks/` directory expecting Core to pick it up will produce code that never
+  registers and never renders. Assert that every `block.json` has a registration call,
+  and that no registration call points at a directory without a `block.json`.
+- **Server side registration is mandatory for presentational blocks, not optional.**
+  A block that core does not know about on the server applies no `theme.json` styles,
+  no supports, no style variations and no REST block type entry.
+- **The line that decides theme versus plugin is whether the block reads a data
+  model.** Presentational blocks, such as a card, badge or flow, are theme. Blocks
+  whose `render.php` queries posts, meta or terms are plugin territory, because the
+  WordPress.org dividing line is "functionality that is not related to design and
+  presentation", and dynamic blocks that read project data are exactly that. Flag a
+  `render.php` that queries; do not flag a `render.php` that only echoes attributes.
 
 ### 2.11 Never emit a raw email address or a `mailto` link
 

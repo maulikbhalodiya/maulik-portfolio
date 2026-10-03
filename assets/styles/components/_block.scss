@@ -1,4 +1,36 @@
 // Block level component styling.
-// Intentionally empty. Styling here should be scoped to a block class that this
-// theme actually owns, not to core block internals such as .wp-block-paragraph,
-// which Core and the site editor both expect to control.
+
+// The secondary button.
+//
+// is-style-outline is carried in content/pages/*.html but is NOT a registered
+// block style variation. There is no styles/outline.json and there is no
+// is-style-outline rule in Core, so the class was a name nothing matched and
+// every secondary button rendered as a second copy of the primary amber button,
+// side by side with it.
+//
+// The design's secondary button, from HomePage.tsx and repeated on every
+// section, is bg-[#171719] text-[#FFFDF4] border border-[#343434] with the
+// border going amber on hover. Those are the values below.
+//
+// It is written as a plain class rather than registered as a variation because a
+// variation is registered from styles/, and adding a file there would be a new
+// block style the editor offers, which is a larger change than the design asks
+// for. The class string is already in the content files and those are the
+// repository's source of truth for page copy.
+
+/* stylelint-disable selector-class-pattern --
+   is-style-outline is a fixed class string carried by content/pages/*.html. */
+
+.wp-block-button.is-style-outline .wp-block-button__link {
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.wp-block-button.is-style-outline .wp-block-button__link:hover,
+.wp-block-button.is-style-outline .wp-block-button__link:focus {
+	color: var(--wp--preset--color--accent);
+	background-color: var(--wp--preset--color--surface-2);
+	border-color: var(--wp--preset--color--accent);
+}
+/* stylelint-enable selector-class-pattern */

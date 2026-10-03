@@ -1,0 +1,35 @@
+// Breakpoints.
+//
+// The design reference switches layout at four widths, and those four widths are
+// the whole reason this file exists:
+//
+//   640px   Tailwind sm. The eyebrow, hero copy and body copy step up here.
+//   768px   Tailwind md. The header inset and the section rhythm step up here.
+//   1024px  Tailwind lg. Load bearing: the desktop nav appears and the hero
+//           becomes two columns.
+//   1280px  Tailwind xl. The display type reaches its maximum here.
+//
+// WHY PX AND NOT REM OR EM. A rem or em breakpoint moves with the user's root
+// font size, which is not what the design specifies and which makes the whole
+// layout reflow while the user is still zooming. These are device width
+// thresholds and are absolute lengths.
+//
+// WHY THE NAMES ARE PREFIXED. abstracts/_variables.scss forwards
+// generated/_theme-json-tokens.scss, which emits $breakpoint-md as 48em and
+// $breakpoint-lg as 64em. Those are generated from scripts/, which is outside
+// the write scope of this change, and they are not the values the design uses.
+// Redefining the same names here would be a Sass duplicate variable error, so
+// these four are the layout breakpoints and the generated pair is left alone for
+// whatever still consumes it. Do not rename these back to $breakpoint-md and
+// $breakpoint-lg without first changing the generator, or the stylesheet stops
+// compiling.
+//
+// 48em and 64em resolve to the same 768px and 1024px at the default 16px root,
+// so nothing here contradicts the generated pair. It is written in px anyway so
+// that the emitted media queries read as the four device widths the design names
+// rather than as font relative lengths.
+
+$bp-sm: 640px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;

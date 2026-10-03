@@ -564,10 +564,12 @@ That single question signals more competence than any metric could.
 
 **This directly contradicts two decisions already made:**
 
-1. **Research established that custom post types and custom blocks are
-   forbidden in a wp.org directory theme.** "Shortcodes, custom post types, and
-   custom blocks are not allowed in themes." The blueprint is a plugin
-   architecture.
+1. **Research established that custom post types and custom blocks that read
+   project data are forbidden in a wp.org directory theme.** The directory's own
+   wording is "Shortcodes, custom post types, and custom blocks are not allowed
+   in themes", and its dividing line is functionality that is not design and
+   presentation. All four blocks named above fall on the plugin side of that line
+   because each reads project data. The blueprint is a plugin architecture.
 2. **The decision was Path B, everything inside the theme, no submission.**
 
 There is a third problem: the blueprint's own field list **omits

@@ -9,9 +9,11 @@
 // background-image on a page surface rather than a theme token, and a custom
 // property cannot carry the 3.5 percent alpha that keeps the lines behind the
 // type.
-// WordPress strips unrecognised placeholder classes from block markup, so
-// .warm-editorial is a documented hook name, attached through a theme.json style
-// variation rather than hand applied in the editor.
+
+// DEPRECATED. The .warm-editorial rule below is a legacy hook name that exists
+// only until templates/404.html is migrated to the is-style-* vocabulary. It is
+// not a second canonical name and must not be used in new markup. The canonical
+// selector is .is-style-surface-warm-editorial.
 
 .warm-editorial {
 	background-color: var(--wp--preset--color--paper);
@@ -22,4 +24,34 @@
 		transparent 1px
 	);
 	background-size: 64px 64px;
+}
+
+// Texture: surface-warm-editorial, the canonical is-style-* selector.
+// Matches <div class="wp-block-group is-style-surface-warm-editorial">.
+// Surface, type colour and the 64px horizontal line grid are copied verbatim
+// from .warm-editorial above. The link colours are copied verbatim from the
+// block css in styles/surface-warm-editorial.json, which is the only place they
+// are written down.
+
+.wp-block-group.is-style-surface-warm-editorial {
+	background-color: var(--wp--preset--color--paper);
+	color: var(--wp--preset--color--text-on-paper);
+	background-image: linear-gradient(
+		to bottom,
+		rgba(10, 10, 11, 0.035) 1px,
+		transparent 1px
+	);
+	background-size: 64px 64px;
+
+	a,
+	a:visited,
+	a:hover {
+		color: var(--wp--preset--color--accent-on-paper);
+	}
+
+	// THE FOCUS OUTLINE IS DELIBERATELY NOT RESTATED HERE, for the same reason as
+	// on the cream surface. A link specific rule nested in this file outranks the
+	// flip in base/_focus.scss on specificity rather than on print order, and it
+	// was measured winning on a real page. base/_focus.scss is the single owner
+	// of the focus outline on both light surfaces.
 }

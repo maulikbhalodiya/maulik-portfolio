@@ -322,9 +322,19 @@ Target: **TTFB under 400ms at p75**.
 - **No custom post types, no taxonomies, no shortcodes, no form handling.** Project
   data lives in block attributes inside post content, which needs no database schema and
   no meta queries. Flag any proposal to add them.
-- **No `register_block_type()` in PHP.** Block registration is automatic from
-  `blocks/*/block.json`. A manual registration for a block that already has a
-  `block.json` produces a duplicate registration warning.
+- **A theme gets NO automatic block registration.** Nothing in core scans a theme's
+  `blocks/` directory. `wp_register_block_types_from_metadata_collection()` exists in
+  `wp-includes/blocks.php` but core never calls it for a theme, and auto registration
+  from `blocks/*/block.json` is a `@wordpress/scripts` **plugin** convention that is
+  widely misrepeated. A block in this theme's `blocks/` directory that has no matching
+  `register_block_type()` call is dead code that the editor will never offer, so assert
+  the two match rather than assuming Core does it. See `docs/RESEARCH-02-BLOCK-THEME.md`
+  section 1, which is verified against core source.
+- **A custom block belongs in the theme only when it is presentation.** A block whose
+  `render.php` reads a data model, that is posts, meta or terms, belongs in a plugin. A
+  presentational block, such as a card, badge or flow, belongs in the theme. Either way
+  it must be registered on the server, because a block that core does not know about
+  applies no `theme.json` styles at all.
 - **Never create `block-templates/` or `block-template-parts/`.** Core checks
   `file_exists()` on the stylesheet directory and switches to legacy handling if either
   exists. It is silent and it breaks `templates/` entirely.

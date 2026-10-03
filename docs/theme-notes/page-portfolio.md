@@ -64,3 +64,23 @@ the inner text of one original comment, in the order it appeared in the file.
 			into the page content in the normal page editor. The twelve headings
 			above are the framework and do not change from project to project.
 ```
+
+---
+
+## Correction note, 2026-10-01
+
+The archived text above is verbatim and is not rewritten. Added because this note already
+argued for editor owned content.
+
+**The final archived paragraph, "the case study prose is written into the page content in
+the normal page editor", is the editor first decision, already made in the original
+file.** The twelve headings are a framework and the prose belongs to the editor. That is
+the same conclusion the resume note reached from the opposite direction: the editor
+should be able to change a job title or a paragraph without unlocking a template.
+
+Applying it consistently is what changed on 2026-10-01. The composition now lives in
+`post_content` for case study pages too, sourced from `content/pages/`, rather than
+being split between a template and an almost empty post-content block. A
+`core/post-content` block existing in a template never proved a page was editor first:
+the test is whether the substantial composition is in `post_content`. See
+`docs/ARCHITECTURE.md`.

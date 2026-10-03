@@ -233,48 +233,76 @@ jobs:
           fi
           echo "OK: no em dashes or en dashes found."
 
+      # THE EMAIL ADDRESS IS PUBLISHED, BY OWNER DECISION. Both gates below used
+      # to reject every mailto and every raw address outright. They are now
+      # NARROWED rather than deleted, and the reason is that their original
+      # target has narrowed rather than vanished: the owner ruled that the demo
+      # design's own address ships in the footer Connect column and in the
+      # section 08 Email Me button, and that Contact remains a form with an
+      # intent dropdown everywhere else.
+      #
+      # So exactly one address is now permitted. Any OTHER mailto, or any OTHER
+      # address, still fails the build. Deleting these steps wholesale would have
+      # removed a real guard for no reason, since the guard's job, catching an
+      # address nobody decided to publish, is still live.
+      #
       # The grep pattern is assembled from a variable rather than written
       # literally. A literal pattern inside this workflow file would match itself
       # and fail the build forever, which is a confusing way to discover the check
-      # works.
+      # works. The permitted address is assembled the same way, for the same
+      # reason: written out in full here, this file would match itself and the
+      # gate would fail on the workflow that contains it.
       #
       # docs/ is excluded because it legitimately cites this rule and records the
       # historical finding, including the shape of the violation. Documentation is
-      # never served to a browser, so a mailto string there cannot leak an
-      # address. The gate covers everything that actually ships: PHP, templates,
-      # parts, patterns, styles, JS and SCSS.
-      - name: Assert no mailto links
+      # never served to a browser. The gate covers everything that actually
+      # ships: PHP, templates, parts, patterns, styles, JS and SCSS.
+      - name: Assert no mailto links other than the design's own
         run: |
           set -euo pipefail
-          pattern="mail$(printf 'to')"':'
-          if git grep -nI -F "${pattern}" -- . \
+          allowed="mail$(printf 'to')"':maulikbhalodiya9999@'"gmail.com"
+          tok="mail$(printf 'to')"':[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+          found="$(git grep -oI -P "${tok}" -- . \
             ':(exclude)node_modules' \
             ':(exclude)vendor' \
             ':(exclude)package-lock.json' \
-            ':(exclude)docs'; then
-            echo "::error::A mailto link was found in shipped theme content."
-            echo "Contact is a form with an intent dropdown, not an email link."
+            ':(exclude)docs' \
+            | sed 's|^[^:]*:||' \
+            | sort -u || true)"
+          unexpected="$(printf '%s\n' "${found}" | grep -v -F -x "${allowed}" || true)"
+          if [ -n "${unexpected}" ]; then
+            echo "::error::A mailto link other than the design's own was found in shipped theme content."
+            printf '%s\n' "${unexpected}"
+            echo "The design's address is permitted by owner decision. Any other is not."
             exit 1
           fi
-          echo "OK: no mailto links in shipped theme content."
+          echo "OK: no unexpected mailto links in shipped theme content."
 
       # The .pot header carries the standard gettext translator placeholder, which
       # is what upstream wp i18n make-pot emits, so the POT file is excluded here
       # to avoid matching on a string that has to be there.
-      - name: Assert no raw email addresses
+      #
+      # Narrowed on the same basis as the mailto gate above: the design's one
+      # address is allowed through, and every other address still fails.
+      - name: Assert no raw email addresses other than the design's own
         run: |
           set -euo pipefail
-          if git grep -nI -P '[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
+          permitted="maulikbhalodiya9999@""gmail.com"
+          found="$(git grep -oI -P '[A-Za-z0-9._%%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' -- . \
             ':(exclude)node_modules' \
             ':(exclude)vendor' \
             ':(exclude)package-lock.json' \
-            ':(exclude)languages/*.pot'; then
-            echo "::error::A raw email address was found in the repository."
-            echo "Raw addresses are scraped by automated bots within hours of a site going live."
-            echo "Contact is a form with an intent dropdown."
+            ':(exclude)languages/*.pot' \
+            | sed 's|^[^:]*:||' \
+            | sort -u || true)"
+          unexpected="$(printf '%s\n' "${found}" | grep -v -F -x "${permitted}" || true)"
+          if [ -n "${unexpected}" ]; then
+            echo "::error::A raw email address other than the design's own was found in the repository."
+            printf '%s\n' "${unexpected}"
+            echo "The design's address is permitted by owner decision. Any other is not."
             exit 1
           fi
-          echo "OK: no raw email addresses found."
+          echo "OK: no unexpected raw email addresses found."
 
   wordpress-standards:
     name: WordPress standards

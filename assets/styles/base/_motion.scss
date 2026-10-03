@@ -1,0 +1,67 @@
+// Motion.
+//
+// THE THEME HAD NO TRANSITION DECLARATION AND NO REDUCED MOTION BLOCK. Both are
+// load bearing and both are stated by the design reference.
+//
+// The design sets transition-colors duration-200 on every interactive element,
+// which is a colour only transition. Nothing in this theme moves, scales or
+// translates, so the transitions are limited to the three colour properties the
+// design actually animates: color, background-color and border-color. Adding a
+// transform transition here would be motion this theme does not have.
+//
+// The duration is the design's 200ms and the easing is the design's standard
+// curve. Both are written as literals rather than read from
+// theme.json settings.custom.motion, because WordPress does not emit
+// settings.custom keys as custom properties, so a variable reference to one
+// would resolve to nothing and every transition would fall back to 0s.
+//
+// prefers-reduced-motion is a separate, unconditional layer at the bottom of
+// this file and is not scoped to any component. It forces animation and
+// transition durations to 0.01ms rather than 0s on purpose: 0s is not a valid
+// duration for an element with a transition, the browser refuses the rule and
+// the motion keeps playing. 0.01ms is the smallest value the spec permits and
+// is what the design reference uses.
+//
+// !important IS REQUIRED HERE AND ONLY HERE. A visitor who has asked for less
+// motion must get less motion even from a component rule that is more specific
+// than this one. Without it the block being overridden is decided by
+// specificity, which is the opposite of what the preference means.
+//
+// $motion-duration and $motion-ease live in abstracts/_variables.scss because
+// components/_site-header.scss and components/_site-footer.scss need the same
+// two values and a Sass variable defined in a base partial is not visible to
+// them.
+/* stylelint-disable selector-class-pattern --
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by patterns/header.php, patterns/footer.php and the content
+   files, none of which this stylesheet can change. */
+
+
+@use '../abstracts' as *;
+
+a,
+.wp-block-navigation-item__content,
+.wp-block-button__link,
+.wp-block-social-link,
+.site-header__social-link,
+.site-footer__link a {
+	transition:
+		color $motion-duration $motion-ease,
+		background-color $motion-duration $motion-ease,
+		border-color $motion-duration $motion-ease;
+}
+
+// The reduced motion layer.
+@media (prefers-reduced-motion: reduce) {
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* stylelint-enable selector-class-pattern */

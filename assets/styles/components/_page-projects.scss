@@ -1,0 +1,932 @@
+@use '../abstracts' as *;
+
+// The Projects archive page.
+//
+// Sources, all read and traced:
+//   design-reference/src/pages/ProjectsArchivePage.tsx  the four sections
+//   design-reference/src/components/InnerPageHero.tsx    the hero frame
+//   design-reference/src/data/portfolioData.ts            the copy and the data
+//   design-reference/node_modules/tailwindcss/theme.css   the line heights
+//
+// MEASURED AGAINST THE DESIGN AT 1440 AND 390. Every number below is the
+// rendered value of the Tailwind utility the design states, with
+// --spacing: 0.25rem per step:
+//
+//   py-6   = 24px    the filter row
+//   py-16  = 64px    mobile step
+//   py-20  = 80px    the independent section at md
+//   py-24  = 96px    the professional section at md, and the hero, which
+//                    .section-hero already supplies in _rhythm.scss
+//
+// HEADINGS ARE NOT UNIFORM. The hero h1 is 60px, the independent h2 is 30px at
+// sm and 24px below it, and the professional h2 is 36px at sm and 30px below.
+// The theme h2 preset is a fluid clamp with a 36px floor, so both body steps are
+// stated here rather than inherited.
+//
+// ZERO BORDER RADIUS, ZERO BOX SHADOW. The design spine is square corners, so
+// nothing in this file sets either property.
+//
+// THE FOUR GRID TEXTURES ARE NOT TOUCHED HERE. This page wears the 48px dark
+// grid on the hero and on the professional section and nothing else. The 32, 64
+// and 96px textures stay registered and unused.
+//
+// NO LIGHT SURFACE ON THIS PAGE. Every ground here is base, surface or
+// surface-2, and the two editorial textures are never worn.
+
+/* stylelint-disable selector-class-pattern --
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by content/pages/projects.html. */
+
+// 01 Hero.
+//
+// InnerPageHero.tsx line 44 and line 45: py-16 md:py-24 on bg-dark-grid with a
+// 1px #262626 rule under it, then max-w-[1440px] px-6 md:px-10 inside.
+// .section-hero in _rhythm.scss already carries the 64px then 96px, so only the
+// rule and the internals are stated here.
+.pj-hero {
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// grid grid-cols-1 lg:grid-cols-12 gap-10 items-end, so 40px between the two
+// columns, aligned to their bottom edges.
+.pj-hero__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2.5rem;
+	align-items: end;
+}
+
+@include from( $bp-lg ) {
+
+	.pj-hero__grid {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+}
+
+// space-y-5 on the left cell, lg:col-span-7. 20px between its children.
+.pj-hero__main {
+	min-width: 0;
+}
+
+.pj-hero__main > * {
+	margin-block: 0;
+}
+
+.pj-hero__main > * + * {
+	margin-block-start: 1.25rem;
+}
+
+@include from( $bp-lg ) {
+
+	.pj-hero__main {
+		grid-column: span 7;
+	}
+
+	.pj-hero__aside {
+		grid-column: span 5;
+	}
+}
+
+// The amber square that opens the identifier line is 8px on a side.
+.pj-eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+}
+
+.pj-eyebrow__dot {
+	display: inline-block;
+	flex-shrink: 0;
+	width: 0.5rem;
+	height: 0.5rem;
+	background-color: var(--wp--preset--color--accent);
+}
+
+// text-4xl sm:text-5xl md:text-6xl font-display font-extrabold tracking-tight
+// with leading-[1.08]. The theme h1 preset already lands on 60px at 1440, so the
+// weight, the tracking and the leading are what this rule adds.
+.pj-hero .wp-block-heading {
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 800;
+	line-height: 1.08;
+	letter-spacing: -0.025em;
+	color: var(--wp--preset--color--text);
+}
+
+// text-base sm:text-lg text-[#D8D5CA] leading-relaxed max-w-3xl, so 16px then
+// 18px at 1.5556 within 768px.
+
+.pj-hero__desc {
+	max-width: 48rem;
+	margin-block: 0;
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+@include from( $bp-sm ) {
+
+	.pj-hero__desc {
+		font-size: 1.125rem;
+		line-height: 1.5556;
+	}
+}
+
+// pt-2 font-mono-tech text-xs text-[#77746C] with gap-x-2.5 gap-y-1, which is
+// 10px across and 4px down.
+.pj-hero__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.25rem 0.625rem;
+	padding-block-start: 0.5rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.pj-hero__meta-sep {
+	color: var(--wp--preset--color--text-faint);
+}
+
+// p-6 bg-[#111113] border border-[#262626] space-y-4.
+.pj-panel {
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.pj-panel > * {
+	margin-block: 0;
+}
+
+.pj-panel > * + * {
+	margin-block-start: 1rem;
+}
+
+// font-mono-tech text-xs text-[#FACC15] border-b border-[#262626] pb-3.
+.pj-panel__title {
+	padding-block-end: 0.75rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+}
+
+// space-y-3 text-xs text-[#D8D5CA] leading-relaxed.
+.pj-panel__list > * {
+	margin-block: 0;
+}
+
+.pj-panel__list > * + * {
+	margin-block-start: 0.75rem;
+}
+
+.pj-panel__item {
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.pj-panel__key {
+	font-family: var(--wp--preset--font-family--mono);
+	font-weight: 600;
+	color: var(--wp--preset--color--text);
+}
+
+// 02 Filter row.
+//
+// ProjectsArchivePage.tsx line 105 and line 106: py-6 on #0A0A0B with a 1px
+// #262626 rule under it, then a flex row that stacks below md.
+//
+// INTERACTIVITY. The row is a real tablist and it filters. It is server rendered
+// by inc/project-filters.php, which is a dynamic block registered in the
+// inc/hero-ecosystem.php mould, so the markup carries role="tablist", one
+// button per tab with role="tab" and aria-selected, and a roving tabindex
+// without a single line of this stylesheet having to guess at it. The view
+// script is attached through the block's own view_script_handles, so it is
+// downloaded only where the block rendered.
+//
+// The tabs are buttons, not anchors, so nothing here can navigate. There is no
+// dead control on this page: every tab either narrows the case study grid or
+// is one of the two classification tabs that do.
+//
+// THE ROW IS 83PX AND MUST STAY 83PX. The tabs are the same 14px by 8px padding
+// box the anchors measured at, the same 12px mono type and the same 8px flex
+// gap, so the row's geometry is unchanged by the change of element.
+.pj-filters {
+	padding-block: 1.5rem;
+	background-color: var(--wp--preset--color--base);
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// The two sections above are full bleed surfaces in the design, and both paint
+// their background on the content box, so without this their surface stops at
+// the gutter and the page shows a seam down both edges where the body's own
+// background shows through.
+//
+// THE GENERIC MECHANISM IS is-style-section, in _rhythm.scss. Neither of these
+// two carries that class, which is the whole reason they were missed. The
+// treatment is restated here rather than changed there, because _rhythm.scss is
+// owned elsewhere: width, the negative inline margin that escapes the
+// constrained parent, and the gutter as padding-inline, which is the same three
+// declarations in the same order.
+//
+// THE MARGIN MUST BE !important OR NOTHING HERE APPLIES. WordPress core prints
+//   .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull))
+//     { margin-left: auto !important; margin-right: auto !important; }
+// and those auto margins centre a constrained child inside its parent, which is
+// right for a column of text and wrong for a surface that has to reach both
+// edges of the window. Measured with the plain declaration, both sections still
+// reported left 40 and right 1480 at 1440, that is they did not move at all,
+// because auto resolved to 0 against the over wide width. theme.css loads after
+// the inline global styles, so the !important here is later in the cascade and
+// wins. _site-footer.scss does the same for the same reason.
+//
+// padding-inline is the design's own arithmetic, identical to the one in
+// _rhythm.scss, and both custom properties are the ones WordPress derives from
+// theme.json: the gutter is var(--wp--style--root--padding-left), 1.5rem then
+// 2.5rem from 768, and the cap is var(--wp--style--global--content-size). The
+// result is
+//   max( gutter, ( 100vw - 1440 ) / 2 + gutter )
+// which is the gutter at and below 1440 and then the centred cap plus the
+// gutter inside it. Below 768 the cap term is negative and max() falls through
+// to the gutter alone, so the gutter stays a step, 24px then 40px, and never a
+// ramp.
+//
+// 100vw COUNTS THE SCROLLBAR. base/_reset.scss already sets overflow-x: hidden
+// on body, taken from the design's own index.css, so the overshoot is clipped
+// and no horizontal scrollbar appears. That guard is load bearing here exactly
+// as it is in _rhythm.scss and in _site-footer.scss.
+.pj-filters,
+.wp-block-group.pj-indep {
+	width: 100vw;
+	max-width: none;
+
+	// stylelint-disable-next-line declaration-no-important
+	margin-inline: calc( 50% - 50vw ) !important;
+
+	padding-inline: max(
+		var( --wp--style--root--padding-left, 1.5rem ),
+		calc(
+			(
+				( 100vw - var( --wp--style--global--content-size, 90rem ) ) / 2
+			) + var( --wp--style--root--padding-left, 1.5rem )
+		)
+	);
+}
+
+.pj-filters__row {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+@include from( $bp-md ) {
+
+	.pj-filters__row {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+// text-xs, which is 12px on a 16px line, read off
+// node_modules/tailwindcss/theme.css lines 348 and 350.
+//
+// The label is a paragraph, and the base typography sets `.page-shell p` to
+// 1rem. That selector is more specific than a single class, so the design size
+// is stated against the section to win it back. Without this the label renders
+// at 16px, takes two lines, and pushes the control row down.
+.pj-filters .pj-filters__label {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+// ProjectsArchivePage.tsx line 113: the control strip is a plain flex wrap with
+// gap-2 and nothing else. WordPress flow layout drops its block gap between the
+// label and the strip, and the design has no such gap, so it is cleared here.
+// Clearing it also lets the strip take its full 934px of natural width, which is
+// what keeps all ten labels on one 34px line instead of wrapping to two.
+.pj-filters .pj-filters__list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-block: 0;
+}
+
+// px-3.5 py-2 text-xs font-mono-tech border, so 14px by 8px, at 34px tall.
+//
+// A button does not inherit type from the page, so every property the design
+// states is stated here rather than inherited: family, size, line height and
+// weight. The user agent's own button face and its default text align are
+// overridden for the same reason. Nothing here changes the measured box.
+.pj-tab {
+	display: inline-block;
+	padding: 0.5rem 0.875rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3333;
+	text-align: center;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	color: var(--wp--preset--color--text-muted);
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// ProjectsArchivePage.tsx line 124 states transition-colors, which the measured
+// computed value expands to the colour properties at 150ms on the design's
+// standard curve. It is a colour transition and nothing moves, scales or
+// translates. The duration and the curve are written as literals rather than
+// read from theme.json settings.custom.motion, for the reason base/_motion.scss
+// records: WordPress does not emit settings.custom keys as custom properties,
+// so a variable reference would resolve to nothing.
+//
+// prefers-reduced-motion is already handled unconditionally in
+// base/_motion.scss, which forces every transition duration to 0.01ms with
+// important, so a visitor who asks for less motion gets none without a second
+// media query here.
+.pj-tab {
+	transition:
+		color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+		background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+		border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// hover:border-[#77746C] hover:text-[#FFFDF4] on the unselected tab.
+//
+// :focus-visible rather than :focus so the colour follows the same keyboard
+// only distinction the outline does. The outline itself is NOT restated here
+// and must never be: it is the single rule in base/_focus.scss, a 2px #FACC15
+// outline at a 3px offset, and this file has no rule that can remove it.
+.pj-tab:hover,
+.pj-tab:focus-visible {
+	color: var(--wp--preset--color--text);
+	border-color: var(--wp--preset--color--text-faint);
+}
+
+// The selected state: bg-[#FACC15] text-[#000000] border-[#FACC15] at weight
+// 600, which is ProjectsArchivePage.tsx line 126.
+//
+// NOT BY COLOUR ALONE. The design's selected tab is not only amber on dark, it
+// is also the only tab at weight 600 while every unselected tab sits at 400,
+// which is measured on the live reference and reproduced here. The weight
+// change is the difference that survives a greyscale render, a colour vision
+// deficiency and a screen reader. aria-selected is the machine readable half of
+// the same fact.
+//
+// The rule is stated for the attribute and for the class together so the paint
+// can never disagree with the accessibility tree, whichever one a future edit
+// to the markup happens to move.
+.pj-tab[aria-selected="true"],
+.pj-tab.pj-tab-selected,
+.pj-tab[aria-selected="true"]:hover,
+.pj-tab.pj-tab-selected:hover,
+.pj-tab[aria-selected="true"]:focus-visible,
+.pj-tab.pj-tab-selected:focus-visible {
+	font-weight: 600;
+	color: var(--wp--preset--color--black);
+	background-color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// 03 Independent Development.
+//
+// ProjectsArchivePage.tsx line 142: py-16 md:py-20 on #0A0A0B with a rule under
+// it, which is 64px then 80px, matching the measured 80/80 at 1440.
+.wp-block-group.pj-indep {
+	padding-block: 4rem;
+	background-color: var(--wp--preset--color--base);
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.pj-indep {
+		padding-block: 5rem;
+	}
+}
+
+// flex flex-wrap items-center justify-between gap-4 border-b pb-4.
+.pj-indep__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-block-end: 1rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.pj-indep__head-main > * {
+	margin-block: 0;
+}
+
+.pj-indep__head-main > * + * {
+	margin-block-start: 0.25rem;
+}
+
+// text-2xl sm:text-3xl font-display font-bold text-[#FFFDF4], so 24px then 30px.
+.pj-indep__title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.pj-indep__title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+.pj-indep__note {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// p-8 md:p-10 bg-[#111113] border border-[#343434] grid grid-cols-1
+// lg:grid-cols-12 gap-8 items-center, which is 32px then 40px of padding and a
+// 32px gutter.
+.pj-indep__card {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	align-items: center;
+	padding: 2rem;
+	margin-block-start: 2rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+@include from( $bp-md ) {
+
+	.pj-indep__card {
+		padding: 2.5rem;
+	}
+}
+
+@include from( $bp-lg ) {
+
+	.pj-indep__card {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.pj-indep__body {
+		grid-column: span 8;
+	}
+
+	.pj-indep__actions {
+		grid-column: span 4;
+	}
+}
+
+// space-y-5 inside the left cell.
+.pj-indep__body > * {
+	margin-block: 0;
+}
+
+.pj-indep__body > * + * {
+	margin-block-start: 1.25rem;
+}
+
+// font-mono-tech text-xs text-[#FACC15] flex flex-wrap items-center gap-2.
+.pj-indep__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+}
+
+// text-3xl sm:text-4xl font-display font-bold, so 30px then 36px.
+.pj-indep__name {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.875rem;
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.pj-indep__name {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+// text-lg font-display font-semibold text-[#FACC15], 18px at 1.5556.
+.pj-indep__subtitle {
+	margin-block: 0.5rem 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.125rem;
+	font-weight: 600;
+	line-height: 1.5556;
+	color: var(--wp--preset--color--accent);
+}
+
+.pj-indep__overview {
+	margin-block: 0;
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// p-4 bg-[#0A0A0B] border border-[#262626] space-y-2.
+.pj-scheme {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.pj-scheme > * {
+	margin-block: 0;
+}
+
+.pj-scheme > * + * {
+	margin-block-start: 0.5rem;
+}
+
+// text-[11px] text-[#77746C] for the schematic caption.
+.pj-scheme__caption {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.6875rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+.pj-scheme__text {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text);
+}
+
+// flex flex-col sm:flex-row lg:flex-col gap-3.
+.pj-indep__actions {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+@include from( $bp-sm ) {
+
+	.pj-indep__actions {
+		flex-direction: row;
+	}
+}
+
+@include from( $bp-lg ) {
+
+	.pj-indep__actions {
+		flex-direction: column;
+	}
+}
+
+// px-5 py-3.5 at 20px by 14px, so 44px tall, and 46px with the 1px rule the
+// design puts on the secondary button.
+.wp-block-button__link.pj-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	padding: 0.875rem 1.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.pj-btn-amber {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--black);
+}
+
+.pj-btn-amber:hover,
+.pj-btn-amber:focus {
+	background-color: var(--wp--preset--color--accent-hover);
+	color: var(--wp--preset--color--black);
+}
+
+.pj-btn-dark {
+	background-color: var(--wp--preset--color--surface-2);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.pj-btn-dark:hover,
+.pj-btn-dark:focus {
+	color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// 04 Professional Engineering Work.
+//
+// ProjectsArchivePage.tsx line 225: py-16 md:py-24 on the 48px dark grid, which
+// is 64px then 96px. is-style-section would state 80px then 112px, so the
+// variation stays on for its rhythm vocabulary and the padding is restated here
+// at a higher specificity. No rule under this band, the design gives it none.
+.wp-block-group.is-style-section.pj-work {
+	padding-block: 4rem;
+	border-bottom: 0;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.is-style-section.pj-work {
+		padding-block: 6rem;
+	}
+}
+
+// flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b pb-6.
+.pj-work__head {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding-block-end: 1.5rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-lg ) {
+
+	.pj-work__head {
+		flex-direction: row;
+		align-items: end;
+		justify-content: space-between;
+	}
+}
+
+// space-y-2 max-w-3xl.
+.pj-work__intro {
+	max-width: 48rem;
+	min-width: 0;
+}
+
+.pj-work__intro > * {
+	margin-block: 0;
+}
+
+// space-y-2 max-w-3xl. The gap is stated against the section because the
+// children below reset their own margin to 0 at a specificity that ties with
+// this one, and being later in the file they would otherwise win it.
+.wp-block-group.pj-work .pj-work__intro > * + * {
+	margin-block-start: 0.5rem;
+}
+
+// text-3xl sm:text-4xl font-display font-bold text-[#FFFDF4], so 30px then 36px.
+.pj-work__title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.875rem;
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.pj-work__title {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+// text-sm sm:text-base text-[#D8D5CA] leading-relaxed, so 14px then 16px.
+.pj-work__lede {
+	margin-block: 0;
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+@include from( $bp-sm ) {
+
+	.pj-work__lede {
+		font-size: 1rem;
+		line-height: 1.625;
+	}
+}
+
+.pj-work__count {
+	flex-shrink: 0;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+// ProjectsArchivePage.tsx line 227: space-y-12, so 48px below the header.
+.pj-work__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	margin-block-start: 3rem;
+}
+
+@include from( $bp-lg ) {
+
+	.pj-work__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// The card category tags.
+//
+// pj-cat-* is not a style. It is the filter vocabulary, carried on each card in
+// the block's own className so that an editor can add a project and tag it from
+// the CSS classes field, and so the tag lives on the card it describes rather
+// than in a JSON payload maintained beside it. assets/js/project-filters.js
+// reads it and this stylesheet deliberately does not.
+
+// 04b The empty result.
+//
+// ProjectsArchivePage.tsx lines 259 to 275: p-12 bg-[#111113] border
+// border-[#262626] text-center space-y-4, a font-display bold text-xl bone white
+// title, a text-sm body line, and one amber reset control.
+//
+// AUTHORED BUT NEVER RENDERED UNTIL IT IS NEEDED. The panel is in the page so
+// an editor can see and change it, and it is hidden here so that a visitor
+// whose browser is still loading the view script does not see it flash. The
+// view script then removes it from the document entirely, so a filter with no
+// matches leaves an empty grid rather than an empty panel in the accessibility
+// tree. display: none is the only hiding in this file and it exists purely for
+// that first paint. The view script adds the BEM modifier below when the panel
+// is the result of a filter that matched nothing, so the panel and the script
+// that reveals it cannot disagree.
+.wp-block-group.pj-work .pj-work__empty {
+	display: none;
+	padding: 3rem;
+	margin-block-start: 3rem;
+	text-align: center;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.wp-block-group.pj-work .pj-work__empty.pj-work__empty--visible {
+	display: block;
+}
+
+.wp-block-group.pj-work .pj-work__empty > * {
+	margin-block: 0;
+}
+
+.wp-block-group.pj-work .pj-work__empty > * + * {
+	margin-block-start: 1rem;
+}
+
+.wp-block-group.pj-work .pj-work__empty-title {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text);
+}
+
+// text-sm at 16px. Stated against the section because the base typography sets
+// 1rem on a page paragraph and that outranks the plain class selector.
+.wp-block-group.pj-work .pj-work__empty-note {
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.wp-block-group.pj-work .pj-work__empty-actions {
+	line-height: 1.3333;
+}
+
+// px-5 py-2.5 bg-[#FACC15] text-[#000000] font-mono-tech text-xs
+// font-semibold, so 20px by 10px at 36px tall.
+.wp-block-group.pj-work .pj-work__empty-reset {
+	display: inline-block;
+	padding: 0.625rem 1.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+	text-align: center;
+	cursor: pointer;
+	color: var(--wp--preset--color--black);
+	background-color: var(--wp--preset--color--accent);
+	border: 0;
+}
+
+.wp-block-group.pj-work .pj-work__empty-reset:hover {
+	background-color: var(--wp--preset--color--accent-hover);
+	color: var(--wp--preset--color--black);
+}
+
+// ProjectsArchivePage.tsx line 249: the grid's only spacing is gap-8. WordPress
+// flow layout adds its block gap to every child after the first, which is 24px
+// on each of the eight later cards and inflates four of the five rows. The grid
+// container already carries the design's 32px, so the block gap is cleared.
+.wp-block-group.pj-work .pj-work__grid > * {
+	margin-block: 0;
+}
+
+// ProjectCard.tsx lines 52 to 69 wrap the title and the description in one
+// space-y-2 group, which is 8px. Markup puts them in that group, so the card
+// body has the design's three children, not four, and the 20px body rhythm
+// lands between the metadata row, the title block and the schematic.
+.wp-block-group.pj-work .hz-card__lead > * {
+	margin-block: 0;
+}
+
+.wp-block-group.pj-work .hz-card__lead > * + * {
+	margin-block-start: 0.5rem;
+}
+
+// ProjectCard.tsx lines 111 to 147: the footer is a sibling of the body in the
+// article's flex column and the article carries no sibling gap. WordPress flow
+// layout puts 24px above it.
+.wp-block-group.pj-work .hz-card__foot {
+	margin-block-start: 0;
+}
+
+// ProjectCard.tsx line 121: the technology strip is text-xs, so a 16px line.
+// The strip is one text node on this page rather than the design's list of
+// spans, so no flex rule is stated for it.
+.wp-block-group.pj-work .hz-card__foot .hz-meta {
+	line-height: 1.3333;
+}
+
+// text-xs on every label inside the card, so a 16px line rather than the 1.625
+// the shared section styles hand down. ProjectCard.tsx lines 37, 43, 79, 83 and
+// 121, with text-xs read from theme.css line 348.
+.wp-block-group.pj-work .hz-card__meta .hz-meta,
+.wp-block-group.pj-work .hz-card__foot .hz-link,
+.wp-block-group.pj-work .hz-card__scheme-label,
+.wp-block-group.pj-work .hz-card__node,
+.wp-block-group.pj-work .hz-card__node-sep {
+	line-height: 1.3333;
+}
+
+// ProjectCard.tsx line 145: the case study arrow is w-4 h-4, which is 16px on
+// a side. The inline SVG carries no width of its own and would otherwise fall
+// back to its own view box size.
+.wp-block-group.pj-work .hz-card__foot .hz-link svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+// ProjectCard.tsx lines 79 and 83: the caption row sits over the nodes with
+// mb-2.5 and nothing else, and the footer is a plain flex row whose second
+// child carries no offset. WordPress flow layout adds its 24px block gap to
+// both of those second children.
+.wp-block-group.pj-work .hz-card__scheme-head > * + *,
+.wp-block-group.pj-work .hz-card__nodes,
+.wp-block-group.pj-work .hz-card__foot .hz-link {
+	margin-block-start: 0;
+}
+
+// ProjectsArchivePage.tsx line 239: text-sm sm:text-base, so 14px until sm and
+// 16px from sm. The 14px is stated against the section because the base
+// typography sets 1rem on a page paragraph, and that outranks the plain class
+// selector the sm step uses.
+@media ( max-width: 639.98px ) {
+
+	.wp-block-group.pj-work .pj-work__lede {
+		font-size: 0.875rem;
+	}
+}
+
+// 05 The filter anchor target.
+//
+// The professional band is the destination of most of the filter labels. A
+// scroll margin keeps the section title clear of the fixed header without
+// moving any measured padding.
+.pj-work {
+	scroll-margin-block-start: 5rem;
+}
+
+/* stylelint-enable selector-class-pattern */

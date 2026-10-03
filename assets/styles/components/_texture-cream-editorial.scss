@@ -9,9 +9,10 @@
 // background-image on a page surface rather than a theme token, and a custom
 // property cannot carry the 4 percent alpha that keeps the hairlines behind the
 // type.
-// WordPress strips unrecognised placeholder classes from block markup, so
-// .cream-editorial is a documented hook name, attached through a theme.json
-// style variation rather than hand applied in the editor.
+// DEPRECATED. The .cream-editorial rule below is a legacy hook name that exists
+// only until templates/404.html is migrated to the is-style-* vocabulary. It is
+// not a second canonical name and must not be used in new markup. The canonical
+// selector is .is-style-surface-cream-editorial.
 
 .cream-editorial {
 	background-color: var(--wp--preset--color--paper-warm);
@@ -22,4 +23,39 @@
 		transparent 1px
 	);
 	background-size: 96px 96px;
+}
+
+// Texture: surface-cream-editorial, the canonical is-style-* selector.
+// Matches <div class="wp-block-group is-style-surface-cream-editorial">.
+// Surface, type colour and the 96px vertical hairline grid are copied verbatim
+// from .cream-editorial above. The link colours are copied verbatim from the
+// block css in styles/surface-cream-editorial.json, which is the only place
+// they are written down: a link on a paper ground must not fall back to the
+// dark-surface link colour.
+
+.wp-block-group.is-style-surface-cream-editorial {
+	background-color: var(--wp--preset--color--paper-warm);
+	color: var(--wp--preset--color--text-on-paper);
+	background-image: linear-gradient(
+		to right,
+		rgba(10, 10, 11, 0.04) 1px,
+		transparent 1px
+	);
+	background-size: 96px 96px;
+
+	a,
+	a:visited,
+	a:hover {
+		color: var(--wp--preset--color--accent-on-paper);
+	}
+
+	// THE FOCUS OUTLINE IS DELIBERATELY NOT RESTATED HERE.
+	// It used to be, as a link specific rule inside this surface rule. That rule
+	// is nested one level deeper than the flip in base/_focus.scss, so it outran
+	// it on specificity rather than on order, and it was measured winning: a link
+	// focused inside the cream surface computed an outline colour of
+	// rgb(138, 106, 0), the darkened amber, instead of the design's dark ink.
+	// The flip in base/_focus.scss is the single owner of the focus outline on
+	// both light surfaces and is not repeated anywhere else, so there is one
+	// number for it and no rule that can outrank the owner.
 }
