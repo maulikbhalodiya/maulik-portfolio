@@ -6,8 +6,16 @@
  * script depends on the WordPress block registry being loaded:
  *
  *     wp eval-file tools/migrate-content.php -- --path=/var/www/maulik-dev
- *     wp eval-file tools/migrate-content.php -- --apply --path=/var/www/maulik-dev
- *     wp eval-file tools/migrate-content.php -- --rollback --path=/var/www/maulik-dev
+ *     MAULIK_PORTFOLIO_APPLY=1 wp eval-file tools/migrate-content.php -- --path=/var/www/maulik-dev
+ *     MAULIK_PORTFOLIO_ROLLBACK=1 wp eval-file tools/migrate-content.php -- --path=/var/www/maulik-dev
+ *
+ * THE SWITCHES ARE ENVIRONMENT VARIABLES, NOT COMMAND LINE FLAGS. wp-cli validates
+ * every flag after the script path against eval-file's own synopsis and rejects
+ * anything unrecognised, so `-- --apply` never reaches this script. It fails with
+ * "unknown --apply parameter", which reads as though the tool is broken rather than
+ * misdocumented, and it was the documented invocation for a while. Use
+ * MAULIK_PORTFOLIO_APPLY=1. A bare `--apply` still works when this file is run as
+ * plain PHP outside wp-cli.
  *
  * WHY THE SCRIPT EXISTS. Before this, the approved copy for every page lived in
  * page specific HTML templates, so Pages -> About -> Edit showed three blocks and
