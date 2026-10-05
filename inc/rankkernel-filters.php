@@ -27,11 +27,24 @@
  *
  * THE TABS ARE NOT EDITABLE DATA.
  *
- * The set is fixed by the design reference as the statusFilter state in
- * src/components/RankKernelArchitecture.tsx, which is All, Implemented, In
- * Progress and Planned. It is declared once below rather than repeated, and the
- * labels are translatable so the row can be localised even though the set
- * cannot.
+ * The set is the project status vocabulary, the same three class names the
+ * diagram nodes carry: is-completed, is-running and is-planned, plus All. The
+ * `value` of each tab is that same token, lowercased and with the is- prefix
+ * removed, so a tab value and the class on a node are the same word and the
+ * script compares like with like. This was not true before. The values used to
+ * read IMPLEMENTED and IN PROGRESS while the nodes carried is-completed and
+ * is-running, which meant the markup advertised a second vocabulary that
+ * matched nothing, and that the two sets had to be kept in step by hand.
+ *
+ * A status is therefore authored twice on a node and never a third time: the
+ * class, and the visible word in the badge. There is no data attribute. See
+ * assets/styles/components/_page-rankkernel.scss for the pairing rule and
+ * assets/js/rankkernel-filter.js for the reader.
+ *
+ * The set is declared once below rather than repeated, and the labels are
+ * translatable so the row can be localised even though the set cannot. The
+ * labels are the uppercase display form of the same three words, which is the
+ * pairing rule the stylesheet already documented.
  *
  * The selected state is applied by the view script on init rather than trusted
  * from the markup, so aria-selected is correct even if a filter is printed twice
@@ -67,11 +80,16 @@ if ( ! function_exists( 'maulik_portfolio_rankkernel_filters_tabs' ) ) {
 	 * The four filter tabs, in the order the design states them.
 	 *
 	 * `value` is the status token the view script compares against the status
-	 * label on each directory entry and each diagram node. `icon` is the status
-	 * mark the design draws on an unselected status tab and hides on the
-	 * selected one. The set reproduces RankKernelArchitecture.tsx lines 96 to
-	 * 114, including the two details that are easy to lose: All is labelled with
-	 * the subsystem count rather than the word All, and All carries no mark.
+	 * class on each diagram node and the status word on each directory entry.
+	 * `icon` is the status mark the design draws on an unselected status tab
+	 * and hides on the selected one. All is labelled with the subsystem count
+	 * rather than the word All, and All carries no mark.
+	 *
+	 * A tab whose value matches nothing is hidden by the view script rather
+	 * than rendered as a control that filters to an empty figure, and it comes
+	 * back on its own as soon as one node carries that class again. There is no
+	 * list of states or counts here that could fall out of step with the
+	 * diagram; the vocabulary is the only thing declared.
 	 *
 	 * @since 0.1.0
 	 *
@@ -80,22 +98,22 @@ if ( ! function_exists( 'maulik_portfolio_rankkernel_filters_tabs' ) ) {
 	function maulik_portfolio_rankkernel_filters_tabs() {
 		return array(
 			array(
-				'value' => 'ALL',
+				'value' => 'all',
 				'label' => __( 'All States (9)', 'maulik-portfolio' ),
 				'icon'  => '',
 			),
 			array(
-				'value' => 'IMPLEMENTED',
-				'label' => __( 'IMPLEMENTED', 'maulik-portfolio' ),
+				'value' => 'completed',
+				'label' => __( 'COMPLETED', 'maulik-portfolio' ),
 				'icon'  => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>',
 			),
 			array(
-				'value' => 'IN PROGRESS',
-				'label' => __( 'IN PROGRESS', 'maulik-portfolio' ),
+				'value' => 'running',
+				'label' => __( 'RUNNING', 'maulik-portfolio' ),
 				'icon'  => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="10"></circle></svg>',
 			),
 			array(
-				'value' => 'PLANNED',
+				'value' => 'planned',
 				'label' => __( 'PLANNED', 'maulik-portfolio' ),
 				'icon'  => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path><circle cx="12" cy="12" r="10"></circle></svg>',
 			),
@@ -120,6 +138,15 @@ if ( ! function_exists( 'maulik_portfolio_rankkernel_filters_render' ) ) {
 	 * tabpanel that says what is in it, and the first tab already states the set
 	 * that is on screen. The page does not depend on the script to be readable,
 	 * only to be filterable.
+	 *
+	 * A tab whose state has no member is hidden by the view script, not here.
+	 * This callback cannot know the states, because they live in the diagram
+	 * block's own markup in post_content rather than in this block's attributes,
+	 * and hardcoding them here is the drift this vocabulary exists to remove. The
+	 * cost is that a visitor whose script never arrives is offered one control
+	 * that narrows to nothing. That is a smaller defect than a permanently empty
+	 * control for every visitor, and it is the only one of the two that cannot
+	 * be fixed in the wrong place.
 	 *
 	 * @since 0.1.0
 	 *

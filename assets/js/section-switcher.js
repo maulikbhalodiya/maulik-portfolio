@@ -37,7 +37,7 @@
  *
  *   [data-hz-arch-status]    the figure root, carrying the applied filter
  *   data-hz-arch-filter      on each of the four filter buttons, the status it
- *                            selects: all, implemented, in-progress or planned
+ *                            selects: all, completed, running or planned
  *   .hz-work__arch-svg-node  a subsystem node, read for its status class
  *   .hz-work__arch-edge      a connection line inside that figure's svg
  *
@@ -193,13 +193,27 @@
 	const ARCH_ALL = 'all';
 
 	/*
-	 * The node status classes as the filter values they answer to. The filter
-	 * attribute and the node class are separate vocabularies in the markup, so
-	 * the join between them lives here and nowhere else.
+	 * THE STATUS VOCABULARY, and the only place it is written down in JavaScript.
+	 *
+	 * Three class names, and they are the same three the RankKernel page uses.
+	 * The block that defines them for CSS is in _page-rankkernel.scss.
+	 *
+	 *   is-completed   shipped and enabled by default
+	 *   is-running     shipped but default off, or partially delivered
+	 *   is-planned     registered in the module registry, nothing on disk
+	 *
+	 * The filter button carries a slug of its own, data-hz-arch-filter, because a
+	 * class name cannot be an attribute value containing a hyphenated sentence.
+	 * The join between the two vocabularies therefore lives here and nowhere
+	 * else, which is what makes a status change a one line edit: change the
+	 * class on the node, and if the button set changes, change this table.
+	 *
+	 * The visible word next to each node is authored in the markup, not
+	 * generated here. The class and the word must change together.
 	 */
 	const ARCH_STATUS_BY_NODE_CLASS = {
-		'is-implemented': 'implemented',
-		'is-progress': 'in-progress',
+		'is-completed': 'completed',
+		'is-running': 'running',
 		'is-planned': 'planned',
 	};
 
@@ -522,7 +536,7 @@
 	/**
 	 * Apply a status to the figure: the nodes, the lines and the four buttons.
 	 *
-	 * @param {string} status all, implemented, in-progress or planned.
+	 * @param {string} status all, completed, running or planned.
 	 * @return {void}
 	 */
 	ArchStatusFilter.prototype.applyStatus = function ( status ) {

@@ -1785,11 +1785,15 @@
 	stroke-linejoin: round;
 }
 
-.hz-work__arch-filter-mark.is-implemented {
+// The status vocabulary is the same three classes the RankKernel page uses, and
+// the block that defines them is in _page-rankkernel.scss. is-completed is
+// shipped and on by default, is-running is shipped but opt in, is-planned is
+// registered with no implementation. Nothing here re-derives the state.
+.hz-work__arch-filter-mark.is-completed {
 	color: var(--wp--preset--color--accent);
 }
 
-.hz-work__arch-filter-mark.is-progress {
+.hz-work__arch-filter-mark.is-running {
 	color: var(--wp--preset--color--text);
 }
 
@@ -1803,7 +1807,7 @@
 // place, which is the class.
 //
 // DIM, NOT HIDE, AND THE NUMBERS ARE THE DESIGN'S. Measured on the running
-// reference after clicking IMPLEMENTED: the six excluded subsystem groups read
+// reference after clicking COMPLETED: the six excluded subsystem groups read
 // computed opacity 0.3 and display inline, and six of the nine primary edges
 // read computed opacity 0.25 on their wrapping g. The reference dims in
 // RankKernelArchitecture.tsx at the two places that matter, 0.3 for a subsystem
@@ -1976,11 +1980,11 @@
 	background-color: var(--wp--preset--color--surface-2);
 }
 
-.hz-work__arch-key.is-implemented {
+.hz-work__arch-key.is-completed {
 	border: 2px solid var(--wp--preset--color--accent);
 }
 
-.hz-work__arch-key.is-progress {
+.hz-work__arch-key.is-running {
 	border: 2px dashed var(--wp--preset--color--text);
 }
 
