@@ -24,6 +24,20 @@
  * the live database is not version controlled and an editor save leaves no trace
  * in git otherwise.
  *
+ * LIMITING A RUN TO ONE PAGE. MAULIK_PORTFOLIO_SLUG migrates a single page:
+ *
+ *     MAULIK_PORTFOLIO_SLUG=about MAULIK_PORTFOLIO_APPLY=1 \
+ *       wp eval-file tools/migrate-content.php -- --path=/var/www/maulik-dev
+ *
+ * The `-- --slug=about` form does not work, for the same reason `-- --apply`
+ * does not: wp-cli rejects the flag before the script sees it. Both were tried
+ * and both failed with an "unknown parameter" error.
+ *
+ * Prefer this over a full run whenever a change touches one page. A full run
+ * compares all six, and if any other page has drifted since its last migration
+ * it will rewrite that page too. Restricting the slug bounds the blast radius
+ * to the page that was actually edited.
+ *
  * PAGES ARE FOUND BY SLUG, NEVER BY POST ID. The slug is the filename without its
  * extension in content/pages/. A hardcoded ID would break the moment a page is
  * recreated, reimported, or the site is pointed at a different database, which is
