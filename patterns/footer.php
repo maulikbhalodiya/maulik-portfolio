@@ -70,13 +70,16 @@
  * THAT EXISTS. Explore is Home, About, Resume and Contact, which is the design's
  * four exactly. Development is the design's four, in the design's order:
  * RankKernel, All Development Work, Payment Architecture and Data Encryption.
- * The design points the last two at two nested project pages, and this site has
- * no such pages and cannot have them, because there are no custom post types and
- * /projects/{slug}/ does not resolve. They were not created, and the links were
- * not pointed at anything invented: both cards live on /projects/ and both carry
- * an id, so the two links resolve as in page anchors to those ids. See the note
- * at the entries themselves for which ids, and for what to re check first if a
- * case study is ever renumbered.
+ * THE TWO NESTED PROJECT LINKS ARE IN PAGE ANCHORS AND THEY RESOLVE. Both ids were
+ * re-read off the rendered /projects/ page rather than off the source, and both
+ * resolve to the card the design points at: #case-study-01 is Cross Domain
+ * Payment Architecture and #case-study-04 is Secure WordPress Data Encryption.
+ * The design's own targets are /projects/cross-domain-payment-architecture/ and
+ * /projects/wordpress-data-encryption/, which is the same work under different
+ * names, and this site has no such routes because there are no custom post
+ * types. They were not created and the links were not pointed at anything
+ * invented. See the note at the entries themselves for which ids, and for what
+ * to re check first if a case study is ever renumbered.
  *
  * Connect is the design's three, in the design's order: GitHub, LinkedIn and
  * Email. The Email entry was previously omitted, on the grounds recorded below.
@@ -109,7 +112,20 @@
  * gates in .github/workflows/ were narrowed rather than removed, so they still
  * reject any OTHER address while exempting the design's one.
  *
- * The copyright year is generated, never hardcoded. A hardcoded year is not a
+ * NO HEADINGS AT ALL IN THIS FOOTER, AND THAT IS A FIX. The wordmark and the
+ * three column titles were all core/heading blocks at level 2, which put four
+ * h2 elements in the document outline and exposed the site title as a section
+ * heading of the page. A wordmark is a link and a column title is a label, and
+ * neither one introduces a section, so both are core/paragraph blocks carrying
+ * the same two classes the stylesheet already keys on. Measured on the design,
+ * which is the reference for this: it publishes zero h1 through h6 elements
+ * inside its footer. The classes are unchanged, so every type rule in
+ * _site-footer.scss still applies and the rendered geometry is the same, because
+ * the rules for these two elements state font size, family, weight, line height,
+ * letter spacing, colour and margin rather than inheriting any of them from the
+ * heading level.
+ *
+ * THE COPYRIGHT YEAR IS GENERATED, NEVER HARDCODED. A hardcoded year is not a
  * translation bug, it is a correctness bug, and it is the kind of thing that
  * survives for years because nothing breaks visibly.
  *
@@ -309,9 +325,9 @@ $maulik_portfolio_footer_columns = array(
 	<div class="wp-block-group site-footer__grid">
 		<!-- wp:group {"tagName":"div","className":"site-footer__col site-footer__col--identity","layout":{"type":"constrained"}} -->
 		<div class="wp-block-group site-footer__col site-footer__col--identity">
-			<!-- wp:heading {"level":2,"className":"site-footer__brand"} -->
-			<h2 class="wp-block-heading site-footer__brand"><a href="<?php echo esc_url( get_home_url() ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a></h2>
-			<!-- /wp:heading -->
+			<!-- wp:paragraph {"className":"site-footer__brand"} -->
+			<p class="site-footer__brand"><a href="<?php echo esc_url( get_home_url() ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a></p>
+			<!-- /wp:paragraph -->
 
 			<!-- wp:paragraph {"className":"site-footer__identity-line"} -->
 			<p class="site-footer__identity-line"><?php echo esc_html__( 'WordPress Developer | PHP Engineer | Custom Plugin Developer', 'maulik-portfolio' ); ?></p>
@@ -338,9 +354,9 @@ $maulik_portfolio_footer_columns = array(
 			?>
 			<!-- wp:group {"tagName":"div","className":<?php echo wp_json_encode( $maulik_portfolio_footer_class ); ?>,"layout":{"type":"constrained"}} -->
 			<div class="wp-block-group <?php echo esc_attr( $maulik_portfolio_footer_class ); ?>">
-				<!-- wp:heading {"level":2,"className":"site-footer__heading"} -->
-				<h2 class="wp-block-heading site-footer__heading"><?php echo esc_html( $maulik_portfolio_footer_column['heading'] ); ?></h2>
-				<!-- /wp:heading -->
+				<!-- wp:paragraph {"className":"site-footer__heading"} -->
+				<p class="site-footer__heading"><?php echo esc_html( $maulik_portfolio_footer_column['heading'] ); ?></p>
+				<!-- /wp:paragraph -->
 
 				<?php foreach ( $maulik_portfolio_footer_column['links'] as $maulik_portfolio_footer_link ) : ?>
 					<?php

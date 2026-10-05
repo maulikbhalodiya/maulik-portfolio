@@ -188,6 +188,39 @@
 	color: var(--wp--preset--color--text-muted);
 }
 
+// Section 03 states text-sm sm:text-base on its head lede and text-base on every
+// other section's, so 14px below $bp-sm where the rule above is 16px. Measured
+// on the live site at 390 that cost the section 12.98px across three extra
+// wrapped lines, and the delta at 768 was +0.02 because the design is already
+// on text-base there.
+//
+// Scoped to .hz-stack, section 03's own class, rather than restating the shared
+// value. Both selectors are two class selectors, so source order is what carries
+// this one, and it is later in the file. .hz-stack and .hz-section are both on
+// the section element and hz-section__head-lede is its descendant, so the chain
+// resolves; the two class selector is not the ancestor trap.
+.hz-stack .hz-section__head-lede {
+	font-size: 0.875rem;
+	line-height: 1.625;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-stack .hz-section__head-lede {
+		font-size: 1rem;
+	}
+}
+
+// The interval between section 03's head and its body. The design states
+// space-y-12 on this section's container, which is 48px, where every other
+// section states space-y-14. The shared hz-stack-8 is a 2rem gap and Core's block
+// gap adds 24px under the group inside it, so the measured interval was 56.01
+// against the design's 48.00 at both 390 and 768. Trimming the gap to 1.5rem
+// lands on 48.
+.hz-stack .hz-stack-8 {
+	gap: 1.5rem;
+}
+
 .hz-section .hz-section__head-lede,
 .hz-section .hz-section__lede {
 	max-width: none;
@@ -666,14 +699,22 @@
 	background-color: var(--wp--preset--color--surface-2);
 }
 
-// The active card. aria-pressed drives this rather than a class the script has
+// The active card. aria-selected drives this rather than a class the script has
 // to add, so the selected state is stated once in the markup and cannot drift
 // from what a screen reader is told.
+//
+// aria-selected, and not aria-pressed, because the five cards are a tablist.
+// The markup emits role="tab" with aria-selected on each and the script only
+// ever writes aria-pressed when the group it was handed is not a tablist, so a
+// rule keyed on aria-pressed matched nothing: measured live, the count was 0 and
+// the selected card carried a transparent left border. aria-pressed is still
+// correct for section 06's stage rows, which are buttons and not tabs, and that
+// selector is unchanged below.
 //
 // The design gives the active card a background, a 2px amber left border, an
 // amber label and an amber ACTIVE state label, so the selection is carried by
 // four signals and not by colour alone.
-.hz-capability[aria-pressed="true"] {
+.hz-capability[aria-selected="true"] {
 	background-color: var(--wp--preset--color--surface-2);
 	border-left-color: var(--wp--preset--color--accent);
 }
@@ -691,31 +732,42 @@
 	font-variant-numeric: tabular-nums;
 }
 
-.hz-capability[aria-pressed="true"] .hz-capability__number,
-.hz-capability[aria-pressed="true"] .hz-capability__state {
+.hz-capability[aria-selected="true"] .hz-capability__number,
+.hz-capability[aria-selected="true"] .hz-capability__state {
 	color: var(--wp--preset--color--accent);
 }
 
 // The ACTIVE and INSPECT state label. This is the non colour signal that the
 // card is selected, and it is text, so it survives a monochrome rendering and a
 // screen reader alike. The design states it as text-xs, so the line is 16px.
+//
+// The weight is 400 and not 600. The design writes font-mono-tech text-xs on
+// this span with no font weight class on it, and the default is 400, so the 600
+// that was here was a delta of 200 on a 12px mono run. That was measured on the
+// live site against the design at 1440 and the two weights do not agree.
 .hz-capability__state {
 	flex-shrink: 0;
 	margin-block-start: 0.25rem;
 	font-family: var(--wp--preset--font-family--mono);
 	font-size: 0.75rem;
-	font-weight: 600;
+	font-weight: 400;
 	line-height: 1.3333;
 	color: var(--wp--preset--color--text-faint);
 	font-variant-numeric: tabular-nums;
 }
 
+// The capability card title. The design writes text-xl font-display font-bold
+// with no tracking utility, so the heading carries no tracking of its own. The
+// theme's h3 preset supplies -0.025em, which is what was measured live at -0.5px
+// against the design's normal. Normal is stated here rather than by removing a
+// class, because the -0.025em comes from theme.json and not from this file.
 .hz-capability__title {
 	margin-block: 0;
 	font-family: var(--wp--preset--font-family--display);
 	font-size: 1.25rem;
 	font-weight: 700;
 	line-height: 1.4;
+	letter-spacing: normal;
 	color: var(--wp--preset--color--text);
 }
 
@@ -750,12 +802,61 @@
 	margin-block: 0;
 }
 
+// The design stacks the label and the title inside one flex child and hangs
+// "Architecture Focus" off the right of the row as a second child. The saved
+// markup put the label and the title in the row directly, so they became flex
+// items in their own right: they laid out on one baseline at 1440, the title
+// read 990.77 against the design's 661, and the row measured 57 against the
+// design's 77. Restating the row as two children is the whole of the fix.
+//
+// The inner wrapper carries no box of its own. It only has to stop the label
+// and the title being flex items, which means resetting the block gap Core puts
+// on the children of a group, the same two-class move used for .hz-grid-2.
+.hz-section .hz-capabilities__detail-head-main > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-capabilities__detail-head-main > * + * {
+	margin-block-start: 0.25rem;
+}
+
+// The case study link on the panel footer. It carries the shared hz-link voice
+// already, which is the design's own voice for this element, so only the icon
+// box is stated here: the design draws a 16px ArrowUpRight, and the markup's
+// width and height attributes would say so anyway.
+//
+// flex-shrink: 0 is kept, and the design's own behaviour at 390 is not copied.
+// The label is one nowrap run of 360.02px inside a 276px content box, so the
+// anchor is stretched to 276 and the row overflows by the icon as well as by the
+// text. The design's arrow, which carries no shrink rule, collapses to zero
+// width under those conditions and its document measures scrollWidth 417 against
+// clientWidth 390; pinning the arrow at 16px measures 439. The 27px of overflow
+// the label itself causes is inherent to A2 at 390 and is the design's behaviour
+// too. The 22px difference is one visible 16px arrow against a collapsed one,
+// and a collapsed arrow is a defect, not a reference.
+.hz-section a.hz-capabilities__detail-cta svg {
+	flex-shrink: 0;
+	width: 1rem;
+	height: 1rem;
+}
+
+// "Architecture Focus", the design's right hand note on the detail header. Mono
+// 12px at 400 in the faint colour, with no leading, so the line is 16px.
+.is-style-section .hz-capabilities__detail-focus {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
 .hz-capabilities__detail-title {
 	margin-block-start: 0.25rem;
 	font-family: var(--wp--preset--font-family--display);
 	font-size: 1.5rem;
 	font-weight: 700;
 	line-height: 1.3333;
+	letter-spacing: normal;
 	color: var(--wp--preset--color--text);
 }
 
@@ -827,10 +928,120 @@
 	border-top: 1px solid var(--wp--preset--color--line);
 }
 
+// The design states it as pt-6 border-t flex flex-col sm:flex-row
+// sm:items-center justify-between gap-4.
+//
+// align-items is not stated here, and that is deliberate. The design states no
+// align-items either, so its column layout stretches the children to the 276px
+// content box and the nowrap case study text overflows that box: its anchor
+// measures 276 wide at 390 with a 360.02px label inside it, and the design's own
+// document scrollWidth is 417 against a clientWidth of 390. Stating
+// align-items: flex-start here instead gave the anchor its full 382.02px content
+// width and pushed the document scrollWidth to 439, which is 22px worse than the
+// design on a page that had no overflow at all before this rule.
+.hz-capabilities__detail-foot {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-capabilities__detail-foot {
+		flex-direction: row;
+		align-items: center;
+	}
+}
+
+// The mechanism list. The design states this block as space-y-3 pt-2, so the
+// stack is hz-stack-3 for its 12px gap and the 8px of padding above the label is
+// stated here. The saved markup had hz-stack-2 with no padding, which measured
+// 12px short of the design at 390: 8 of padding and 4 of gap.
+.hz-capabilities__mechanisms {
+	padding-top: 0.5rem;
+}
+
+// The group is a flow group, so Core would put 24px under every child of it.
+.hz-section .hz-capabilities__detail-foot > * {
+	margin-block-start: 0;
+}
+
+// The footer is itself a child of the panel, and the panel is a flow group, so
+// Core's block gap put 24px between it and the stack above it, on top of the
+// panel's own 2rem. The technology run it replaced was a paragraph carrying
+// hz-rule-top, which reset its own margins, so the interval was 32px before and
+// is 32px again. Measured at 390 it was 56 against the design's 32.
+.hz-section .hz-capabilities__detail-foot {
+	margin-block-start: 0;
+}
+
 // 03 Technical skills.
 //
+// Two values are section scoped rather than shared, because the design gives
+// this section its own and no other section has them.
+//
+// The head lede is text-sm sm:text-base here and text-base in every other
+// section. The shared rule is 1rem at every width, which measured 16px over a
+// 26px line at 390 where the design measures 14px over 22.75, and the three
+// extra lines of wrapping cost the section 12.98px. From $bp-sm the design is
+// back on text-base, so the shared value is restored there.
+//
+// The section body sits space-y-12 under the head, which is 48px, where every
+// other section uses space-y-14. The shared hz-stack-8 is a 32px gap and Core
+// adds 24px of block gap to the group under it, which is 56px. Trimming the gap
+// to 24px puts the measured interval on 48.
+.hz-stack .hz-section__head-lede {
+	font-size: 0.875rem;
+	line-height: 1.625;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-stack .hz-section__head-lede {
+		font-size: 1rem;
+	}
+}
+
+.hz-stack .hz-stack-8 {
+	gap: 1.5rem;
+}
+
 // Left is the node map panel, right is the breakdown panel. The node map is an
 // SVG at aspect-[5/4], which is aspect-ratio 5 / 4, plus a row of seven tabs.
+
+// The left column is a card in its own right, and the design draws it as one:
+// bg-[#111113] border border-[#262626] p-6 flex flex-col justify-between. The
+// saved markup gave hz-body__lead no surface at all, so the map ran to the full
+// 548px width of the column and to the very edge of the section, against the
+// design's 498px inset by its own 24px padding on a bordered card. Adding the
+// surface is therefore also the whole of the node map's geometry fix: the SVG
+// takes its width from the card's content box and its height from aspect-ratio
+// 5 / 4, so it lands on the design's 498 by 402.22 without the SVG element
+// itself changing.
+.hz-stack__card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// The group is a flow group, so Core would put 24px between its three children.
+.hz-section .hz-stack__card > * {
+	margin-block-start: 0;
+}
+
+// flex-wrap: wrap stays. The design states this row as flex items-center
+// justify-between with no wrap, so at narrow widths its two labels share one
+// line and each wraps inside itself, which measures 49 at 390. Forcing that
+// shape here was measured and is worse: the labels are mono runs that do not
+// wrap to the same degree, the row read 33.97 against the design's 49, and
+// section 03 went from -8.18 to -16.18 at 390. Two stacked lines is the closer
+// of the two and it is what stays.
 .hz-stack__map-head {
 	display: flex;
 	flex-wrap: wrap;
@@ -842,12 +1053,39 @@
 	border-bottom: 1px solid var(--wp--preset--color--line);
 }
 
+// The design wraps the map in a relative w-full aspect-[5/4] box and lets the
+// SVG's own ratio win inside it, so the measured ratio is 520/420, 1.2381, and
+// not 1.25. At 498 wide that is 402.22 tall against the design's 402.22, where
+// aspect-ratio 5/4 gives 398.4. Stating the ratio the design actually renders
+// is the whole of the geometry fix; the box it sits in is hz-stack__card above.
 .hz-stack__map,
 .hz-section .hz-stack__svg {
 	display: block;
 	width: 100%;
-	aspect-ratio: 5 / 4;
+	aspect-ratio: 520 / 420;
 	margin-block: auto;
+}
+
+// The count note on the right of a domain panel header. The design writes
+// font-mono-tech text-xs text-[#77746C] with no leading, so the line is 16px.
+//
+// It sits in the same flex row as the label and the title. The design states
+// that row items-center and .hz-row carries align-items: baseline, which on a
+// row this short lands on the same pixel, so nothing here restates it.
+//
+// margin-block: 0 is load bearing and not tidiness. The row is a flow group, so
+// Core's :root :where(.is-layout-flow) > * puts 24px of block gap on every child
+// after the first, and this is the second child. Measured with the note present
+// and no reset, the row read 100.98 against the design's 73 and the section read
+// 24px over. The note's own class is a two class selector, which is what lets it
+// win here.
+.is-style-section .hz-stack__verified {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
 }
 
 // Text inside the node map. The design states Syne at 13px for the centre node,
@@ -877,17 +1115,45 @@
 // The node map is a second control for the same state as the row of tabs, so
 // the script marks a selected node with this class. The design's node
 // treatment is a solid amber block with near-black ink, which is the same
-// inversion the selected stage row in 06 uses, and the saved markup already
-// carries it on the node that the markup selects. Restating it here means the
-// selected node looks the same whichever control moved the selection, instead
-// of looking right only on first paint.
+// inversion the selected stage row in 06 uses.
+//
+// BOTH STATES ARE STATED HERE, AND THAT IS THE POINT.
+//
+// The unselected treatment used to be left to the markup's own fill and stroke
+// attributes, so the selected rule alone decided how a node looked. That works
+// only for a node whose saved markup is already unselected, which is true of
+// six of the seven domains and false of the seventh: WordPress is the node the
+// markup selects, so its rect ships with fill and stroke of amber. Removing the
+// selected class therefore returned it to the amber it had been painted with,
+// and it stayed yellow forever while the newly selected node also turned
+// yellow. Two yellow nodes, and a yellow that never moved. Both states are now
+// stated, so which node is yellow is decided by the class alone and never by an
+// attribute the editor's markup happens to carry.
+//
+// The rules are keyed on hz-svg-node, which only the script adds, so a page
+// with no JavaScript still falls back to the markup's own colours and still
+// shows the same single selected node the markup names. The centre node carries
+// neither class and keeps its own values for the same reason.
 //
 // fill and stroke are properties here, not attributes, because a CSS
-// declaration beats an SVG presentation attribute. The unselected node keeps
-// the fill and stroke the markup gave it, so this rule is written only for the
-// selected state and nothing else has to restate the default.
+// declaration beats an SVG presentation attribute. The unselected rules come
+// first and the selected rules second: the label and count selectors tie on
+// specificity, so source order is what lets the selected pair win.
 .hz-section .hz-svg-node {
 	cursor: pointer;
+}
+
+.hz-section .hz-svg-node rect {
+	fill: var(--wp--preset--color--surface-2);
+	stroke: var(--wp--preset--color--line-strong);
+}
+
+.hz-section .hz-svg-node .hz-svg-label {
+	fill: var(--wp--preset--color--text);
+}
+
+.hz-section .hz-svg-node .hz-svg-count {
+	fill: var(--wp--preset--color--text-faint);
 }
 
 .hz-section .hz-svg-node--selected rect {
@@ -1031,8 +1297,31 @@
 	margin-block: 0;
 }
 
+// The visible panel has to fill its host exactly, which is what makes the detail
+// column the same height as the tab column beside it on every tab.
+//
+// The panel is a flow child of the panels host, and the host is a constrained
+// group, so Core emits in the served global styles:
+//
+//   :root :where(.is-layout-flow) > * {
+//       margin-block-start: var(--wp--preset--spacing--50);
+//   }
+//
+// which is 24px. Core resets it on the first child only, so panel one measured
+// 0px and panels two through seven measured 24px. In a column flexbox the margin
+// is outside the flex item, so flex: 1 1 auto grew the panel into what was left
+// of the host and it settled 24px short: at 1440 the host measured 720.92 on
+// every tab and the panel measured 720.92 on tab one and 696.92 on tabs two
+// through five. That is the detail container changing height when the tab
+// changes, and it is the whole of it.
+//
+// The design has no equivalent of the wrapper and therefore no equivalent of the
+// margin: there the detail column is itself the grid item. The mechanism the
+// design relies on is the stretch, so the fix is to let the stretch reach the
+// panel by removing the margin, not to state a height.
 .hz-switch-panel {
 	flex: 1 1 auto;
+	margin-block: 0;
 }
 
 // A domain heading inside the breakdown panel. md:text-3xl is 30px.
@@ -1230,6 +1519,15 @@
 	margin-block: 0;
 }
 
+// The two RankKernel calls to action sit gap-3 apart in the design, which is
+// 12px, and the buttons block arrived with Core's own gap of 24px. The row is
+// right aligned by space-between, so a 12px wider row is a 12px wider section:
+// measured at 1440 the row read 406.42 wide where the design reads 394.42, and
+// its left edge sat at 993.58 against the design's 1005.58.
+.hz-work__rk-head .wp-block-buttons {
+	gap: 0.75rem;
+}
+
 @include from( $bp-lg ) {
 
 	.hz-work__rk-head {
@@ -1262,9 +1560,15 @@
 	}
 }
 
+// The design steps this subtitle as text-lg sm:text-xl, which is 18px on a 28px
+// line below 640px and 20px on a 28px line from it. The rule carried no size of
+// its own below $bp-sm and read 16px on a 26px line, against the design's 18px on
+// 28: measured at 390 the line read 52 where the design reads 56.
 .is-style-section .hz-work__rk-subtitle {
 	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.125rem;
 	font-weight: 600;
+	line-height: 1.5556;
 	color: var(--wp--preset--color--accent);
 }
 
@@ -1283,10 +1587,23 @@
 // well as the Core flow margin it was written to cancel. Measured before this at
 // 1440, the RankKernel head read 193.98 where the design reads 206, and the 12
 // is the whole of the difference.
+//
+// The design states this paragraph as text-sm sm:text-base, so 14px below 640px
+// and 16px from it. The shared body copy voice is 16px at every width, so the
+// mobile step has to be stated here: measured at 390 the paragraph read 156
+// where the design reads 113.75.
 .hz-section .hz-work__rk-overview {
 	max-width: 48rem;
 	margin-block-end: 0;
+	font-size: 0.875rem;
 	color: var(--wp--preset--color--text-muted);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-section .hz-work__rk-overview {
+		font-size: 1rem;
+	}
 }
 
 .hz-work__rk-actions {
@@ -1434,7 +1751,16 @@
 	border-color: var(--wp--preset--color--text-faint);
 }
 
-.hz-work__arch-filter[aria-selected="true"] {
+// The applied filter. Keyed on aria-pressed and not on aria-selected, because
+// these four buttons are a group of filters and not a tablist: there is no
+// tabpanel anywhere near them, one before this change or now, so aria-selected
+// stated a selection with nothing to select. The markup ships the first button
+// with aria-pressed true and the script writes the attribute on every click, so
+// the visible state and the state a screen reader is told are the same
+// declaration. is-on is joined here because the markup and the script both carry
+// it and a page with no script still has to show which filter is applied.
+.hz-work__arch-filter.is-on,
+.hz-work__arch-filter[aria-pressed="true"] {
 	background-color: var(--wp--preset--color--accent);
 	border-color: var(--wp--preset--color--accent);
 	color: var(--wp--preset--color--black);
@@ -1469,6 +1795,32 @@
 
 .hz-work__arch-filter-mark.is-planned {
 	color: var(--wp--preset--color--text-faint);
+}
+
+// A subsystem the applied filter excludes, and an edge with a filtered out
+// endpoint. The script puts is-arch-hidden and is-arch-edge-off on and takes
+// them off; nothing here reads the status attribute, so the state lives in one
+// place, which is the class.
+//
+// DIM, NOT HIDE, AND THE NUMBERS ARE THE DESIGN'S. Measured on the running
+// reference after clicking IMPLEMENTED: the six excluded subsystem groups read
+// computed opacity 0.3 and display inline, and six of the nine primary edges
+// read computed opacity 0.25 on their wrapping g. The reference dims in
+// RankKernelArchitecture.tsx at the two places that matter, 0.3 for a subsystem
+// and 0.25 for a core edge, and it never sets display on either, so a filter
+// leaves the graph in place and readable. Hiding would also break the pairing
+// the script reads, because it resolves an edge's two endpoints by coordinate
+// and a line with no node under its endpoint resolves to nothing at all.
+//
+// transition is not stated: opacity on an svg group is not what the reference
+// animates, it swaps the value, so adding one here would be a behaviour the
+// reference does not have.
+.hz-work__arch-svg-node.is-arch-hidden {
+	opacity: 0.3;
+}
+
+.hz-work__arch-edge.is-arch-edge-off {
+	opacity: 0.25;
 }
 
 // The two column preview. grid-cols-1 xl:grid-cols-12 with gap-8, so it is one
@@ -1525,6 +1877,32 @@
 // and it sets every fill as an attribute on the element itself, so no rule here
 // states one: a CSS declaration would beat the attribute and the design's own
 // per node colouring would go with it.
+//
+// The selected subsystem is the one exception, and it is stated here rather than
+// left to the markup for one reason only. Selection is a pair, the amber body
+// and the near-black ink that only reads on amber, and the owner read the two
+// halves drifting apart: a node left on a dark body with the selected ink on it
+// is unreadable, and an amber body without the ink is a yellow hole. Stating
+// the pair in one place is what stops them separating, and it is the same reason
+// the selected node in section 03 states both halves here rather than inheriting
+// either from the markup.
+//
+// Status is deliberately NOT restated here. The three status treatments are
+// correct in the markup, they differ from each other, and restating them would
+// replace the design's per node attribute with a second copy of it that could
+// drift. Only the selected pair is a class, because only the selected pair is a
+// single thing that must not come apart.
+.hz-work__arch-svg-node.is-active .hz-work__arch-svg-box {
+	fill: var(--wp--preset--color--accent);
+	stroke: var(--wp--preset--color--accent);
+	stroke-width: 2;
+}
+
+.hz-work__arch-svg-node.is-active .hz-work__arch-svg-name,
+.hz-work__arch-svg-node.is-active .hz-work__arch-svg-badge {
+	fill: var(--wp--preset--color--black);
+}
+
 .hz-work__arch-svg-core {
 	font-family: var(--wp--preset--font-family--display);
 	font-size: 15px;
@@ -1836,9 +2214,40 @@
 	max-width: 48rem;
 }
 
+// The project archive link is a button block in the design, not a bare text
+// link, and the saved markup gave it the bare link classes only. The design
+// states it as px-5 py-3 bg-[#111113] text-[#FFFDF4] border border-[#343434]
+// hover:border-[#FACC15] font-mono-tech text-xs font-semibold inline-flex
+// items-center gap-2 whitespace-nowrap.
+//
+// Measured before this at 390 and 768 the anchor was a 16px line with no
+// padding, no border and no ground, against the design's 42px, which is -26px on
+// the section. At 1440 it measured 261.61 wide where the design measures
+// 303.61, and the 42px difference is exactly the padding and the border, since
+// the text and the 16px arrow were already identical.
+//
+// The arrow takes the design's amber, which the design puts on the icon alone,
+// so the surrounding text stays #FFFDF4.
 .hz-work__archive-link {
 	align-self: flex-start;
 	flex-shrink: 0;
+	padding: 0.75rem 1.25rem;
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.hz-work__archive-link:hover,
+.hz-work__archive-link:focus {
+	color: var(--wp--preset--color--text);
+	border-color: var(--wp--preset--color--accent);
+}
+
+.hz-work__archive-link svg {
+	flex-shrink: 0;
+	width: 1rem;
+	height: 1rem;
+	color: var(--wp--preset--color--accent);
 }
 
 @include from( $bp-lg ) {
@@ -1922,6 +2331,45 @@
 	gap: 0.5rem;
 	padding-bottom: 1rem;
 	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// The card index and its label are one flex child in the design, not three
+// items in the meta row: a font-mono-tech text-xs flex items-center gap-2 run
+// holding <span>01</span><span aria-hidden>·</span><span>Professional
+// Project</span>, all three in the text colour. The saved markup ran them
+// together as one #D8D5CA string, which measured 180.02 wide against the
+// design's 181.63.
+//
+// The lead wrapper is what makes the row two children again. Left as three
+// children, justify-content: space-between spread them across the whole 598px
+// row, and Core's block gap put 24px under every child after the first, which
+// cost the section 24px on its own.
+//
+// The separator carries the accent in the design. It is aria-hidden, so the
+// visible dot stays decoration and the index is still the first thing read.
+.hz-card__meta-lead {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.is-style-section .hz-card__index,
+.is-style-section .hz-card__kind,
+.is-style-section .hz-card__index-sep {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3333;
+}
+
+.is-style-section .hz-card__index,
+.is-style-section .hz-card__kind {
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .hz-card__index-sep {
+	color: var(--wp--preset--color--accent);
 }
 
 .is-style-section .hz-card__title {
@@ -2230,28 +2678,73 @@
 // group as a 24px margin. Left alone that margin is what the old row baseline
 // aligned to, so clearing it is part of the same fix rather than a separate
 // one.
+// The role header is a two child flex row in the design, not a block:
+// flex flex-col md:flex-row md:items-baseline justify-between gap-2. The label
+// and the title share the first child so they stack, and the timeline index
+// hangs off the right as the second.
+//
+// It was a block, so the index had nowhere to sit and the header could not put
+// the two ends of the row apart. Both changes are the markup's, not this rule's:
+// the index is a span in the saved content and this rule only has to give it a
+// row to sit in.
 .hz-role__head {
-	display: block;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.5rem;
 	padding-bottom: 1.25rem;
 	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.hz-role__head {
+		flex-direction: row;
+		align-items: baseline;
+	}
 }
 
 .hz-section .hz-role__head > * {
 	margin-block: 0;
 }
 
-// mt-1 on the design's title, so 4px under the label.
-.hz-section .hz-role__head > * + * {
+// mt-1 on the design's title, so 4px under the label. The label and the title
+// are inside the first child now, so the reset and the gap move with them: the
+// wrapper is a group and Core would otherwise put 24px under both of them.
+.hz-section .hz-role__head-main > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-role__head-main > * + * {
 	margin-block-start: 0.25rem;
+}
+
+// The timeline index. font-mono-tech text-xs font-semibold text-[#77746C],
+// right aligned on the header row. It is right aligned by the row's own
+// justify-content and by items-baseline, not by a text-align on itself.
+.is-style-section .hz-role__index {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
 }
 
 // text-xs on the label, which is 12px on a 16px line, so the title sits 20px
 // under the label. That is what the shared label voice above now states, so
 // nothing has to be restated here.
 
+// The design writes text-2xl sm:text-3xl font-display font-bold on this heading
+// with no tracking utility, so it carries no tracking of its own. The theme's h3
+// preset supplies -0.025em, which measured -0.75px against the design's normal
+// at 1440. Normal is stated here rather than by removing a class, because the
+// -0.025em comes from theme.json and not from this file.
 .is-style-section .hz-role__title {
 	font-size: 1.5rem;
 	line-height: 1.3333;
+	letter-spacing: normal;
 }
 
 @include from( $bp-sm ) {
@@ -2485,12 +2978,15 @@
 // font and line-height are restated because a button inherits neither, and the
 // shape comes from base/_reset.scss. The design draws no arrow on this control,
 // so there is no icon box to size here. The label is text-xs, so 16px.
+// The weight is 400 and not 600. The design writes font-mono-tech text-xs on
+// this control with no weight class, so the default is 400. The 600 that was
+// here measured 600 against the design's 400, a delta of 200.
 .hz-approach__next {
 	flex-shrink: 0;
 	padding: 0.5rem 0.875rem;
 	font-family: var(--wp--preset--font-family--mono);
 	font-size: 0.75rem;
-	font-weight: 600;
+	font-weight: 400;
 	line-height: 1.3333;
 	color: var(--wp--preset--color--accent);
 	background-color: var(--wp--preset--color--surface-2);

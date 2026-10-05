@@ -23,7 +23,6 @@
  *   [data-hz-switcher]      the control strip, inside a section
  *   data-hz-tab             the class the tab buttons carry
  *   data-hz-target          on each button, the id of the panel it selects
- *   data-hz-selected-class  the class the selected button carries
  *   data-hz-rotates         present and "true" only where auto rotation is wanted
  *   .hz-switch-panels       the element that holds the panels
  *   .hz-switch-panel        a panel
@@ -34,6 +33,18 @@
  *   svg                      the node map, read for g.hz-svg-label elements
  *   .hz-svg-label            the node's own text, matched to the tab text
  *
+ * and, for the RankKernel architecture figure in section 03:
+ *
+ *   [data-hz-arch-status]    the figure root, carrying the applied filter
+ *   data-hz-arch-filter      on each of the four filter buttons, the status it
+ *                            selects: all, implemented, in-progress or planned
+ *   .hz-work__arch-svg-node  a subsystem node, read for its status class
+ *   .hz-work__arch-edge      a connection line inside that figure's svg
+ *
+ * and the two state classes this script toggles, which the stylesheet owns:
+ *
+ *   .is-arch-hidden          on a node the active filter excludes
+ *   .is-arch-edge-off        on an edge with a filtered out endpoint
  *
  * Every one of those except the button attributes lives on a core block as an
  * ordinary className or a support attribute WordPress already emits, so the
@@ -118,6 +129,491 @@
 	const GRAPH_EDGE_IDLE_STROKE = '#343434';
 	const GRAPH_EDGE_SELECTED_STROKE = '#FACC15';
 
+	/*
+	 * The RankKernel architecture figure in section 03, and its status filter.
+	 *
+	 * WHY THIS IS NOT PART OF THE STRIP ABOVE. A strip drives panels by id and
+	 * one selected tab; this figure drives nine nodes inside one svg by status
+	 * and has no panels at all. It also carries role group rather than
+	 * role tablist, because there are no tabpanels for a tablist to own, so
+	 * folding it into the strip contract would have meant faking the panel
+	 * relationship. It is bound from the same init and destroy paths instead.
+	 *
+	 * WHAT THE DESIGN DOES WITH AN EDGE. Read from
+	 * RankKernelArchitecture.tsx: the primary core-to-subsystem edges are dimmed
+	 * on the same condition as their own subsystem, so an edge follows its
+	 * subsystem and nothing else. The secondary subsystem-to-subsystem lines
+	 * carry no filter term at all; the design varies them only by whether an
+	 * endpoint is the active node. So a filter in the design hides no line
+	 * outright, it dims the nine primary edges, and it leaves the secondary
+	 * lines alone.
+	 *
+	 * The owner asked for the lines to actually change, so the treatment here is
+	 * the design's dimmed read taken one step to its conclusion: an edge whose
+	 * endpoint is filtered out is switched off. An edge is switched off when
+	 * EITHER endpoint is filtered out, never only when both are, because a line
+	 * running to a node that is no longer drawn is a line pointing at nothing.
+	 * The core node is never filtered, so the nine primary edges follow their
+	 * subsystem, which is the design's rule exactly. The secondary lines follow
+	 * both of their endpoints, which is the design's rule extended to the edges
+	 * the design left unresponsive.
+	 *
+	 * THE EDGE SET IS DERIVED, NOT COUNTED. Every line inside this figure's own
+	 * svg is read, which is what scopes the work to this figure: the page carries
+	 * other line elements, including the seven in section 03's node map, and those
+	 * are none of this figure's business. The stylesheet marks the same lines
+	 * with hz-work__arch-edge, but pairing is by coordinate: every subsystem
+	 * node's centre is readable from its translate transform, and every line's
+	 * two endpoints are readable
+	 * from x1/y1 and x2/y2. An endpoint therefore names the node it belongs to,
+	 * and a line whose endpoints cannot both be resolved is left alone rather
+	 * than guessed at. Nothing here depends on how many lines the markup
+	 * happens to carry.
+	 *
+	 * THE COUNT IS NOT TOUCHED. The design reads "All States (9)" and carries
+	 * no count on the other three labels, and it does not recount as the filter
+	 * changes. The markup already says 9, which is the true total, so the count
+	 * is left exactly as the markup has it rather than a count format being
+	 * invented for the other three.
+	 *
+	 * STATE IS CLASS AND ATTRIBUTE ONLY. is-arch-hidden and is-arch-edge-off are
+	 * the stylesheet's to style, which is what keeps this out of the inline
+	 * style trap that three RankKernel filter tabs once fell into.
+	 */
+	const ARCH_STATUS_ATTRIBUTE = 'data-hz-arch-status';
+	const ARCH_FILTER_ATTRIBUTE = 'data-hz-arch-filter';
+	const ARCH_ROOT_SELECTOR = `[${ ARCH_STATUS_ATTRIBUTE }]`;
+	const ARCH_FILTER_CLASS = 'hz-work__arch-filter';
+	const ARCH_FILTER_ACTIVE_CLASS = 'is-on';
+	const ARCH_SVG_SELECTOR = '.hz-work__arch-svg';
+	const ARCH_NODE_SELECTOR = '.hz-work__arch-svg-node';
+	const ARCH_EDGE_CLASS = 'hz-work__arch-edge';
+	const ARCH_NODE_HIDDEN_CLASS = 'is-arch-hidden';
+	const ARCH_EDGE_OFF_CLASS = 'is-arch-edge-off';
+	const ARCH_ALL = 'all';
+
+	/*
+	 * The node status classes as the filter values they answer to. The filter
+	 * attribute and the node class are separate vocabularies in the markup, so
+	 * the join between them lives here and nowhere else.
+	 */
+	const ARCH_STATUS_BY_NODE_CLASS = {
+		'is-implemented': 'implemented',
+		'is-progress': 'in-progress',
+		'is-planned': 'planned',
+	};
+
+	/**
+	 * The RankKernel architecture status filter, one instance per figure.
+	 *
+	 * @param {HTMLElement} root The figure root carrying data-hz-arch-status.
+	 */
+	function ArchStatusFilter( root ) {
+		this.root = root;
+
+		/*
+		 * The control row sits in the figure's head and the drawing sits in its
+		 * figure column, so the element carrying the status attribute is not
+		 * necessarily the element holding both. The .hz-work__arch wrapper is,
+		 * and when the attribute has been placed on the wrapper already then
+		 * closest finds that same element, so one expression covers both.
+		 */
+		this.host =
+			root.closest( '.hz-work__arch' ) ||
+			( root.classList.contains( 'hz-work__arch' ) ? root : null ) ||
+			root;
+
+		this.svg = this.host.querySelector( ARCH_SVG_SELECTOR );
+		this.filterHost = this.host.querySelector( '.hz-work__arch-filters' );
+
+		this.buttons = [];
+		this.nodes = [];
+		this.edges = [];
+		this.status = ARCH_ALL;
+
+		this.onRootClick = null;
+		this.onFilterKeyDown = null;
+		this.onPageHide = null;
+		this.destroyed = false;
+
+		this.init();
+	}
+
+	/**
+	 * Read the figure, bind one click listener and one key listener, then apply
+	 * whatever filter the markup already states.
+	 *
+	 * @return {void}
+	 */
+	ArchStatusFilter.prototype.init = function () {
+		if ( ! this.svg || ! this.filterHost ) {
+			return;
+		}
+
+		this.readButtons();
+		this.readNodes();
+		this.readEdges();
+
+		if ( ! this.buttons.length ) {
+			return;
+		}
+
+		this.onRootClick = ( event ) => {
+			const button =
+				event.target && event.target.closest
+					? event.target.closest(
+							`button[${ ARCH_FILTER_ATTRIBUTE }]`
+						)
+					: null;
+
+			if ( ! button || ! this.host.contains( button ) ) {
+				return;
+			}
+
+			const status = button.getAttribute( ARCH_FILTER_ATTRIBUTE );
+
+			if ( ! status ) {
+				return;
+			}
+
+			this.applyStatus( status );
+		};
+
+		/*
+		 * Arrow, Home and End move between the four buttons. The design has no
+		 * key handler on these at all, so this is an addition rather than parity,
+		 * and it is a shortcut rather than the only route: every button is a
+		 * real button, so Tab alone still reaches all four and Enter or Space
+		 * still activate whichever one has focus.
+		 *
+		 * The buttons are a role group, not a tablist, so focus moves without the
+		 * filter changing. Applying the filter from a keypress as well would make
+		 * arrowing across the row filter as it went, which is a tablist
+		 * behaviour and not a toggle group's.
+		 */
+		this.onFilterKeyDown = ( event ) => {
+			const current = this.buttons.indexOf(
+				this.filterHost.ownerDocument.activeElement
+			);
+
+			if ( current < 0 ) {
+				return;
+			}
+
+			let next = -1;
+
+			switch ( event.key ) {
+				case 'ArrowRight':
+				case 'ArrowDown':
+					next = ( current + 1 ) % this.buttons.length;
+					break;
+				case 'ArrowLeft':
+				case 'ArrowUp':
+					next =
+						( current - 1 + this.buttons.length ) %
+						this.buttons.length;
+					break;
+				case 'Home':
+					next = 0;
+					break;
+				case 'End':
+					next = this.buttons.length - 1;
+					break;
+				default:
+					return;
+			}
+
+			event.preventDefault();
+
+			this.buttons[ next ].focus();
+		};
+
+		this.host.addEventListener( 'click', this.onRootClick );
+		this.filterHost.addEventListener( 'keydown', this.onFilterKeyDown );
+
+		this.onPageHide = () => {
+			this.destroy();
+		};
+
+		window.addEventListener( 'pagehide', this.onPageHide );
+
+		this.applyStatus( this.initialStatus() );
+	};
+
+	/**
+	 * The four filter buttons, read fresh from the markup.
+	 *
+	 * @return {void}
+	 */
+	ArchStatusFilter.prototype.readButtons = function () {
+		this.buttons = Array.prototype.slice.call(
+			this.filterHost.querySelectorAll(
+				`button.${ ARCH_FILTER_CLASS }[${ ARCH_FILTER_ATTRIBUTE }]`
+			)
+		);
+	};
+
+	/**
+	 * The subsystem nodes, each paired with the status its class states.
+	 *
+	 * @return {void}
+	 */
+	ArchStatusFilter.prototype.readNodes = function () {
+		this.nodes = Array.prototype.slice
+			.call( this.svg.querySelectorAll( ARCH_NODE_SELECTOR ) )
+			.map( ( group ) => ( {
+				group,
+				status: this.statusOfNode( group ),
+				point: this.nodePoint( group ),
+			} ) )
+			.filter( ( node ) => !! node.status );
+	};
+
+	/**
+	 * The lines inside this figure, each paired with the nodes its two
+	 * endpoints land on.
+	 *
+	 * Scoped to this svg rather than queried from the document, because the page
+	 * carries other line elements, including the seven in section 03's node map,
+	 * and those are none of this figure's business.
+	 *
+	 * @return {void}
+	 */
+	ArchStatusFilter.prototype.readEdges = function () {
+		const lines = Array.prototype.slice.call(
+			this.svg.querySelectorAll( 'line' )
+		);
+
+		/*
+		 * The stylesheet marks these lines with hz-work__arch-edge, so where that
+		 * class is present it names the edge set exactly and is preferred. Where
+		 * it is absent, every line inside this figure's own svg is read instead,
+		 * which is the same set: this svg contains two background circles and
+		 * nothing but edges and nodes.
+		 */
+		const marked = lines.filter( ( line ) =>
+			line.classList.contains( ARCH_EDGE_CLASS )
+		);
+
+		( marked.length ? marked : lines )
+			.map( ( line ) => ( {
+				line,
+				ends: this.edgeEndpoints( line ),
+			} ) )
+			.filter( ( edge ) => null !== edge.ends )
+			.forEach( ( edge ) => {
+				this.edges.push( edge );
+			} );
+	};
+
+	/**
+	 * The status a node's own class states, or an empty string when it states
+	 * none, which leaves the node out of the filter entirely rather than
+	 * guessing at it.
+	 *
+	 * @param {Element} group The node's g element.
+	 * @return {string} The filter status, or an empty string.
+	 */
+	ArchStatusFilter.prototype.statusOfNode = function ( group ) {
+		const names = Object.keys( ARCH_STATUS_BY_NODE_CLASS );
+
+		for ( let i = 0; i < names.length; i++ ) {
+			if ( group.classList.contains( names[ i ] ) ) {
+				return ARCH_STATUS_BY_NODE_CLASS[ names[ i ] ];
+			}
+		}
+
+		return '';
+	};
+
+	/**
+	 * The centre of a node, read from its own translate transform.
+	 *
+	 * @param {Element} group The node's g element.
+	 * @return {Object|null} { x, y }, or null when it carries no transform.
+	 */
+	ArchStatusFilter.prototype.nodePoint = function ( group ) {
+		const transform = group.getAttribute( 'transform' ) || '';
+		const match = transform.match(
+			/translate\(\s*(-?[\d.]+)[ ,]+(-?[\d.]+)\s*\)/
+		);
+
+		if ( ! match ) {
+			return null;
+		}
+
+		const x = parseFloat( match[ 1 ] );
+		const y = parseFloat( match[ 2 ] );
+
+		if ( isNaN( x ) || isNaN( y ) ) {
+			return null;
+		}
+
+		return { x, y };
+	};
+
+	/**
+	 * The nodes a line's two endpoints land on.
+	 *
+	 * A line is only usable as a filter edge when both of its endpoints resolve
+	 * to a node. The primary edges run from the central core, which carries no
+	 * status class and is never filtered, so one endpoint resolves to no node
+	 * and the pair is kept as a null, meaning that edge follows its single
+	 * subsystem rather than being skipped. Both endpoints unresolved means the
+	 * line is not part of this figure's node graph at all, and the whole edge is
+	 * dropped rather than switched off on a guess.
+	 *
+	 * @param {Element} line The line element.
+	 * @return {Object|null} { a, b }, or null when the line is not usable.
+	 */
+	ArchStatusFilter.prototype.edgeEndpoints = function ( line ) {
+		const a = this.nodeAtPoint( line, 'x1', 'y1' );
+		const b = this.nodeAtPoint( line, 'x2', 'y2' );
+
+		if ( ! a && ! b ) {
+			return null;
+		}
+
+		return { a, b };
+	};
+
+	/**
+	 * The node a line endpoint sits on, or null.
+	 *
+	 * @param {Element} line  The line element.
+	 * @param {string}  xAttr The x coordinate attribute.
+	 * @param {string}  yAttr The y coordinate attribute.
+	 * @return {Object|null} The node, or null.
+	 */
+	ArchStatusFilter.prototype.nodeAtPoint = function ( line, xAttr, yAttr ) {
+		const x = parseFloat( line.getAttribute( xAttr ) );
+		const y = parseFloat( line.getAttribute( yAttr ) );
+
+		if ( isNaN( x ) || isNaN( y ) ) {
+			return null;
+		}
+
+		return (
+			this.nodes.find(
+				( node ) =>
+					node.point && node.point.x === x && node.point.y === y
+			) || null
+		);
+	};
+
+	/**
+	 * The filter the markup already states, which is aria-pressed on a button
+	 * when there is one and the root's own attribute otherwise.
+	 *
+	 * @return {string} The status to start on, defaulting to all.
+	 */
+	ArchStatusFilter.prototype.initialStatus = function () {
+		const pressed = this.buttons.find(
+			( button ) => 'true' === button.getAttribute( 'aria-pressed' )
+		);
+
+		if ( pressed ) {
+			return pressed.getAttribute( ARCH_FILTER_ATTRIBUTE ) || ARCH_ALL;
+		}
+
+		return this.root.getAttribute( ARCH_STATUS_ATTRIBUTE ) || ARCH_ALL;
+	};
+
+	/**
+	 * Apply a status to the figure: the nodes, the lines and the four buttons.
+	 *
+	 * @param {string} status all, implemented, in-progress or planned.
+	 * @return {void}
+	 */
+	ArchStatusFilter.prototype.applyStatus = function ( status ) {
+		if ( ARCH_ALL !== status ) {
+			const known = Object.keys( ARCH_STATUS_BY_NODE_CLASS ).some(
+				( name ) => ARCH_STATUS_BY_NODE_CLASS[ name ] === status
+			);
+
+			if ( ! known ) {
+				return;
+			}
+		}
+
+		const filtered = ( value ) => ARCH_ALL !== status && value !== status;
+
+		this.nodes.forEach( ( node ) => {
+			node.group.classList.toggle(
+				ARCH_NODE_HIDDEN_CLASS,
+				filtered( node.status )
+			);
+		} );
+
+		/*
+		 * Either endpoint being filtered out switches the line off, and the core
+		 * is never filtered so a primary edge follows its subsystem alone. That
+		 * is the design's own rule for the nine primary edges, extended to the
+		 * secondary lines the design left unresponsive.
+		 */
+		this.edges.forEach( ( edge ) => {
+			const off = !! (
+				( edge.ends.a && filtered( edge.ends.a.status ) ) ||
+				( edge.ends.b && filtered( edge.ends.b.status ) )
+			);
+
+			edge.line.classList.toggle( ARCH_EDGE_OFF_CLASS, off );
+		} );
+
+		this.buttons.forEach( ( button ) => {
+			const isOn =
+				button.getAttribute( ARCH_FILTER_ATTRIBUTE ) === status;
+
+			button.classList.toggle( ARCH_FILTER_ACTIVE_CLASS, isOn );
+			button.setAttribute( 'aria-pressed', isOn ? 'true' : 'false' );
+		} );
+
+		this.root.setAttribute( ARCH_STATUS_ATTRIBUTE, status );
+
+		this.status = status;
+	};
+
+	/**
+	 * Tear the instance down: every listener it added, and nothing else. The
+	 * class and attribute state is left as it stands, because a page going away
+	 * has no further state to get right.
+	 *
+	 * Safe to call twice, which matters because pagehide can be followed by
+	 * unload and both reach this.
+	 *
+	 * @return {void}
+	 */
+	ArchStatusFilter.prototype.destroy = function () {
+		if ( this.destroyed ) {
+			return;
+		}
+
+		this.destroyed = true;
+
+		if ( this.onRootClick ) {
+			this.host.removeEventListener( 'click', this.onRootClick );
+		}
+
+		if ( this.onFilterKeyDown && this.filterHost ) {
+			this.filterHost.removeEventListener(
+				'keydown',
+				this.onFilterKeyDown
+			);
+		}
+
+		if ( this.onPageHide ) {
+			window.removeEventListener( 'pagehide', this.onPageHide );
+		}
+
+		this.onRootClick = null;
+		this.onFilterKeyDown = null;
+		this.onPageHide = null;
+
+		this.buttons = [];
+		this.nodes = [];
+		this.edges = [];
+	};
+
 	/**
 	 * Automatic advance interval in milliseconds.
 	 *
@@ -130,6 +626,19 @@
 	 * the reference exactly. The interval is the one number the owner fixed.
 	 */
 	const ROTATE_INTERVAL = 3000;
+
+	/**
+	 * The share of a detail panel the viewport must already be showing before a
+	 * control click is allowed to move the page.
+	 *
+	 * The previous guard asked only whether any part of the panel was below the
+	 * fold, which a panel whose top edge sat 700px down a phone viewport answered
+	 * no to while showing 16% of its detail. A share is the question a visitor is
+	 * actually asking: did the thing I tapped actually come into view. 0.6 sits
+	 * below the 82.7% to 88.7% the stacked sections already reached on their own,
+	 * so a tap that already worked still does nothing at all.
+	 */
+	const MIN_PANEL_VISIBLE = 0.6;
 
 	/**
 	 * One initialised section.
@@ -145,8 +654,6 @@
 			/^\./,
 			''
 		);
-		this.selectedClass =
-			strip.getAttribute( 'data-hz-selected-class' ) || '';
 		/*
 		 * The strip states the two words the selected and unselected state
 		 * labels use, so the visible text is swapped along with the attribute.
@@ -176,6 +683,7 @@
 		this.nodes = [];
 		this.edges = [];
 		this.edgeDot = null;
+		this.graphSvg = null;
 
 		this.onStripClick = null;
 		this.onStripKeyDown = null;
@@ -268,10 +776,13 @@
 	};
 
 	/**
-	 * Bind the listeners on the control strip.
+	 * Bind the click and key listeners this section needs.
 	 *
-	 * One click listener on the strip rather than one per button, so the number
-	 * of listeners does not grow with the number of tabs.
+	 * The click listener is on the section root rather than on the strip, so a
+	 * control that names its destination with data-hz-target can live anywhere
+	 * in the section, not only in the row strip. The key listener stays on the
+	 * strip, because arrow key navigation is a tablist behaviour and belongs to
+	 * the tablist. Neither listener count grows with the number of tabs.
 	 *
 	 * @return {void}
 	 */
@@ -337,6 +848,14 @@
 		if ( ! svg ) {
 			return;
 		}
+
+		/*
+		 * Held rather than looked up again in destroy(). A second querySelector
+		 * returns whatever the first one found only for as long as the DOM is
+		 * unchanged, and the listeners were attached to this element, so this is
+		 * the only reference guaranteed to name them.
+		 */
+		this.graphSvg = svg;
 
 		const tabs = this.getTabs();
 
@@ -708,6 +1227,54 @@
 	};
 
 	/**
+	 * The id a tabpanel should be labelled by, which is the id of its tab.
+	 *
+	 * WHY IT MAY HAVE TO MAKE ONE. A tabpanel needs its tab to have an id for
+	 * aria-labelledby to name it, and the saved markup does not give every tab
+	 * one. Rather than leave those panels unnamed, an id is derived from the
+	 * panel the tab already names through data-hz-target, which is content the
+	 * markup is carrying anyway. It is therefore stable across reloads, unique
+	 * per panel, and readable, and an id the editor later writes into the markup
+	 * is preferred over a derived one rather than overwritten.
+	 *
+	 * A tab that carries an id on something inside itself is labelled by that
+	 * instead. The capability cards do exactly this: the heading inside the button
+	 * carries the id, and naming the heading names the capability, which is
+	 * better than naming the whole button including its state label.
+	 *
+	 * @param {HTMLElement} tab    The tab button.
+	 * @param {string|null} target The panel id the tab controls.
+	 * @return {string} An id that resolves to a real element.
+	 */
+	SectionSwitcher.prototype.labelIdForTab = function ( tab, target ) {
+		if ( tab.id ) {
+			return tab.id;
+		}
+
+		const labelled = tab.querySelector( '[id]' );
+
+		if ( labelled ) {
+			return labelled.id;
+		}
+
+		const base = target || 'hz-switch-panel';
+		let candidate = base + '-tab';
+		let attempt = 2;
+
+		while (
+			document.getElementById( candidate ) &&
+			document.getElementById( candidate ) !== tab
+		) {
+			candidate = base + '-tab-' + attempt;
+			attempt += 1;
+		}
+
+		tab.id = candidate;
+
+		return candidate;
+	};
+
+	/**
 	 * The index the saved markup says is selected when the script starts.
 	 *
 	 * @param {Array<HTMLElement>} tabs The tab buttons.
@@ -785,10 +1352,12 @@
 	 * prefers-reduced-motion contract for no benefit. Excluding it by this.rotates
 	 * leaves exactly sections 02 and 06, which are the two the request names.
 	 *
-	 * WHY ONLY WHEN THE PANEL IS BELOW THE FOLD. A visitor reading a panel that
-	 * is already on screen must not have the page moved under them by a tap on a
-	 * control further up. The panel is taller than a phone viewport, so what
-	 * matters is where its top edge is, not whether any part of it is visible.
+	 * WHY ONLY WHEN TOO LITTLE OF THE PANEL IS ON SCREEN. A visitor reading a
+	 * panel that is already on screen must not have the page moved under them by
+	 * a tap on a control further up. The panel is taller than a phone viewport,
+	 * so what matters is not whether any part of it is visible but how much of
+	 * it is: a panel whose top edge sat just above the fold line still showed
+	 * 16% of its detail and the tap appeared to do nothing.
 	 *
 	 * @param {HTMLElement} tab The tab that was selected.
 	 * @return {void}
@@ -806,6 +1375,7 @@
 
 		const panelBox = panel.getBoundingClientRect();
 		const stripBox = this.strip.getBoundingClientRect();
+		const viewHeight = panel.ownerDocument.defaultView.innerHeight;
 
 		/*
 		 * Stacked means the panel starts below the whole control strip. The two
@@ -818,7 +1388,15 @@
 			return;
 		}
 
-		if ( panelBox.top < panel.ownerDocument.defaultView.innerHeight ) {
+		if ( ! panelBox.height ) {
+			return;
+		}
+
+		const visible =
+			Math.min( panelBox.bottom, viewHeight ) -
+			Math.max( panelBox.top, 0 );
+
+		if ( visible / panelBox.height >= MIN_PANEL_VISIBLE ) {
 			return;
 		}
 
@@ -883,15 +1461,24 @@
 				if ( panel && ! panel.getAttribute( 'role' ) ) {
 					panel.setAttribute( 'role', 'tabpanel' );
 				}
+
+				/*
+				 * A tabpanel with no accessible name is announced as an unnamed
+				 * panel, so the relationship the visitor hears stated on the tab
+				 * is the only place it is stated at all. Each panel is therefore
+				 * labelled by the tab that controls it.
+				 */
+				if ( panel ) {
+					panel.setAttribute(
+						'aria-labelledby',
+						this.labelIdForTab( tab, target )
+					);
+				}
 			} else {
 				tab.setAttribute(
 					'aria-pressed',
 					isSelected ? 'true' : 'false'
 				);
-			}
-
-			if ( this.selectedClass ) {
-				tab.classList.toggle( this.selectedClass, isSelected );
 			}
 
 			/*
@@ -992,8 +1579,21 @@
 			return;
 		}
 
-		this.edgeDot.setAttribute( 'cx', this.midpoint( edge, 'x1', 'x2' ) );
-		this.edgeDot.setAttribute( 'cy', this.midpoint( edge, 'y1', 'y2' ) );
+		const midpointX = this.midpoint( edge, 'x1', 'x2' );
+		const midpointY = this.midpoint( edge, 'y1', 'y2' );
+
+		/*
+		 * midpoint returns null rather than a number when either coordinate is
+		 * absent, and writing that null into an attribute would publish the
+		 * literal string "null" as a coordinate. A dot in its last known place is
+		 * better than a dot at the origin.
+		 */
+		if ( null === midpointX || null === midpointY ) {
+			return;
+		}
+
+		this.edgeDot.setAttribute( 'cx', midpointX );
+		this.edgeDot.setAttribute( 'cy', midpointY );
 	};
 
 	/**
@@ -1169,7 +1769,7 @@
 		}
 
 		if ( this.onGraphClick || this.onGraphKeyDown ) {
-			const svg = this.root.querySelector( GRAPH_SVG_SELECTOR );
+			const svg = this.graphSvg;
 
 			if ( svg ) {
 				if ( this.onGraphClick ) {
@@ -1227,7 +1827,37 @@
 		this.nodes = [];
 		this.edges = [];
 		this.edgeDot = null;
+		this.graphSvg = null;
 	};
+
+	/**
+	 * Initialise every RankKernel architecture figure on the page.
+	 *
+	 * Separate from the strip pass because the figure is not a strip: it carries
+	 * no data-hz-switcher, has no panels and is a role group rather than a
+	 * tablist. Both passes run from the same readyState gate and each instance
+	 * tears itself down on pagehide, so neither leaks on its own.
+	 *
+	 * @return {void}
+	 */
+	function initArchStatusFilters() {
+		Array.prototype.forEach.call(
+			document.querySelectorAll( ARCH_ROOT_SELECTOR ),
+			( root ) => {
+				if ( 'true' === root.getAttribute( 'data-hz-arch-ready' ) ) {
+					return;
+				}
+
+				root.setAttribute( 'data-hz-arch-ready', 'true' );
+
+				try {
+					new ArchStatusFilter( root );
+				} catch {
+					root.setAttribute( 'data-hz-error', 'true' );
+				}
+			}
+		);
+	}
 
 	/**
 	 * Initialise every control strip on the page exactly once.
@@ -1258,8 +1888,12 @@
 	}
 
 	if ( 'loading' === document.readyState ) {
-		document.addEventListener( 'DOMContentLoaded', initSectionSwitchers );
+		document.addEventListener( 'DOMContentLoaded', function () {
+			initSectionSwitchers();
+			initArchStatusFilters();
+		} );
 	} else {
 		initSectionSwitchers();
+		initArchStatusFilters();
 	}
 } )();

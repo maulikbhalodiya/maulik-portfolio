@@ -1,3 +1,7 @@
+<!-- wp:html -->
+<noscript><style>.hz-switch-panel--idle{display:block}</style></noscript>
+<!-- /wp:html -->
+
 <!-- wp:group {"tagName":"section","className":"is-style-section is-style-surface-dark-grid hero-section","anchor":"hero","ariaLabelledby":"heading-hero","layout":{"type":"constrained"}} -->
 <section class="wp-block-group is-style-section is-style-surface-dark-grid hero-section" id="hero" aria-labelledby="heading-hero">
 	<!-- wp:group {"className":"hero__grid","layout":{"type":"constrained"}} -->
@@ -76,7 +80,7 @@
 						<!-- wp:group {"className":"hz-body__lead","layout":{"type":"default"}} -->
 						<div class="wp-block-group hz-body__lead">
 							<!-- wp:html -->
-							<div class="hz-capabilities__list" role="tablist" aria-label="Capability areas" data-hz-switcher data-hz-tab="hz-capability" data-hz-state-selected="ACTIVE" data-hz-state-idle="INSPECT"><button type="button" role="tab" class="hz-capability" aria-controls="hz-capability-panel-wordpress" data-hz-target="hz-capability-panel-wordpress" aria-selected="true"><span class="hz-capability__body"><span class="hz-capability__number">01 · Capability Area</span><h3 class="hz-capability__title" id="capability-01">WordPress Engineering</h3><span class="hz-capability__summary">Custom plugins, hooks, REST APIs, Gutenberg, WooCommerce and WordPress backend functionality.</span></span><span class="hz-capability__state" data-hz-state>ACTIVE</span></button><button type="button" role="tab" class="hz-capability" aria-controls="hz-capability-panel-php" data-hz-target="hz-capability-panel-php" aria-selected="false"><span class="hz-capability__body"><span class="hz-capability__number">02 · Capability Area</span><h3 class="hz-capability__title" id="capability-02">PHP Backend</h3><span class="hz-capability__summary">Object oriented PHP, Composer, database operations, reusable architecture and server side processing.</span></span><span class="hz-capability__state" data-hz-state>INSPECT</span></button><button type="button" role="tab" class="hz-capability" aria-controls="hz-capability-panel-apis" data-hz-target="hz-capability-panel-apis" aria-selected="false"><span class="hz-capability__body"><span class="hz-capability__number">03 · Capability Area</span><h3 class="hz-capability__title" id="capability-03">API and Integration Engineering</h3><span class="hz-capability__summary">REST APIs, authentication, webhooks, third party services and event driven workflows.</span></span><span class="hz-capability__state" data-hz-state>INSPECT</span></button><button type="button" role="tab" class="hz-capability" aria-controls="hz-capability-panel-payments" data-hz-target="hz-capability-panel-payments" aria-selected="false"><span class="hz-capability__body"><span class="hz-capability__number">04 · Capability Area</span><h3 class="hz-capability__title" id="capability-04">Payment Engineering</h3><span class="hz-capability__summary">Payment gateways, payment workflows, webhooks, secure communication and transaction processing.</span></span><span class="hz-capability__state" data-hz-state>INSPECT</span></button><button type="button" role="tab" class="hz-capability" aria-controls="hz-capability-panel-security" data-hz-target="hz-capability-panel-security" aria-selected="false"><span class="hz-capability__body"><span class="hz-capability__number">05 · Capability Area</span><h3 class="hz-capability__title" id="capability-05">Security</h3><span class="hz-capability__summary">Request verification, HMAC SHA 256, encryption, secure API communication and protected data workflows.</span></span><span class="hz-capability__state" data-hz-state>INSPECT</span></button></div>
+							<div class="hz-capabilities__list" role="tablist" aria-label="Capability areas" data-hz-switcher data-hz-tab="hz-capability" data-hz-state-selected="ACTIVE" data-hz-state-idle="INSPECT"><button type="button" role="tab" id="hz-capability-tab-wordpress" class="hz-capability" aria-controls="hz-capability-panel-wordpress" data-hz-target="hz-capability-panel-wordpress" aria-selected="true"><span class="hz-capability__body"><span class="hz-capability__number">01 · Capability Area</span><h3 class="hz-capability__title" id="capability-01">WordPress Engineering</h3><span class="hz-capability__summary">Custom plugins, hooks, REST APIs, Gutenberg, WooCommerce and WordPress backend functionality.</span></span><span class="hz-capability__state" data-hz-state>ACTIVE</span></button><button type="button" role="tab" id="hz-capability-tab-php" class="hz-capability" aria-controls="hz-capability-panel-php" data-hz-target="hz-capability-panel-php" aria-selected="false"><span class="hz-capability__body"><span class="hz-capability__number">02 · Capability Area</span><h3 class="hz-capability__title" id="capability-02">PHP Backend</h3><span class="hz-capability__summary">Object oriented PHP, Composer, database operations, reusable architecture and server side processing.</span></span><span class="hz-capability__state" data-hz-state>INSPECT</span></button><button type="button" role="tab" id="hz-capability-tab-apis" class="hz-capability" aria-controls="hz-capability-panel-apis" data-hz-target="hz-capability-panel-apis" aria-selected="false"><span class="hz-capability__body"><span class="hz-capability__number">03 · Capability Area</span><h3 class="hz-capability__title" id="capability-03">API and Integration Engineering</h3><span class="hz-capability__summary">REST APIs, authentication, webhooks, third party services and event driven workflows.</span></span><span class="hz-capability__state" data-hz-state>INSPECT</span></button><button type="button" role="tab" id="hz-capability-tab-payments" class="hz-capability" aria-controls="hz-capability-panel-payments" data-hz-target="hz-capability-panel-payments" aria-selected="false"><span class="hz-capability__body"><span class="hz-capability__number">04 · Capability Area</span><h3 class="hz-capability__title" id="capability-04">Payment Engineering</h3><span class="hz-capability__summary">Payment gateways, payment workflows, webhooks, secure communication and transaction processing.</span></span><span class="hz-capability__state" data-hz-state>INSPECT</span></button><button type="button" role="tab" id="hz-capability-tab-security" class="hz-capability" aria-controls="hz-capability-panel-security" data-hz-target="hz-capability-panel-security" aria-selected="false"><span class="hz-capability__body"><span class="hz-capability__number">05 · Capability Area</span><h3 class="hz-capability__title" id="capability-05">Security</h3><span class="hz-capability__summary">Request verification, HMAC SHA 256, encryption, secure API communication and protected data workflows.</span></span><span class="hz-capability__state" data-hz-state>INSPECT</span></button></div>
 								<!-- /wp:html -->
 								</div>
 							<!-- /wp:group -->
@@ -88,13 +92,20 @@
 									<div class="wp-block-group hz-stack-6">
 										<!-- wp:group {"className":"hz-row hz-capabilities__detail-head","layout":{"type":"default"}} -->
 										<div class="wp-block-group hz-row hz-capabilities__detail-head">
-											<!-- wp:paragraph {"className":"hz-label"} -->
-											<p class="hz-label">Capability Specification · 01</p>
-												<!-- /wp:paragraph -->
-												<!-- wp:heading {"level":3,"className":"hz-capabilities__detail-title"} -->
-												<h3 class="wp-block-heading hz-capabilities__detail-title">WordPress Engineering</h3>
+											<!-- wp:group {"className":"hz-capabilities__detail-head-main","layout":{"type":"default"}} -->
+												<div class="wp-block-group hz-capabilities__detail-head-main">
+													<!-- wp:paragraph {"className":"hz-label"} -->
+														<p class="hz-label">Capability Specification · 01</p>
+													<!-- /wp:paragraph -->
+													<!-- wp:heading {"level":3,"className":"hz-capabilities__detail-title"} -->
+														<h3 class="wp-block-heading hz-capabilities__detail-title">WordPress Engineering</h3>
 													<!-- /wp:heading -->
-													</div>
+												</div>
+											<!-- /wp:group -->
+											<!-- wp:html -->
+												<span class="hz-capabilities__detail-focus">Architecture Focus</span>
+											<!-- /wp:html -->
+										</div>
 												<!-- /wp:group -->
 												<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
 												<div class="wp-block-group hz-stack-2">
@@ -106,8 +117,8 @@
 															<!-- /wp:paragraph -->
 															</div>
 														<!-- /wp:group -->
-														<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
-														<div class="wp-block-group hz-stack-2">
+														<!-- wp:group {"className":"hz-stack-3 hz-capabilities__mechanisms","layout":{"type":"default"}} -->
+														<div class="wp-block-group hz-stack-3 hz-capabilities__mechanisms">
 															<!-- wp:paragraph {"className":"hz-label"} -->
 															<p class="hz-label">Key Technical Mechanisms</p>
 																<!-- /wp:paragraph -->
@@ -159,9 +170,16 @@
 																							<!-- /wp:group -->
 																							</div>
 																						<!-- /wp:group -->
-																						<!-- wp:paragraph {"className":"hz-meta hz-rule-top"} -->
-																						<p class="hz-meta hz-rule-top">WordPress · Custom Plugins · Hooks · REST API · Gutenberg · WooCommerce · WP CLI</p>
-																							<!-- /wp:paragraph -->
+																						<!-- wp:group {"className":"hz-capabilities__detail-foot","layout":{"type":"default"}} -->
+																							<div class="wp-block-group hz-capabilities__detail-foot">
+																								<!-- wp:paragraph {"className":"hz-meta"} -->
+																									<p class="hz-meta">WordPress · Custom Plugins · Hooks · REST API · Gutenberg · WooCommerce · WP CLI</p>
+																								<!-- /wp:paragraph -->
+																								<!-- wp:html -->
+																									<a class="hz-link hz-capabilities__detail-cta" href="/projects/"><span>Case Study: Employee Application Management System</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg></a>
+																								<!-- /wp:html -->
+																							</div>
+																						<!-- /wp:group -->
 																							</div>
 																						<!-- /wp:group -->
 																						<!-- wp:group {"anchor":"hz-capability-panel-php","className":"hz-panel hz-panel-rail hz-switch-panel hz-switch-panel--idle","layout":{"type":"default"}} -->
@@ -170,13 +188,20 @@
 																							<div class="wp-block-group hz-stack-6">
 																								<!-- wp:group {"className":"hz-row hz-capabilities__detail-head","layout":{"type":"default"}} -->
 																								<div class="wp-block-group hz-row hz-capabilities__detail-head">
-																									<!-- wp:paragraph {"className":"hz-label"} -->
-																									<p class="hz-label">Capability Specification · 02</p>
-																										<!-- /wp:paragraph -->
-																										<!-- wp:heading {"level":3,"className":"hz-capabilities__detail-title"} -->
-																										<h3 class="wp-block-heading hz-capabilities__detail-title">PHP Backend</h3>
+																									<!-- wp:group {"className":"hz-capabilities__detail-head-main","layout":{"type":"default"}} -->
+																										<div class="wp-block-group hz-capabilities__detail-head-main">
+																											<!-- wp:paragraph {"className":"hz-label"} -->
+																												<p class="hz-label">Capability Specification · 02</p>
+																											<!-- /wp:paragraph -->
+																											<!-- wp:heading {"level":3,"className":"hz-capabilities__detail-title"} -->
+																												<h3 class="wp-block-heading hz-capabilities__detail-title">PHP Backend</h3>
 																											<!-- /wp:heading -->
-																											</div>
+																										</div>
+																									<!-- /wp:group -->
+																									<!-- wp:html -->
+																										<span class="hz-capabilities__detail-focus">Architecture Focus</span>
+																									<!-- /wp:html -->
+																								</div>
 																										<!-- /wp:group -->
 																										<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
 																										<div class="wp-block-group hz-stack-2">
@@ -188,8 +213,8 @@
 																													<!-- /wp:paragraph -->
 																													</div>
 																												<!-- /wp:group -->
-																												<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
-																												<div class="wp-block-group hz-stack-2">
+																												<!-- wp:group {"className":"hz-stack-3 hz-capabilities__mechanisms","layout":{"type":"default"}} -->
+																												<div class="wp-block-group hz-stack-3 hz-capabilities__mechanisms">
 																													<!-- wp:paragraph {"className":"hz-label"} -->
 																													<p class="hz-label">Key Technical Mechanisms</p>
 																														<!-- /wp:paragraph -->
@@ -241,9 +266,16 @@
 																																					<!-- /wp:group -->
 																																					</div>
 																																				<!-- /wp:group -->
-																																				<!-- wp:paragraph {"className":"hz-meta hz-rule-top"} -->
-																																				<p class="hz-meta hz-rule-top">PHP · OOP · Composer · PSR 4 · MySQL · Custom Tables · AJAX</p>
-																																					<!-- /wp:paragraph -->
+																																				<!-- wp:group {"className":"hz-capabilities__detail-foot","layout":{"type":"default"}} -->
+																																					<div class="wp-block-group hz-capabilities__detail-foot">
+																																						<!-- wp:paragraph {"className":"hz-meta"} -->
+																																							<p class="hz-meta">PHP · OOP · Composer · PSR 4 · MySQL · Custom Tables · AJAX</p>
+																																						<!-- /wp:paragraph -->
+																																						<!-- wp:html -->
+																																							<a class="hz-link hz-capabilities__detail-cta" href="/rankkernel/"><span>Case Study: RankKernel Open Source Engine</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg></a>
+																																						<!-- /wp:html -->
+																																					</div>
+																																				<!-- /wp:group -->
 																																					</div>
 																																				<!-- /wp:group -->
 																																				<!-- wp:group {"anchor":"hz-capability-panel-apis","className":"hz-panel hz-panel-rail hz-switch-panel hz-switch-panel--idle","layout":{"type":"default"}} -->
@@ -252,13 +284,20 @@
 																																					<div class="wp-block-group hz-stack-6">
 																																						<!-- wp:group {"className":"hz-row hz-capabilities__detail-head","layout":{"type":"default"}} -->
 																																						<div class="wp-block-group hz-row hz-capabilities__detail-head">
-																																							<!-- wp:paragraph {"className":"hz-label"} -->
-																																							<p class="hz-label">Capability Specification · 03</p>
-																																								<!-- /wp:paragraph -->
-																																								<!-- wp:heading {"level":3,"className":"hz-capabilities__detail-title"} -->
-																																								<h3 class="wp-block-heading hz-capabilities__detail-title">API and Integration Engineering</h3>
+																																							<!-- wp:group {"className":"hz-capabilities__detail-head-main","layout":{"type":"default"}} -->
+																																								<div class="wp-block-group hz-capabilities__detail-head-main">
+																																									<!-- wp:paragraph {"className":"hz-label"} -->
+																																										<p class="hz-label">Capability Specification · 03</p>
+																																									<!-- /wp:paragraph -->
+																																									<!-- wp:heading {"level":3,"className":"hz-capabilities__detail-title"} -->
+																																										<h3 class="wp-block-heading hz-capabilities__detail-title">API and Integration Engineering</h3>
 																																									<!-- /wp:heading -->
-																																									</div>
+																																								</div>
+																																							<!-- /wp:group -->
+																																							<!-- wp:html -->
+																																								<span class="hz-capabilities__detail-focus">Architecture Focus</span>
+																																							<!-- /wp:html -->
+																																						</div>
 																																								<!-- /wp:group -->
 																																								<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
 																																								<div class="wp-block-group hz-stack-2">
@@ -270,8 +309,8 @@
 																																											<!-- /wp:paragraph -->
 																																											</div>
 																																										<!-- /wp:group -->
-																																										<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
-																																										<div class="wp-block-group hz-stack-2">
+																																										<!-- wp:group {"className":"hz-stack-3 hz-capabilities__mechanisms","layout":{"type":"default"}} -->
+																																										<div class="wp-block-group hz-stack-3 hz-capabilities__mechanisms">
 																																											<!-- wp:paragraph {"className":"hz-label"} -->
 																																											<p class="hz-label">Key Technical Mechanisms</p>
 																																												<!-- /wp:paragraph -->
@@ -323,9 +362,16 @@
 																																																			<!-- /wp:group -->
 																																																			</div>
 																																																		<!-- /wp:group -->
-																																																		<!-- wp:paragraph {"className":"hz-meta hz-rule-top"} -->
-																																																		<p class="hz-meta hz-rule-top">REST API · Webhooks · API Authentication · JSON · cURL · Azure Form Recognizer · Brevo API</p>
-																																																			<!-- /wp:paragraph -->
+																																																		<!-- wp:group {"className":"hz-capabilities__detail-foot","layout":{"type":"default"}} -->
+																																																			<div class="wp-block-group hz-capabilities__detail-foot">
+																																																				<!-- wp:paragraph {"className":"hz-meta"} -->
+																																																					<p class="hz-meta">REST API · Webhooks · API Authentication · JSON · cURL · Azure Form Recognizer · Brevo API</p>
+																																																				<!-- /wp:paragraph -->
+																																																				<!-- wp:html -->
+																																																					<a class="hz-link hz-capabilities__detail-cta" href="/projects/"><span>Case Study: Identity Document OCR Integration</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg></a>
+																																																				<!-- /wp:html -->
+																																																			</div>
+																																																		<!-- /wp:group -->
 																																																			</div>
 																																																		<!-- /wp:group -->
 																																																		<!-- wp:group {"anchor":"hz-capability-panel-payments","className":"hz-panel hz-panel-rail hz-switch-panel hz-switch-panel--idle","layout":{"type":"default"}} -->
@@ -334,13 +380,20 @@
 																																																			<div class="wp-block-group hz-stack-6">
 																																																				<!-- wp:group {"className":"hz-row hz-capabilities__detail-head","layout":{"type":"default"}} -->
 																																																				<div class="wp-block-group hz-row hz-capabilities__detail-head">
-																																																					<!-- wp:paragraph {"className":"hz-label"} -->
-																																																					<p class="hz-label">Capability Specification · 04</p>
-																																																						<!-- /wp:paragraph -->
-																																																						<!-- wp:heading {"level":3,"className":"hz-capabilities__detail-title"} -->
-																																																						<h3 class="wp-block-heading hz-capabilities__detail-title">Payment Engineering</h3>
+																																																					<!-- wp:group {"className":"hz-capabilities__detail-head-main","layout":{"type":"default"}} -->
+																																																						<div class="wp-block-group hz-capabilities__detail-head-main">
+																																																							<!-- wp:paragraph {"className":"hz-label"} -->
+																																																								<p class="hz-label">Capability Specification · 04</p>
+																																																							<!-- /wp:paragraph -->
+																																																							<!-- wp:heading {"level":3,"className":"hz-capabilities__detail-title"} -->
+																																																								<h3 class="wp-block-heading hz-capabilities__detail-title">Payment Engineering</h3>
 																																																							<!-- /wp:heading -->
-																																																							</div>
+																																																						</div>
+																																																					<!-- /wp:group -->
+																																																					<!-- wp:html -->
+																																																						<span class="hz-capabilities__detail-focus">Architecture Focus</span>
+																																																					<!-- /wp:html -->
+																																																				</div>
 																																																						<!-- /wp:group -->
 																																																						<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
 																																																						<div class="wp-block-group hz-stack-2">
@@ -352,8 +405,8 @@
 																																																									<!-- /wp:paragraph -->
 																																																									</div>
 																																																								<!-- /wp:group -->
-																																																								<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
-																																																								<div class="wp-block-group hz-stack-2">
+																																																								<!-- wp:group {"className":"hz-stack-3 hz-capabilities__mechanisms","layout":{"type":"default"}} -->
+																																																								<div class="wp-block-group hz-stack-3 hz-capabilities__mechanisms">
 																																																									<!-- wp:paragraph {"className":"hz-label"} -->
 																																																									<p class="hz-label">Key Technical Mechanisms</p>
 																																																										<!-- /wp:paragraph -->
@@ -405,9 +458,16 @@
 																																																																	<!-- /wp:group -->
 																																																																	</div>
 																																																																<!-- /wp:group -->
-																																																																<!-- wp:paragraph {"className":"hz-meta hz-rule-top"} -->
-																																																																<p class="hz-meta hz-rule-top">Payment Gateways · Webhooks · REST APIs · Gravity Forms · HMAC SHA 256</p>
-																																																																	<!-- /wp:paragraph -->
+																																																																<!-- wp:group {"className":"hz-capabilities__detail-foot","layout":{"type":"default"}} -->
+																																																																	<div class="wp-block-group hz-capabilities__detail-foot">
+																																																																		<!-- wp:paragraph {"className":"hz-meta"} -->
+																																																																			<p class="hz-meta">Payment Gateways · Webhooks · REST APIs · Gravity Forms · HMAC SHA 256</p>
+																																																																		<!-- /wp:paragraph -->
+																																																																		<!-- wp:html -->
+																																																																			<a class="hz-link hz-capabilities__detail-cta" href="/projects/"><span>Case Study: Cross Domain Payment Architecture</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg></a>
+																																																																		<!-- /wp:html -->
+																																																																	</div>
+																																																																<!-- /wp:group -->
 																																																																	</div>
 																																																																<!-- /wp:group -->
 																																																																<!-- wp:group {"anchor":"hz-capability-panel-security","className":"hz-panel hz-panel-rail hz-switch-panel hz-switch-panel--idle","layout":{"type":"default"}} -->
@@ -416,13 +476,20 @@
 																																																																	<div class="wp-block-group hz-stack-6">
 																																																																		<!-- wp:group {"className":"hz-row hz-capabilities__detail-head","layout":{"type":"default"}} -->
 																																																																		<div class="wp-block-group hz-row hz-capabilities__detail-head">
-																																																																			<!-- wp:paragraph {"className":"hz-label"} -->
-																																																																			<p class="hz-label">Capability Specification · 05</p>
-																																																																				<!-- /wp:paragraph -->
-																																																																				<!-- wp:heading {"level":3,"className":"hz-capabilities__detail-title"} -->
-																																																																				<h3 class="wp-block-heading hz-capabilities__detail-title">Security</h3>
+																																																																			<!-- wp:group {"className":"hz-capabilities__detail-head-main","layout":{"type":"default"}} -->
+																																																																				<div class="wp-block-group hz-capabilities__detail-head-main">
+																																																																					<!-- wp:paragraph {"className":"hz-label"} -->
+																																																																						<p class="hz-label">Capability Specification · 05</p>
+																																																																					<!-- /wp:paragraph -->
+																																																																					<!-- wp:heading {"level":3,"className":"hz-capabilities__detail-title"} -->
+																																																																						<h3 class="wp-block-heading hz-capabilities__detail-title">Security</h3>
 																																																																					<!-- /wp:heading -->
-																																																																					</div>
+																																																																				</div>
+																																																																			<!-- /wp:group -->
+																																																																			<!-- wp:html -->
+																																																																				<span class="hz-capabilities__detail-focus">Architecture Focus</span>
+																																																																			<!-- /wp:html -->
+																																																																		</div>
 																																																																				<!-- /wp:group -->
 																																																																				<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
 																																																																				<div class="wp-block-group hz-stack-2">
@@ -434,8 +501,8 @@
 																																																																							<!-- /wp:paragraph -->
 																																																																							</div>
 																																																																						<!-- /wp:group -->
-																																																																						<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
-																																																																						<div class="wp-block-group hz-stack-2">
+																																																																						<!-- wp:group {"className":"hz-stack-3 hz-capabilities__mechanisms","layout":{"type":"default"}} -->
+																																																																						<div class="wp-block-group hz-stack-3 hz-capabilities__mechanisms">
 																																																																							<!-- wp:paragraph {"className":"hz-label"} -->
 																																																																							<p class="hz-label">Key Technical Mechanisms</p>
 																																																																								<!-- /wp:paragraph -->
@@ -487,9 +554,16 @@
 																																																																															<!-- /wp:group -->
 																																																																															</div>
 																																																																														<!-- /wp:group -->
-																																																																														<!-- wp:paragraph {"className":"hz-meta hz-rule-top"} -->
-																																																																														<p class="hz-meta hz-rule-top">HMAC SHA 256 · PHP Sodium · Encryption · Nonce Verification · Input Validation · Output Escaping · Capability Checks</p>
-																																																																															<!-- /wp:paragraph -->
+																																																																														<!-- wp:group {"className":"hz-capabilities__detail-foot","layout":{"type":"default"}} -->
+																																																																															<div class="wp-block-group hz-capabilities__detail-foot">
+																																																																																<!-- wp:paragraph {"className":"hz-meta"} -->
+																																																																																	<p class="hz-meta">HMAC SHA 256 · PHP Sodium · Encryption · Nonce Verification · Input Validation · Output Escaping · Capability Checks</p>
+																																																																																<!-- /wp:paragraph -->
+																																																																																<!-- wp:html -->
+																																																																																	<a class="hz-link hz-capabilities__detail-cta" href="/projects/"><span>Case Study: Secure WordPress Data Encryption</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg></a>
+																																																																																<!-- /wp:html -->
+																																																																															</div>
+																																																																														<!-- /wp:group -->
 																																																																															</div>
 																																																																														<!-- /wp:group -->
 																																																																														</div>
@@ -522,8 +596,8 @@
 				<div class="wp-block-group hz-stack-8">
 					<!-- wp:group {"className":"hz-body","layout":{"type":"default"}} -->
 					<div class="wp-block-group hz-body">
-						<!-- wp:group {"className":"hz-body__lead","layout":{"type":"default"}} -->
-						<div class="wp-block-group hz-body__lead">
+						<!-- wp:group {"className":"hz-body__lead hz-stack__card","layout":{"type":"default"}} -->
+						<div class="wp-block-group hz-body__lead hz-stack__card">
 							<!-- wp:group {"className":"hz-stack__map-head","layout":{"type":"default"}} -->
 							<div class="wp-block-group hz-stack__map-head">
 								<!-- wp:paragraph {"className":"hz-meta"} -->
@@ -537,7 +611,7 @@
 									<!-- wp:html -->
 									<svg viewBox="0 0 520 420" class="hz-stack__svg" role="img" aria-label="Maulik at the centre, connected to WordPress, PHP, APIs, Databases, Security, Integrations and Tools"><ellipse cx="260" cy="210" rx="195" ry="148" fill="none" stroke="#262626" stroke-width="1" stroke-dasharray="4 4"></ellipse><circle cx="260" cy="210" r="75" fill="none" stroke="#171719" stroke-width="1"></circle><line x1="260" y1="210" x2="260" y2="58" stroke="#FACC15" stroke-width="2"></line><circle cx="260" cy="134" r="3.5" fill="#FACC15"></circle><line x1="260" y1="210" x2="435" y2="115" stroke="#343434" stroke-width="1"></line><line x1="260" y1="210" x2="465" y2="245" stroke="#343434" stroke-width="1"></line><line x1="260" y1="210" x2="365" y2="355" stroke="#343434" stroke-width="1"></line><line x1="260" y1="210" x2="155" y2="355" stroke="#343434" stroke-width="1"></line><line x1="260" y1="210" x2="55" y2="245" stroke="#343434" stroke-width="1"></line><line x1="260" y1="210" x2="85" y2="115" stroke="#343434" stroke-width="1"></line><g transform="translate(260,210)"><rect x="-56" y="-26" width="112" height="52" fill="#0A0A0B" stroke="#FACC15" stroke-width="1.5"></rect><text x="0" y="-3" text-anchor="middle" fill="#FFFDF4" class="hz-svg-name">MAULIK</text><text x="0" y="14" text-anchor="middle" fill="#FACC15" class="hz-svg-count">WP · PHP · CORE</text></g><g transform="translate(260,58)"><rect x="-54" y="-22" width="108" height="44" fill="#FACC15" stroke="#FACC15" stroke-width="1.5"></rect><text x="0" y="-3" text-anchor="middle" fill="#000000" class="hz-svg-label">WordPress</text><text x="0" y="12" text-anchor="middle" fill="#0A0A0B" class="hz-svg-count">6 capabilities</text></g><g transform="translate(435,115)"><rect x="-54" y="-22" width="108" height="44" fill="#171719" stroke="#343434" stroke-width="1.5"></rect><text x="0" y="-3" text-anchor="middle" fill="#FFFDF4" class="hz-svg-label">PHP</text><text x="0" y="12" text-anchor="middle" fill="#77746C" class="hz-svg-count">6 capabilities</text></g><g transform="translate(465,245)"><rect x="-54" y="-22" width="108" height="44" fill="#171719" stroke="#343434" stroke-width="1.5"></rect><text x="0" y="-3" text-anchor="middle" fill="#FFFDF4" class="hz-svg-label">APIs</text><text x="0" y="12" text-anchor="middle" fill="#77746C" class="hz-svg-count">6 capabilities</text></g><g transform="translate(365,355)"><rect x="-54" y="-22" width="108" height="44" fill="#171719" stroke="#343434" stroke-width="1.5"></rect><text x="0" y="-3" text-anchor="middle" fill="#FFFDF4" class="hz-svg-label">Databases</text><text x="0" y="12" text-anchor="middle" fill="#77746C" class="hz-svg-count">5 capabilities</text></g><g transform="translate(155,355)"><rect x="-54" y="-22" width="108" height="44" fill="#171719" stroke="#343434" stroke-width="1.5"></rect><text x="0" y="-3" text-anchor="middle" fill="#FFFDF4" class="hz-svg-label">Security</text><text x="0" y="12" text-anchor="middle" fill="#77746C" class="hz-svg-count">6 capabilities</text></g><g transform="translate(55,245)"><rect x="-54" y="-22" width="108" height="44" fill="#171719" stroke="#343434" stroke-width="1.5"></rect><text x="0" y="-3" text-anchor="middle" fill="#FFFDF4" class="hz-svg-label">Integrations</text><text x="0" y="12" text-anchor="middle" fill="#77746C" class="hz-svg-count">6 capabilities</text></g><g transform="translate(85,115)"><rect x="-54" y="-22" width="108" height="44" fill="#171719" stroke="#343434" stroke-width="1.5"></rect><text x="0" y="-3" text-anchor="middle" fill="#FFFDF4" class="hz-svg-label">Tools</text><text x="0" y="12" text-anchor="middle" fill="#77746C" class="hz-svg-count">5 capabilities</text></g></svg>				<!-- /wp:html -->
 										<!-- wp:html -->
-										<div class="hz-stack__tabs" role="tablist" aria-label="Technical ecosystem domains" data-hz-switcher data-hz-tab="hz-tab" data-hz-rotates="true"><button type="button" role="tab" class="hz-tab" aria-controls="hz-stack-panel-wordpress" data-hz-target="hz-stack-panel-wordpress" aria-selected="true" tabindex="0">WordPress</button><button type="button" role="tab" class="hz-tab" aria-controls="hz-stack-panel-php" data-hz-target="hz-stack-panel-php" aria-selected="false" tabindex="-1">PHP</button><button type="button" role="tab" class="hz-tab" aria-controls="hz-stack-panel-apis" data-hz-target="hz-stack-panel-apis" aria-selected="false" tabindex="-1">APIs</button><button type="button" role="tab" class="hz-tab" aria-controls="hz-stack-panel-databases" data-hz-target="hz-stack-panel-databases" aria-selected="false" tabindex="-1">Databases</button><button type="button" role="tab" class="hz-tab" aria-controls="hz-stack-panel-security" data-hz-target="hz-stack-panel-security" aria-selected="false" tabindex="-1">Security</button><button type="button" role="tab" class="hz-tab" aria-controls="hz-stack-panel-integrations" data-hz-target="hz-stack-panel-integrations" aria-selected="false" tabindex="-1">Integrations</button><button type="button" role="tab" class="hz-tab" aria-controls="hz-stack-panel-tools" data-hz-target="hz-stack-panel-tools" aria-selected="false" tabindex="-1">Tools</button></div>				<!-- /wp:html -->
+										<div class="hz-stack__tabs" role="tablist" aria-label="Technical ecosystem domains" data-hz-switcher data-hz-tab="hz-tab" data-hz-rotates="true"><button type="button" role="tab" id="hz-stack-tab-wordpress" class="hz-tab" aria-controls="hz-stack-panel-wordpress" data-hz-target="hz-stack-panel-wordpress" aria-selected="true" tabindex="0">WordPress</button><button type="button" role="tab" id="hz-stack-tab-php" class="hz-tab" aria-controls="hz-stack-panel-php" data-hz-target="hz-stack-panel-php" aria-selected="false">PHP</button><button type="button" role="tab" id="hz-stack-tab-apis" class="hz-tab" aria-controls="hz-stack-panel-apis" data-hz-target="hz-stack-panel-apis" aria-selected="false">APIs</button><button type="button" role="tab" id="hz-stack-tab-databases" class="hz-tab" aria-controls="hz-stack-panel-databases" data-hz-target="hz-stack-panel-databases" aria-selected="false">Databases</button><button type="button" role="tab" id="hz-stack-tab-security" class="hz-tab" aria-controls="hz-stack-panel-security" data-hz-target="hz-stack-panel-security" aria-selected="false">Security</button><button type="button" role="tab" id="hz-stack-tab-integrations" class="hz-tab" aria-controls="hz-stack-panel-integrations" data-hz-target="hz-stack-panel-integrations" aria-selected="false">Integrations</button><button type="button" role="tab" id="hz-stack-tab-tools" class="hz-tab" aria-controls="hz-stack-panel-tools" data-hz-target="hz-stack-panel-tools" aria-selected="false">Tools</button></div>				<!-- /wp:html -->
 											</div>
 										<!-- /wp:group -->
 										<!-- wp:group {"className":"hz-body__main hz-switch-panels","layout":{"type":"default"}} -->
@@ -558,6 +632,9 @@
 															<!-- /wp:heading -->
 														</div>
 														<!-- /wp:group -->
+														<!-- wp:html -->
+															<span class="hz-stack__verified">6 Verified Areas</span>
+														<!-- /wp:html -->
 													</div>
 													<!-- /wp:group -->
 															<!-- wp:paragraph {"className":"hz-body-copy"} -->
@@ -570,7 +647,7 @@
 																		<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																		<div class="wp-block-group hz-skill__head">
 																			<span class="hz-skill__name">Plugins</span>
-																			<span class="hz-label-faint">SYS.01.01</span>
+																			<span class="hz-label-faint">01</span>
 																			</div>
 																		<!-- /wp:group -->
 																		<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -583,7 +660,7 @@
 																			<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																			<div class="wp-block-group hz-skill__head">
 																				<span class="hz-skill__name">Hooks</span>
-																				<span class="hz-label-faint">SYS.01.02</span>
+																				<span class="hz-label-faint">02</span>
 																				</div>
 																			<!-- /wp:group -->
 																			<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -596,7 +673,7 @@
 																				<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																				<div class="wp-block-group hz-skill__head">
 																					<span class="hz-skill__name">REST API</span>
-																					<span class="hz-label-faint">SYS.01.03</span>
+																					<span class="hz-label-faint">03</span>
 																					</div>
 																				<!-- /wp:group -->
 																				<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -609,7 +686,7 @@
 																					<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																					<div class="wp-block-group hz-skill__head">
 																						<span class="hz-skill__name">Gutenberg</span>
-																						<span class="hz-label-faint">SYS.01.04</span>
+																						<span class="hz-label-faint">04</span>
 																						</div>
 																					<!-- /wp:group -->
 																					<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -622,7 +699,7 @@
 																						<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																						<div class="wp-block-group hz-skill__head">
 																							<span class="hz-skill__name">WooCommerce</span>
-																							<span class="hz-label-faint">SYS.01.05</span>
+																							<span class="hz-label-faint">05</span>
 																							</div>
 																						<!-- /wp:group -->
 																						<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -635,7 +712,7 @@
 																							<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																							<div class="wp-block-group hz-skill__head">
 																								<span class="hz-skill__name">WP CLI</span>
-																								<span class="hz-label-faint">SYS.01.06</span>
+																								<span class="hz-label-faint">06</span>
 																								</div>
 																							<!-- /wp:group -->
 																							<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -675,6 +752,9 @@
 																										<!-- /wp:heading -->
 																									</div>
 																									<!-- /wp:group -->
+																									<!-- wp:html -->
+																										<span class="hz-stack__verified">6 Verified Areas</span>
+																									<!-- /wp:html -->
 																								</div>
 																								<!-- /wp:group -->
 																										<!-- wp:paragraph {"className":"hz-body-copy"} -->
@@ -687,7 +767,7 @@
 																													<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																													<div class="wp-block-group hz-skill__head">
 																														<span class="hz-skill__name">OOP</span>
-																														<span class="hz-label-faint">SYS.02.01</span>
+																														<span class="hz-label-faint">01</span>
 																														</div>
 																													<!-- /wp:group -->
 																													<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -700,7 +780,7 @@
 																														<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																														<div class="wp-block-group hz-skill__head">
 																															<span class="hz-skill__name">Composer</span>
-																															<span class="hz-label-faint">SYS.02.02</span>
+																															<span class="hz-label-faint">02</span>
 																															</div>
 																														<!-- /wp:group -->
 																														<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -713,7 +793,7 @@
 																															<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																															<div class="wp-block-group hz-skill__head">
 																																<span class="hz-skill__name">PSR 4</span>
-																																<span class="hz-label-faint">SYS.02.03</span>
+																																<span class="hz-label-faint">03</span>
 																																</div>
 																															<!-- /wp:group -->
 																															<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -726,7 +806,7 @@
 																																<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																<div class="wp-block-group hz-skill__head">
 																																	<span class="hz-skill__name">MySQL</span>
-																																	<span class="hz-label-faint">SYS.02.04</span>
+																																	<span class="hz-label-faint">04</span>
 																																	</div>
 																																<!-- /wp:group -->
 																																<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -739,7 +819,7 @@
 																																	<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																	<div class="wp-block-group hz-skill__head">
 																																		<span class="hz-skill__name">Custom Tables</span>
-																																		<span class="hz-label-faint">SYS.02.05</span>
+																																		<span class="hz-label-faint">05</span>
 																																		</div>
 																																	<!-- /wp:group -->
 																																	<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -752,7 +832,7 @@
 																																		<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																		<div class="wp-block-group hz-skill__head">
 																																			<span class="hz-skill__name">Backend Processing</span>
-																																			<span class="hz-label-faint">SYS.02.06</span>
+																																			<span class="hz-label-faint">06</span>
 																																			</div>
 																																		<!-- /wp:group -->
 																																		<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -792,6 +872,9 @@
 																																					<!-- /wp:heading -->
 																																				</div>
 																																				<!-- /wp:group -->
+																																				<!-- wp:html -->
+																																					<span class="hz-stack__verified">6 Verified Areas</span>
+																																				<!-- /wp:html -->
 																																			</div>
 																																			<!-- /wp:group -->
 																																					<!-- wp:paragraph {"className":"hz-body-copy"} -->
@@ -804,7 +887,7 @@
 																																								<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																								<div class="wp-block-group hz-skill__head">
 																																									<span class="hz-skill__name">REST</span>
-																																									<span class="hz-label-faint">SYS.03.01</span>
+																																									<span class="hz-label-faint">01</span>
 																																									</div>
 																																								<!-- /wp:group -->
 																																								<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -817,7 +900,7 @@
 																																									<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																									<div class="wp-block-group hz-skill__head">
 																																										<span class="hz-skill__name">Authentication</span>
-																																										<span class="hz-label-faint">SYS.03.02</span>
+																																										<span class="hz-label-faint">02</span>
 																																										</div>
 																																									<!-- /wp:group -->
 																																									<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -830,7 +913,7 @@
 																																										<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																										<div class="wp-block-group hz-skill__head">
 																																											<span class="hz-skill__name">API Keys</span>
-																																											<span class="hz-label-faint">SYS.03.03</span>
+																																											<span class="hz-label-faint">03</span>
 																																											</div>
 																																										<!-- /wp:group -->
 																																										<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -843,7 +926,7 @@
 																																											<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																											<div class="wp-block-group hz-skill__head">
 																																												<span class="hz-skill__name">Webhooks</span>
-																																												<span class="hz-label-faint">SYS.03.04</span>
+																																												<span class="hz-label-faint">04</span>
 																																												</div>
 																																											<!-- /wp:group -->
 																																											<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -856,7 +939,7 @@
 																																												<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																												<div class="wp-block-group hz-skill__head">
 																																													<span class="hz-skill__name">JSON</span>
-																																													<span class="hz-label-faint">SYS.03.05</span>
+																																													<span class="hz-label-faint">05</span>
 																																													</div>
 																																												<!-- /wp:group -->
 																																												<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -869,7 +952,7 @@
 																																													<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																													<div class="wp-block-group hz-skill__head">
 																																														<span class="hz-skill__name">cURL</span>
-																																														<span class="hz-label-faint">SYS.03.06</span>
+																																														<span class="hz-label-faint">06</span>
 																																														</div>
 																																													<!-- /wp:group -->
 																																													<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -909,6 +992,9 @@
 																																																<!-- /wp:heading -->
 																																															</div>
 																																															<!-- /wp:group -->
+																																															<!-- wp:html -->
+																																																<span class="hz-stack__verified">5 Verified Areas</span>
+																																															<!-- /wp:html -->
 																																														</div>
 																																														<!-- /wp:group -->
 																																																<!-- wp:paragraph {"className":"hz-body-copy"} -->
@@ -921,7 +1007,7 @@
 																																																			<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																			<div class="wp-block-group hz-skill__head">
 																																																				<span class="hz-skill__name">MySQL</span>
-																																																				<span class="hz-label-faint">SYS.04.01</span>
+																																																				<span class="hz-label-faint">01</span>
 																																																				</div>
 																																																			<!-- /wp:group -->
 																																																			<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -934,7 +1020,7 @@
 																																																				<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																				<div class="wp-block-group hz-skill__head">
 																																																					<span class="hz-skill__name">Custom Tables</span>
-																																																					<span class="hz-label-faint">SYS.04.02</span>
+																																																					<span class="hz-label-faint">02</span>
 																																																					</div>
 																																																				<!-- /wp:group -->
 																																																				<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -947,7 +1033,7 @@
 																																																					<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																					<div class="wp-block-group hz-skill__head">
 																																																						<span class="hz-skill__name">Prepared Queries</span>
-																																																						<span class="hz-label-faint">SYS.04.03</span>
+																																																						<span class="hz-label-faint">03</span>
 																																																						</div>
 																																																					<!-- /wp:group -->
 																																																					<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -960,7 +1046,7 @@
 																																																						<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																						<div class="wp-block-group hz-skill__head">
 																																																							<span class="hz-skill__name">Encrypted Storage</span>
-																																																							<span class="hz-label-faint">SYS.04.04</span>
+																																																							<span class="hz-label-faint">04</span>
 																																																							</div>
 																																																						<!-- /wp:group -->
 																																																						<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -973,7 +1059,7 @@
 																																																							<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																							<div class="wp-block-group hz-skill__head">
 																																																								<span class="hz-skill__name">Metadata Storage</span>
-																																																								<span class="hz-label-faint">SYS.04.05</span>
+																																																								<span class="hz-label-faint">05</span>
 																																																								</div>
 																																																							<!-- /wp:group -->
 																																																							<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1013,6 +1099,9 @@
 																																																										<!-- /wp:heading -->
 																																																									</div>
 																																																									<!-- /wp:group -->
+																																																									<!-- wp:html -->
+																																																										<span class="hz-stack__verified">6 Verified Areas</span>
+																																																									<!-- /wp:html -->
 																																																								</div>
 																																																								<!-- /wp:group -->
 																																																										<!-- wp:paragraph {"className":"hz-body-copy"} -->
@@ -1025,7 +1114,7 @@
 																																																													<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																													<div class="wp-block-group hz-skill__head">
 																																																														<span class="hz-skill__name">HMAC SHA 256</span>
-																																																														<span class="hz-label-faint">SYS.05.01</span>
+																																																														<span class="hz-label-faint">01</span>
 																																																														</div>
 																																																													<!-- /wp:group -->
 																																																													<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1038,7 +1127,7 @@
 																																																														<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																														<div class="wp-block-group hz-skill__head">
 																																																															<span class="hz-skill__name">Nonce Verification</span>
-																																																															<span class="hz-label-faint">SYS.05.02</span>
+																																																															<span class="hz-label-faint">02</span>
 																																																															</div>
 																																																														<!-- /wp:group -->
 																																																														<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1051,7 +1140,7 @@
 																																																															<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																															<div class="wp-block-group hz-skill__head">
 																																																																<span class="hz-skill__name">Encryption</span>
-																																																																<span class="hz-label-faint">SYS.05.03</span>
+																																																																<span class="hz-label-faint">03</span>
 																																																																</div>
 																																																															<!-- /wp:group -->
 																																																															<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1064,7 +1153,7 @@
 																																																																<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																<div class="wp-block-group hz-skill__head">
 																																																																	<span class="hz-skill__name">Input Validation</span>
-																																																																	<span class="hz-label-faint">SYS.05.04</span>
+																																																																	<span class="hz-label-faint">04</span>
 																																																																	</div>
 																																																																<!-- /wp:group -->
 																																																																<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1077,7 +1166,7 @@
 																																																																	<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																	<div class="wp-block-group hz-skill__head">
 																																																																		<span class="hz-skill__name">Output Escaping</span>
-																																																																		<span class="hz-label-faint">SYS.05.05</span>
+																																																																		<span class="hz-label-faint">05</span>
 																																																																		</div>
 																																																																	<!-- /wp:group -->
 																																																																	<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1090,7 +1179,7 @@
 																																																																		<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																		<div class="wp-block-group hz-skill__head">
 																																																																			<span class="hz-skill__name">Capability Checks</span>
-																																																																			<span class="hz-label-faint">SYS.05.06</span>
+																																																																			<span class="hz-label-faint">06</span>
 																																																																			</div>
 																																																																		<!-- /wp:group -->
 																																																																		<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1130,6 +1219,9 @@
 																																																																					<!-- /wp:heading -->
 																																																																				</div>
 																																																																				<!-- /wp:group -->
+																																																																				<!-- wp:html -->
+																																																																					<span class="hz-stack__verified">6 Verified Areas</span>
+																																																																				<!-- /wp:html -->
 																																																																			</div>
 																																																																			<!-- /wp:group -->
 																																																																					<!-- wp:paragraph {"className":"hz-body-copy"} -->
@@ -1142,7 +1234,7 @@
 																																																																								<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																								<div class="wp-block-group hz-skill__head">
 																																																																									<span class="hz-skill__name">Azure Form Recognizer</span>
-																																																																									<span class="hz-label-faint">SYS.06.01</span>
+																																																																									<span class="hz-label-faint">01</span>
 																																																																									</div>
 																																																																								<!-- /wp:group -->
 																																																																								<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1155,7 +1247,7 @@
 																																																																									<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																									<div class="wp-block-group hz-skill__head">
 																																																																										<span class="hz-skill__name">Payment Gateways</span>
-																																																																										<span class="hz-label-faint">SYS.06.02</span>
+																																																																										<span class="hz-label-faint">02</span>
 																																																																										</div>
 																																																																									<!-- /wp:group -->
 																																																																									<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1168,7 +1260,7 @@
 																																																																										<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																										<div class="wp-block-group hz-skill__head">
 																																																																											<span class="hz-skill__name">Gravity Forms</span>
-																																																																											<span class="hz-label-faint">SYS.06.03</span>
+																																																																											<span class="hz-label-faint">03</span>
 																																																																											</div>
 																																																																										<!-- /wp:group -->
 																																																																										<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1181,7 +1273,7 @@
 																																																																											<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																											<div class="wp-block-group hz-skill__head">
 																																																																												<span class="hz-skill__name">Forminator</span>
-																																																																												<span class="hz-label-faint">SYS.06.04</span>
+																																																																												<span class="hz-label-faint">04</span>
 																																																																												</div>
 																																																																											<!-- /wp:group -->
 																																																																											<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1194,7 +1286,7 @@
 																																																																												<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																												<div class="wp-block-group hz-skill__head">
 																																																																													<span class="hz-skill__name">LatePoint</span>
-																																																																													<span class="hz-label-faint">SYS.06.05</span>
+																																																																													<span class="hz-label-faint">05</span>
 																																																																													</div>
 																																																																												<!-- /wp:group -->
 																																																																												<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1207,7 +1299,7 @@
 																																																																													<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																													<div class="wp-block-group hz-skill__head">
 																																																																														<span class="hz-skill__name">Brevo and Object Storage</span>
-																																																																														<span class="hz-label-faint">SYS.06.06</span>
+																																																																														<span class="hz-label-faint">06</span>
 																																																																														</div>
 																																																																													<!-- /wp:group -->
 																																																																													<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1247,6 +1339,9 @@
 																																																																																<!-- /wp:heading -->
 																																																																															</div>
 																																																																															<!-- /wp:group -->
+																																																																															<!-- wp:html -->
+																																																																																<span class="hz-stack__verified">5 Verified Areas</span>
+																																																																															<!-- /wp:html -->
 																																																																														</div>
 																																																																														<!-- /wp:group -->
 																																																																																<!-- wp:paragraph {"className":"hz-body-copy"} -->
@@ -1259,7 +1354,7 @@
 																																																																																			<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																																			<div class="wp-block-group hz-skill__head">
 																																																																																				<span class="hz-skill__name">Git</span>
-																																																																																				<span class="hz-label-faint">SYS.07.01</span>
+																																																																																				<span class="hz-label-faint">01</span>
 																																																																																				</div>
 																																																																																			<!-- /wp:group -->
 																																																																																			<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1272,7 +1367,7 @@
 																																																																																				<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																																				<div class="wp-block-group hz-skill__head">
 																																																																																					<span class="hz-skill__name">Composer</span>
-																																																																																					<span class="hz-label-faint">SYS.07.02</span>
+																																																																																					<span class="hz-label-faint">02</span>
 																																																																																					</div>
 																																																																																				<!-- /wp:group -->
 																																																																																				<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1285,7 +1380,7 @@
 																																																																																					<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																																					<div class="wp-block-group hz-skill__head">
 																																																																																						<span class="hz-skill__name">JavaScript and AJAX</span>
-																																																																																						<span class="hz-label-faint">SYS.07.03</span>
+																																																																																						<span class="hz-label-faint">03</span>
 																																																																																						</div>
 																																																																																					<!-- /wp:group -->
 																																																																																					<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1298,7 +1393,7 @@
 																																																																																						<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																																						<div class="wp-block-group hz-skill__head">
 																																																																																							<span class="hz-skill__name">HTML and CSS</span>
-																																																																																							<span class="hz-label-faint">SYS.07.04</span>
+																																																																																							<span class="hz-label-faint">04</span>
 																																																																																							</div>
 																																																																																						<!-- /wp:group -->
 																																																																																						<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1311,7 +1406,7 @@
 																																																																																							<!-- wp:group {"className":"hz-skill__head","layout":{"type":"default"}} -->
 																																																																																							<div class="wp-block-group hz-skill__head">
 																																																																																								<span class="hz-skill__name">WP CLI</span>
-																																																																																								<span class="hz-label-faint">SYS.07.05</span>
+																																																																																								<span class="hz-label-faint">05</span>
 																																																																																								</div>
 																																																																																							<!-- /wp:group -->
 																																																																																							<!-- wp:paragraph {"className":"hz-skill__context"} -->
@@ -1412,16 +1507,16 @@
 					</div>
 					<!-- /wp:group -->
 					<!-- wp:html -->
-					<div class="hz-work__arch-filters" role="tablist" aria-label="Filter RankKernel Subsystems by Status"><button type="button" role="tab" class="hz-work__arch-filter is-on" aria-selected="true"><span>All States (9)</span></button><button type="button" role="tab" class="hz-work__arch-filter" aria-selected="false"><svg class="hz-work__arch-filter-mark is-implemented" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg><span>IMPLEMENTED</span></button><button type="button" role="tab" class="hz-work__arch-filter" aria-selected="false"><svg class="hz-work__arch-filter-mark is-progress" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="10"></circle></svg><span>IN PROGRESS</span></button><button type="button" role="tab" class="hz-work__arch-filter" aria-selected="false"><svg class="hz-work__arch-filter-mark is-planned" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path><circle cx="12" cy="12" r="10"></circle></svg><span>PLANNED</span></button></div>				<!-- /wp:html -->
+					<div class="hz-work__arch-filters" role="group" aria-label="Filter RankKernel subsystems by status"><button type="button" class="hz-work__arch-filter is-on" data-hz-arch-filter="all" aria-pressed="true"><span>All States (9)</span></button><button type="button" class="hz-work__arch-filter" data-hz-arch-filter="implemented" aria-pressed="false"><svg class="hz-work__arch-filter-mark is-implemented" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg><span>IMPLEMENTED</span></button><button type="button" class="hz-work__arch-filter" data-hz-arch-filter="in-progress" aria-pressed="false"><svg class="hz-work__arch-filter-mark is-progress" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="10"></circle></svg><span>IN PROGRESS</span></button><button type="button" class="hz-work__arch-filter" data-hz-arch-filter="planned" aria-pressed="false"><svg class="hz-work__arch-filter-mark is-planned" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"></path><circle cx="12" cy="12" r="10"></circle></svg><span>PLANNED</span></button></div>				<!-- /wp:html -->
 				</div>
 				<!-- /wp:group --><!-- wp:group {"className":"hz-work__arch-main","layout":{"type":"default"}} -->
 				<div class="wp-block-group hz-work__arch-main">
 					<!-- wp:group {"className":"hz-work__arch-figure","layout":{"type":"default"}} -->
-					<div class="wp-block-group hz-work__arch-figure">
+					<div class="wp-block-group hz-work__arch-figure" data-hz-arch-status="all">
 						<!-- wp:group {"className":"hz-work__arch-frame","layout":{"type":"default"}} -->
 						<div class="wp-block-group hz-work__arch-frame">
 							<!-- wp:html -->
-							<svg viewBox="0 0 760 480" class="hz-work__arch-svg" role="img" aria-label="RankKernel architecture diagram showing central RankKernel node connected to Modules, Settings, Metadata, Schema, REST, Sitemaps, Content Analysis, Redirects and 404 Monitoring"><circle cx="380" cy="240" r="175" fill="none" stroke="#171719" stroke-width="1"></circle><circle cx="380" cy="240" r="245" fill="none" stroke="#171719" stroke-width="1" stroke-dasharray="4 4"></circle><line x1="380" y1="72" x2="590" y2="105" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line x1="380" y1="72" x2="645" y2="240" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line x1="380" y1="72" x2="585" y2="375" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line x1="380" y1="72" x2="380" y2="412" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line x1="590" y1="105" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line x1="590" y1="105" x2="380" y2="412" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="590" y1="105" x2="645" y2="240" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="645" y1="240" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line x1="645" y1="240" x2="590" y2="105" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="645" y1="240" x2="585" y2="375" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="585" y1="375" x2="645" y2="240" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="585" y1="375" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line x1="585" y1="375" x2="380" y2="412" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="380" y1="412" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line x1="380" y1="412" x2="590" y2="105" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="380" y1="412" x2="585" y2="375" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="380" y1="412" x2="115" y2="240" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="175" y1="375" x2="645" y2="240" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="175" y1="375" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line x1="115" y1="240" x2="380" y2="412" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="115" y1="240" x2="645" y2="240" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="175" y1="105" x2="245" y2="185" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="175" y1="105" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line x1="245" y1="185" x2="175" y2="105" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line x1="245" y1="185" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><g opacity="1"><line x1="380" y1="240" x2="380" y2="72" stroke="#FACC15" stroke-width="2"></line><circle cx="380" cy="156" r="4" fill="#FACC15"></circle></g><g opacity="1"><line x1="380" y1="240" x2="590" y2="105" stroke="#D8D5CA" stroke-width="1.2"></line></g><g opacity="1"><line x1="380" y1="240" x2="645" y2="240" stroke="#D8D5CA" stroke-width="1.2"></line></g><g opacity="1"><line x1="380" y1="240" x2="585" y2="375" stroke="#D8D5CA" stroke-width="1.2"></line></g><g opacity="1"><line x1="380" y1="240" x2="380" y2="412" stroke="#D8D5CA" stroke-width="1.2"></line></g><g opacity="1"><line x1="380" y1="240" x2="175" y2="375" stroke="#262626" stroke-width="1.2"></line></g><g opacity="1"><line x1="380" y1="240" x2="115" y2="240" stroke="#262626" stroke-width="1.2"></line></g><g opacity="1"><line x1="380" y1="240" x2="175" y2="105" stroke="#262626" stroke-width="1.2"></line></g><g opacity="1"><line x1="380" y1="240" x2="245" y2="185" stroke="#262626" stroke-width="1.2"></line></g><g transform="translate(380, 240)"><rect x="-74" y="-32" width="148" height="64" fill="#0A0A0B" stroke="#FACC15" stroke-width="2"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-core">RankKernel</text><text x="0" y="14" text-anchor="middle" fill="#FACC15" class="hz-work__arch-svg-core-sub">CORE ENGINE · OSS</text></g><g transform="translate(380, 72)" opacity="1" class="cursor-pointer" aria-label="Modules subsystem, status IMPLEMENTED"><rect x="-68" y="-26" width="136" height="52" fill="#FACC15" stroke="#FACC15" stroke-width="2" stroke-dasharray="none"></rect><text x="0" y="-4" text-anchor="middle" fill="#000000" class="hz-work__arch-svg-name">Modules</text><text x="0" y="13" text-anchor="middle" fill="#000000" class="hz-work__arch-svg-badge">IMPLEMENTED</text></g><g transform="translate(590, 105)" opacity="1" class="cursor-pointer" aria-label="Settings subsystem, status IMPLEMENTED"><rect x="-68" y="-26" width="136" height="52" fill="#171719" stroke="#FDE047" stroke-width="2" stroke-dasharray="none"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-name">Settings</text><text x="0" y="13" text-anchor="middle" fill="#FACC15" class="hz-work__arch-svg-badge">IMPLEMENTED</text></g><g transform="translate(645, 240)" opacity="1" class="cursor-pointer" aria-label="Metadata subsystem, status IMPLEMENTED"><rect x="-68" y="-26" width="136" height="52" fill="#171719" stroke="#FDE047" stroke-width="2" stroke-dasharray="none"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-name">Metadata</text><text x="0" y="13" text-anchor="middle" fill="#FACC15" class="hz-work__arch-svg-badge">IMPLEMENTED</text></g><g transform="translate(585, 375)" opacity="1" class="cursor-pointer" aria-label="Schema subsystem, status IN PROGRESS"><rect x="-68" y="-26" width="136" height="52" fill="#171719" stroke="#FDE047" stroke-width="2" stroke-dasharray="5 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-name">Schema</text><text x="0" y="13" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-badge">IN PROGRESS</text></g><g transform="translate(380, 412)" opacity="1" class="cursor-pointer" aria-label="REST subsystem, status IN PROGRESS"><rect x="-68" y="-26" width="136" height="52" fill="#171719" stroke="#FDE047" stroke-width="2" stroke-dasharray="5 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-name">REST</text><text x="0" y="13" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-badge">IN PROGRESS</text></g><g transform="translate(175, 375)" opacity="1" class="cursor-pointer" aria-label="Sitemaps subsystem, status IN PROGRESS"><rect x="-68" y="-26" width="136" height="52" fill="#171719" stroke="#FFFDF4" stroke-width="1.25" stroke-dasharray="5 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-name">Sitemaps</text><text x="0" y="13" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-badge">IN PROGRESS</text></g><g transform="translate(115, 240)" opacity="1" class="cursor-pointer" aria-label="Content Analysis subsystem, status PLANNED"><rect x="-68" y="-26" width="136" height="52" fill="#111113" stroke="#77746C" stroke-width="1.25" stroke-dasharray="2 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-name">Content Analysis</text><text x="0" y="13" text-anchor="middle" fill="#77746C" class="hz-work__arch-svg-badge">PLANNED</text></g><g transform="translate(175, 105)" opacity="1" class="cursor-pointer" aria-label="Redirects subsystem, status PLANNED"><rect x="-68" y="-26" width="136" height="52" fill="#111113" stroke="#77746C" stroke-width="1.25" stroke-dasharray="2 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-name">Redirects</text><text x="0" y="13" text-anchor="middle" fill="#77746C" class="hz-work__arch-svg-badge">PLANNED</text></g><g transform="translate(245, 185)" opacity="1" class="cursor-pointer" aria-label="404 Monitoring subsystem, status PLANNED"><rect x="-68" y="-26" width="136" height="52" fill="#111113" stroke="#77746C" stroke-width="1.25" stroke-dasharray="2 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-name">404 Monitoring</text><text x="0" y="13" text-anchor="middle" fill="#77746C" class="hz-work__arch-svg-badge">PLANNED</text></g></svg>
+							<svg viewBox="0 0 760 480" class="hz-work__arch-svg" role="img" aria-label="RankKernel architecture diagram showing central RankKernel node connected to Modules, Settings, Metadata, Schema, REST, Sitemaps, Content Analysis, Redirects and 404 Monitoring"><circle cx="380" cy="240" r="175" fill="none" stroke="#171719" stroke-width="1"></circle><circle cx="380" cy="240" r="245" fill="none" stroke="#171719" stroke-width="1" stroke-dasharray="4 4"></circle><line class="hz-work__arch-edge" x1="380" y1="72" x2="590" y2="105" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line class="hz-work__arch-edge" x1="380" y1="72" x2="645" y2="240" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line class="hz-work__arch-edge" x1="380" y1="72" x2="585" y2="375" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line class="hz-work__arch-edge" x1="380" y1="72" x2="380" y2="412" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line class="hz-work__arch-edge" x1="590" y1="105" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line class="hz-work__arch-edge" x1="590" y1="105" x2="380" y2="412" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="590" y1="105" x2="645" y2="240" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="645" y1="240" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line class="hz-work__arch-edge" x1="645" y1="240" x2="590" y2="105" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="645" y1="240" x2="585" y2="375" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="585" y1="375" x2="645" y2="240" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="585" y1="375" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line class="hz-work__arch-edge" x1="585" y1="375" x2="380" y2="412" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="380" y1="412" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line class="hz-work__arch-edge" x1="380" y1="412" x2="590" y2="105" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="380" y1="412" x2="585" y2="375" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="380" y1="412" x2="115" y2="240" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="175" y1="375" x2="645" y2="240" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="175" y1="375" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line class="hz-work__arch-edge" x1="115" y1="240" x2="380" y2="412" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="115" y1="240" x2="645" y2="240" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="175" y1="105" x2="245" y2="185" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="175" y1="105" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><line class="hz-work__arch-edge" x1="245" y1="185" x2="175" y2="105" stroke="#171719" stroke-width="1" stroke-dasharray="none"></line><line class="hz-work__arch-edge" x1="245" y1="185" x2="380" y2="72" stroke="rgba(250, 204, 21, 0.45)" stroke-width="1.5" stroke-dasharray="4 2"></line><g opacity="1"><line class="hz-work__arch-edge" x1="380" y1="240" x2="380" y2="72" stroke="#FACC15" stroke-width="2"></line><circle cx="380" cy="156" r="4" fill="#FACC15"></circle></g><g opacity="1"><line class="hz-work__arch-edge" x1="380" y1="240" x2="590" y2="105" stroke="#D8D5CA" stroke-width="1.2"></line></g><g opacity="1"><line class="hz-work__arch-edge" x1="380" y1="240" x2="645" y2="240" stroke="#D8D5CA" stroke-width="1.2"></line></g><g opacity="1"><line class="hz-work__arch-edge" x1="380" y1="240" x2="585" y2="375" stroke="#D8D5CA" stroke-width="1.2"></line></g><g opacity="1"><line class="hz-work__arch-edge" x1="380" y1="240" x2="380" y2="412" stroke="#D8D5CA" stroke-width="1.2"></line></g><g opacity="1"><line class="hz-work__arch-edge" x1="380" y1="240" x2="175" y2="375" stroke="#262626" stroke-width="1.2"></line></g><g opacity="1"><line class="hz-work__arch-edge" x1="380" y1="240" x2="115" y2="240" stroke="#262626" stroke-width="1.2"></line></g><g opacity="1"><line class="hz-work__arch-edge" x1="380" y1="240" x2="175" y2="105" stroke="#262626" stroke-width="1.2"></line></g><g opacity="1"><line class="hz-work__arch-edge" x1="380" y1="240" x2="245" y2="185" stroke="#262626" stroke-width="1.2"></line></g><g transform="translate(380, 240)"><rect x="-74" y="-32" width="148" height="64" fill="#0A0A0B" stroke="#FACC15" stroke-width="2"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-core">RankKernel</text><text x="0" y="14" text-anchor="middle" fill="#FACC15" class="hz-work__arch-svg-core-sub">CORE ENGINE · OSS</text></g><g transform="translate(380, 72)" opacity="1" class="cursor-pointer hz-work__arch-svg-node is-implemented is-active" aria-label="Modules subsystem, status IMPLEMENTED"><rect class="hz-work__arch-svg-box" x="-68" y="-26" width="136" height="52" fill="#FACC15" stroke="#FACC15" stroke-width="2" stroke-dasharray="none"></rect><text x="0" y="-4" text-anchor="middle" fill="#000000" class="hz-work__arch-svg-name">Modules</text><text x="0" y="13" text-anchor="middle" fill="#000000" class="hz-work__arch-svg-badge">IMPLEMENTED</text></g><g transform="translate(590, 105)" opacity="1" class="cursor-pointer hz-work__arch-svg-node is-implemented" aria-label="Settings subsystem, status IMPLEMENTED"><rect class="hz-work__arch-svg-box" x="-68" y="-26" width="136" height="52" fill="#171719" stroke="#FACC15" stroke-width="1.25" stroke-dasharray="none"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-name">Settings</text><text x="0" y="13" text-anchor="middle" fill="#FACC15" class="hz-work__arch-svg-badge">IMPLEMENTED</text></g><g transform="translate(645, 240)" opacity="1" class="cursor-pointer hz-work__arch-svg-node is-implemented" aria-label="Metadata subsystem, status IMPLEMENTED"><rect class="hz-work__arch-svg-box" x="-68" y="-26" width="136" height="52" fill="#171719" stroke="#FACC15" stroke-width="1.25" stroke-dasharray="none"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-name">Metadata</text><text x="0" y="13" text-anchor="middle" fill="#FACC15" class="hz-work__arch-svg-badge">IMPLEMENTED</text></g><g transform="translate(585, 375)" opacity="1" class="cursor-pointer hz-work__arch-svg-node is-progress" aria-label="Schema subsystem, status IN PROGRESS"><rect class="hz-work__arch-svg-box" x="-68" y="-26" width="136" height="52" fill="#171719" stroke="#FFFDF4" stroke-width="1.25" stroke-dasharray="5 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-name">Schema</text><text x="0" y="13" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-badge">IN PROGRESS</text></g><g transform="translate(380, 412)" opacity="1" class="cursor-pointer hz-work__arch-svg-node is-progress" aria-label="REST subsystem, status IN PROGRESS"><rect class="hz-work__arch-svg-box" x="-68" y="-26" width="136" height="52" fill="#171719" stroke="#FFFDF4" stroke-width="1.25" stroke-dasharray="5 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-name">REST</text><text x="0" y="13" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-badge">IN PROGRESS</text></g><g transform="translate(175, 375)" opacity="1" class="cursor-pointer hz-work__arch-svg-node is-progress" aria-label="Sitemaps subsystem, status IN PROGRESS"><rect class="hz-work__arch-svg-box" x="-68" y="-26" width="136" height="52" fill="#171719" stroke="#FFFDF4" stroke-width="1.25" stroke-dasharray="5 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#FFFDF4" class="hz-work__arch-svg-name">Sitemaps</text><text x="0" y="13" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-badge">IN PROGRESS</text></g><g transform="translate(115, 240)" opacity="1" class="cursor-pointer hz-work__arch-svg-node is-planned" aria-label="Content Analysis subsystem, status PLANNED"><rect class="hz-work__arch-svg-box" x="-68" y="-26" width="136" height="52" fill="#111113" stroke="#77746C" stroke-width="1.25" stroke-dasharray="2 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-name">Content Analysis</text><text x="0" y="13" text-anchor="middle" fill="#77746C" class="hz-work__arch-svg-badge">PLANNED</text></g><g transform="translate(175, 105)" opacity="1" class="cursor-pointer hz-work__arch-svg-node is-planned" aria-label="Redirects subsystem, status PLANNED"><rect class="hz-work__arch-svg-box" x="-68" y="-26" width="136" height="52" fill="#111113" stroke="#77746C" stroke-width="1.25" stroke-dasharray="2 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-name">Redirects</text><text x="0" y="13" text-anchor="middle" fill="#77746C" class="hz-work__arch-svg-badge">PLANNED</text></g><g transform="translate(245, 185)" opacity="1" class="cursor-pointer hz-work__arch-svg-node is-planned" aria-label="404 Monitoring subsystem, status PLANNED"><rect class="hz-work__arch-svg-box" x="-68" y="-26" width="136" height="52" fill="#111113" stroke="#77746C" stroke-width="1.25" stroke-dasharray="2 3"></rect><text x="0" y="-4" text-anchor="middle" fill="#D8D5CA" class="hz-work__arch-svg-name">404 Monitoring</text><text x="0" y="13" text-anchor="middle" fill="#77746C" class="hz-work__arch-svg-badge">PLANNED</text></g></svg>
 													<!-- /wp:html -->
 						</div>
 						<!-- /wp:group --><!-- wp:group {"className":"hz-work__arch-legend","layout":{"type":"default"}} -->
@@ -1530,9 +1625,9 @@
 		<div class="wp-block-group hz-work__b-head">
 			<!-- wp:group {"className":"hz-stack-3 hz-work__b-intro","layout":{"type":"default"}} -->
 			<div class="wp-block-group hz-stack-3 hz-work__b-intro">
-				<!-- wp:paragraph {"className":"hz-label"} -->
-				<p class="hz-label">Selected Work From My Professional Role · Professional Project Archive</p>
-				<!-- /wp:paragraph -->
+				<!-- wp:html -->
+				<div class="hz-label">Selected Work From My Professional Role · Professional Project Archive</div>
+				<!-- /wp:html -->
 				<!-- wp:heading {"level":3,"className":"hz-work__b-title"} -->
 				<h3 class="wp-block-heading hz-work__b-title">Professional Engineering Work</h3>
 				<!-- /wp:heading -->
@@ -1552,7 +1647,7 @@
 				<div class="wp-block-group hz-card__body">
 					<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
 					<div class="wp-block-group hz-card__meta">
-						<span class="hz-meta">01 · Professional Project</span>
+						<span class="hz-card__meta-lead"><span class="hz-card__index">01</span><span class="hz-card__index-sep" aria-hidden="true">·</span><span class="hz-card__kind">Professional Project</span></span>
 						<span class="hz-meta">Payments and Security Architecture</span>
 					</div>
 					<!-- /wp:group -->
@@ -1613,7 +1708,7 @@
 				<div class="wp-block-group hz-card__body">
 					<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
 					<div class="wp-block-group hz-card__meta">
-						<span class="hz-meta">02 · Professional Project</span>
+						<span class="hz-card__meta-lead"><span class="hz-card__index">02</span><span class="hz-card__index-sep" aria-hidden="true">·</span><span class="hz-card__kind">Professional Project</span></span>
 						<span class="hz-meta">Workflow and Access Control</span>
 					</div>
 					<!-- /wp:group -->
@@ -1672,7 +1767,7 @@
 				<div class="wp-block-group hz-card__body">
 					<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
 					<div class="wp-block-group hz-card__meta">
-						<span class="hz-meta">03 · Professional Project</span>
+						<span class="hz-card__meta-lead"><span class="hz-card__index">03</span><span class="hz-card__index-sep" aria-hidden="true">·</span><span class="hz-card__kind">Professional Project</span></span>
 						<span class="hz-meta">API Integration and Automation</span>
 					</div>
 					<!-- /wp:group -->
@@ -1729,7 +1824,7 @@
 				<div class="wp-block-group hz-card__body">
 					<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
 					<div class="wp-block-group hz-card__meta">
-						<span class="hz-meta">04 · Professional Project</span>
+						<span class="hz-card__meta-lead"><span class="hz-card__index">04</span><span class="hz-card__index-sep" aria-hidden="true">·</span><span class="hz-card__kind">Professional Project</span></span>
 						<span class="hz-meta">Security and Cryptography</span>
 					</div>
 					<!-- /wp:group -->
@@ -1786,7 +1881,7 @@
 				<div class="wp-block-group hz-card__body">
 					<!-- wp:group {"className":"hz-card__meta","layout":{"type":"default"}} -->
 					<div class="wp-block-group hz-card__meta">
-						<span class="hz-meta">05 · Professional Project</span>
+						<span class="hz-card__meta-lead"><span class="hz-card__index">05</span><span class="hz-card__index-sep" aria-hidden="true">·</span><span class="hz-card__kind">Professional Project</span></span>
 						<span class="hz-meta">SEO and WordPress Engineering</span>
 					</div>
 					<!-- /wp:group -->
@@ -1876,12 +1971,19 @@
 				<div class="wp-block-group hz-stack-6">
 					<!-- wp:group {"className":"hz-role__head","layout":{"type":"default"}} -->
 					<div class="wp-block-group hz-role__head">
-						<!-- wp:paragraph {"className":"hz-label"} -->
-						<p class="hz-label">July 2025 to present · Full Time Engineering Role</p>
-						<!-- /wp:paragraph -->
-						<!-- wp:heading {"level":3,"className":"hz-role__title"} -->
-						<h3 class="wp-block-heading hz-role__title">WordPress Developer · Qrolic Technologies</h3>
-						<!-- /wp:heading -->
+						<!-- wp:group {"className":"hz-role__head-main","layout":{"type":"default"}} -->
+							<div class="wp-block-group hz-role__head-main">
+								<!-- wp:paragraph {"className":"hz-label"} -->
+									<p class="hz-label">Current Professional Role · Full Time Engineering Role</p>
+								<!-- /wp:paragraph -->
+								<!-- wp:heading {"level":3,"className":"hz-role__title"} -->
+									<h3 class="wp-block-heading hz-role__title">WordPress Developer · Qrolic Technologies</h3>
+								<!-- /wp:heading -->
+							</div>
+						<!-- /wp:group -->
+						<!-- wp:html -->
+							<span class="hz-role__index">01</span>
+						<!-- /wp:html -->
 					</div>
 					<!-- /wp:group -->
 					<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
@@ -1890,7 +1992,7 @@
 						<p class="hz-label-faint">Technical Focus</p>
 						<!-- /wp:paragraph -->
 						<!-- wp:paragraph {"className":"hz-body-copy hz-body-copy-medium"} -->
-						<p class="hz-body-copy hz-body-copy-medium">Custom plugin development and backend work inside WordPress, including payment architectures, form driven internal systems, third party API integrations and field level encryption. Responsibilities run from design through implementation to verification.</p>
+						<p class="hz-body-copy hz-body-copy-medium">Custom WordPress plugin development, PHP backend systems, REST API integrations, cross domain payment architectures and security workflows.</p>
 						<!-- /wp:paragraph -->
 					</div>
 					<!-- /wp:group -->
@@ -1937,12 +2039,19 @@
 				<div class="wp-block-group hz-stack-6">
 					<!-- wp:group {"className":"hz-role__head","layout":{"type":"default"}} -->
 					<div class="wp-block-group hz-role__head">
-						<!-- wp:paragraph {"className":"hz-label"} -->
-						<p class="hz-label">January to June 2025 · Engineering Internship</p>
-						<!-- /wp:paragraph -->
-						<!-- wp:heading {"level":3,"className":"hz-role__title"} -->
-						<h3 class="wp-block-heading hz-role__title">PHP Developer Intern · Qrolic Technologies</h3>
-						<!-- /wp:heading -->
+						<!-- wp:group {"className":"hz-role__head-main","layout":{"type":"default"}} -->
+							<div class="wp-block-group hz-role__head-main">
+								<!-- wp:paragraph {"className":"hz-label"} -->
+									<p class="hz-label">Prior Internship Role · Engineering Internship</p>
+								<!-- /wp:paragraph -->
+								<!-- wp:heading {"level":3,"className":"hz-role__title"} -->
+									<h3 class="wp-block-heading hz-role__title">PHP Developer Intern · Qrolic Technologies</h3>
+								<!-- /wp:heading -->
+							</div>
+						<!-- /wp:group -->
+						<!-- wp:html -->
+							<span class="hz-role__index">02</span>
+						<!-- /wp:html -->
 					</div>
 					<!-- /wp:group -->
 					<!-- wp:group {"className":"hz-stack-2","layout":{"type":"default"}} -->
@@ -1951,7 +2060,7 @@
 						<p class="hz-label-faint">Technical Focus</p>
 						<!-- /wp:paragraph -->
 						<!-- wp:paragraph {"className":"hz-body-copy hz-body-copy-medium"} -->
-						<p class="hz-body-copy hz-body-copy-medium">PHP and WordPress fundamentals in a production codebase: structure, form handling, data access and debugging real problems rather than exercises.</p>
+						<p class="hz-body-copy hz-body-copy-medium">Core PHP programming, MySQL database operations, WordPress plugin fundamentals, AJAX workflows and web security foundations.</p>
 						<!-- /wp:paragraph -->
 					</div>
 					<!-- /wp:group -->

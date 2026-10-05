@@ -1,77 +1,53 @@
 /**
- * Resume hero actions.
+ * Resume hero actions: no script required.
  *
- * WHAT THIS IS. One control on the Resume hero, the design's "Print View", which
- * opens the browser's own print dialog so the visitor gets the printed resume
- * document. The theme already owns a print stylesheet
- * (assets/styles/components/_print-surfaces.scss) and the page already marks its
- * chrome with no-print, so the control is not a promise the theme cannot keep.
+ * WHAT THIS IS. A deliberate no-op. It is still enqueued by functions.php on
+ * the Resume route, so it exists to state one thing in one place: both Resume
+ * hero controls are now plain markup, and nothing on this page scripts the
+ * browser any more.
  *
- * WHY A SCRIPT AND NOT MARKUP. window.print() is a scripting context method.
- * There is no element, attribute or URL that triggers a print dialog on its
- * own, so the behaviour cannot live in block markup, and the design itself calls
- * window.print() from an onClick handler at src/pages/ResumePage.tsx line 71. A
- * control that did nothing would be worse than an absent one, so the handler has
- * to exist for the button to be honest.
+ * WHY THERE IS NO HANDLER. The "Print View" control used to call window.print()
+ * on this page, which printed the themed page: the hero, all seven numbered
+ * sections, the site header and the site footer. The owner asked for the print
+ * output to be their own standalone resume document and not the page, so
+ * "Print View" is now an anchor on the resume PDF endpoint with target="_blank",
+ * and the browser's print dialog contains only that document. The behaviour a
+ * script could add is behaviour the anchor now gets for free, so there is
+ * nothing left to bind.
  *
- * WHY A BUTTON ELEMENT. core/button declares tagName with an enum of "a" or
- * "button" and its save function emits a real <button type="button"> when
- * tagName is "button", so this is a core authored control rather than pasted
- * markup. docs/ARCHITECTURE.md 2.4 requires a core block wherever a core block
- * fits, and this one fits.
+ * NO window.print() ANYWHERE ON THIS PAGE. A handler that printed the themed
+ * page is the exact defect this file used to carry, and it must not come back,
+ * so it is removed rather than left bound to a control that no longer exists.
  *
- * THE SELECTOR IS A DATA ATTRIBUTE, NOT A CLASS. The class on the block is the
- * styling hook and an editor may rename or remove it. The data attribute is
- * declared here and nowhere else, so the behaviour and the markup it needs are
- * stated in one place each and neither can drift into a control that silently
- * stops working.
+ * WHAT THE TWO CONTROLS DO NOW, IN MARKUP ALONE.
  *
- * NO jQUERY, NO GLOBALS, NO BUILD STEP. One listener on one element, removed
- * again on pagehide, following assets/js/site-header.js. Every listener is torn
- * down so a bfcache restore cannot leave two handlers on the same button, which
- * would open two print dialogs.
+ * "Download Resume" is an anchor on /wp-admin/admin-ajax.php?action=maulik_resume
+ * carrying the HTML download attribute, so the browser saves the PDF instead of
+ * rendering it in place. "Print View" is the same anchor with target="_blank"
+ * and rel="noopener noreferrer", which opens the PDF inline in a new tab so the
+ * visitor's print dialog holds only the resume. Both hrefs are relative, so a
+ * domain change moves them with the site.
+ *
+ * WHY ANCHORS RATHER THAN window.open. Opening a URL the visitor can see in the
+ * status bar, or middle-click, or open in a new tab, is better than a scripted
+ * popup the browser may block, and it works with scripting disabled. Print View
+ * therefore stays an anchor rather than becoming a scripted window.open call.
+ *
+ * WHY THE FILE STAYS. functions.php enqueues assets/js/resume-actions.js on the
+ * Resume route. Deleting the file would leave that enqueue pointing at nothing,
+ * so the script remains, empty of behaviour, and loading it anywhere is inert
+ * rather than an error.
+ *
+ * SHAPE. One IIFE, 'use strict', no jQuery, no globals, no console noise,
+ * following assets/js/site-header.js. There are no listeners to tear down, so
+ * there is no pagehide teardown to keep, and with no listener there is nothing
+ * for a bfcache restore to fire twice.
  */
 
 ( function () {
 	'use strict';
-
-	const PRINT_SELECTOR = '[data-rs-print]';
-
-	/**
-	 * Open the print dialog for the current document.
-	 *
-	 * @return {void}
-	 */
-	function onPrintClick() {
-		window.print();
-	}
-
-	const buttons = document.querySelectorAll( PRINT_SELECTOR );
-
 	/*
-	 * The button lives in the Resume hero, which is content rather than chrome,
-	 * so on every other route in the theme this query finds nothing. That is a
-	 * legitimate state and not an error: the script has to be inert rather than
-	 * throw when it is loaded somewhere the control does not exist.
+	 * Intentionally empty. See the header comment. The hero controls are anchors
+	 * on the resume PDF endpoint and need no script to do their job.
 	 */
-	buttons.forEach( function ( button ) {
-		button.addEventListener( 'click', onPrintClick );
-	} );
-
-	if ( ! buttons.length ) {
-		return;
-	}
-
-	/**
-	 * Remove every listener this file added.
-	 *
-	 * @return {void}
-	 */
-	function teardown() {
-		buttons.forEach( function ( button ) {
-			button.removeEventListener( 'click', onPrintClick );
-		} );
-	}
-
-	window.addEventListener( 'pagehide', teardown );
 } )();

@@ -180,7 +180,14 @@
 // It costs nothing. The eyebrow voice is IBM Plex Mono, which is monospaced, so
 // upper and lower case have the same advance width: the identifier measures
 // 217.6px before and after and the hero does not move.
-.is-style-section .eyebrow-text {
+//
+// SCOPED TO THIS PAGE'S HERO, NOT TO .is-style-section. is-style-section is the
+// shared section block style and it is present on every section of every page, so
+// the unscoped descendant selector leaked this transform onto the homepage hero
+// eyebrow, which the design renders with text-transform none. Contact and resume
+// author their identifiers in caps already, so the leak was invisible there, but
+// the selector was still wrong. The id is rankkernel's own hero wrapper.
+#rk-hero .eyebrow-text {
 	text-transform: uppercase;
 }
 

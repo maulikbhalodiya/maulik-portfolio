@@ -25,13 +25,15 @@
 // padding to clear the 64px band on its own. That is why there is no padding-top
 // on body here and why adding one would double the space under the hero.
 //
-// THE BAND IS EXACTLY 64 PIXELS, BORDER INCLUDED. The design's h-16 is a height
-// on the inner element of a bar that also carries a one pixel bottom border, so
-// the whole fixed band has to come to 64 and not 65. A height on the bar itself,
-// set to the border box, with the inner filling it, is what produces that. A
-// min-height on the inner plus a border produced 65, measured in Chrome at
-// 1440 wide, which puts every fixed element below it one pixel out of
-// registration with the design for the length of the page.
+// THE BAND IS EXACTLY 64 CONTENT PIXELS, 65 WITH THE BORDER. The design's inner
+// element is h-16, which is 64, and the hairline sits on the bar outside it, so
+// the bar's border box is 65 and its content box is a full 64. The rule below
+// states the height on the bar with box-sizing: border-box, which makes the
+// content box one pixel shorter than the number written, and it used to write 4rem
+// and get a 63 pixel content box. The bar therefore now declares
+// calc( 4rem + 1px ). A min-height on the inner plus a border, the other form
+// that was tried, produces 65 of content and puts every fixed element below it one
+// pixel out of registration with the design for the length of the page.
 //
 // THE RESTING BAND IS TRANSPARENT, AND THAT IS THE POINT. Core ships no
 // scroll listener, so the unscrolled state has to be expressed somewhere. The
@@ -150,6 +152,30 @@ $header-gap: 1.75rem;
 $social-size: 2.5rem;
 $toggle-size: 2.75rem;
 
+// THE BAR IS 65 BOX PIXELS TALL AND THE INNER IS 64, AND IT WAS 64 AND 63.
+//
+// The band is written as height on the bar with box-sizing: border-box and a one
+// pixel bottom border, which makes the CONTENT box one pixel shorter than the
+// declared height. That is correct arithmetic and it is not the design.
+//
+// MEASURED AT 1440 AND AT 768 ALIKE, OURS AGAINST THE DESIGN:
+//   header element, ours 64, design 65
+//   inner element,  ours 63, design 64
+//   wordmark top,   ours 17.5, design 18
+//   social row top, ours 10.5, design 12
+//   burger top,     ours 9.5,  design 10
+// Five readings, one pixel, and the 0.5 offsets in three of them are that one
+// pixel seen through a centre alignment. The design states the height on the
+// INNER element, h-16, and puts the border on the bar, so the bar's box is 64
+// plus its border and the inner is a full 64. Adding the border back here gives
+// the design's geometry without moving the border or the fill, and the bar still
+// does not shift the page when it becomes opaque because the border is present
+// in both states.
+//
+// The other 63 is gone with it. assets/js/site-header.js and the measurements in
+// the note on the blur below both describe the band as 63 or 64 content pixels;
+// the band is a 64 pixel content box over a 65 pixel border box now, which is
+// the design's own arithmetic, and nothing below depends on the old number.
 .wp-block-group.site-header {
 	position: fixed;
 	top: 0;
@@ -157,7 +183,7 @@ $toggle-size: 2.75rem;
 	left: 0;
 	z-index: 40;
 	box-sizing: border-box;
-	height: $header-height;
+	height: calc( #{$header-height} + 1px );
 	background-color: transparent;
 	border-bottom: 1px solid transparent;
 	transition:
@@ -170,7 +196,56 @@ $toggle-size: 2.75rem;
 .wp-block-group.site-header.is-scrolled {
 	background-color: rgba(10, 10, 11, 0.92);
 	border-bottom-color: var(--wp--preset--color--line);
+}
+
+// THE BLUR LIVES ON A PSEUDO ELEMENT, NOT ON THE BAR. THIS IS THE MOBILE
+// DEFECT, MEASURED IN CHROME AT 390 AND AT 768, NOT READ OFF THE DESIGN.
+//
+// backdrop-filter ON THE BAR MAKES THE BAR A CONTAINING BLOCK FOR EVERY
+// position: fixed DESCENDANT OF IT. The properties that do that are filter,
+// backdrop-filter, transform, perspective and contain, and the bar is the
+// parent of Core's overlay panel, which Core positions fixed with inset 0. So
+// the sheet's inset 0 resolved against the 63 pixel content box of the bar
+// instead of against the viewport, and the whole sheet collapsed onto the band.
+//
+// MEASURED BEFORE, AT 390 AND AT 768 ALIKE, WITH THE HEADER SCROLLED:
+//   header position                fixed, rect top 0 bottom 64
+//   header backdrop-filter         blur(12px)
+//   panel computed height          63px, rect 0..63 against a viewport of 844
+//   close control rect             top -46, bottom -2, i.e. above the screen
+//   list rect                      24..366 by 10..484, out of a 63px panel
+//   the same numbers at scrollY 0: panel 0..844, close control 24..68
+// So the menu was not missing, it was a 63 pixel strip with the close control
+// off the top of the screen and every link spilling out of the panel, and the
+// bar it belongs to is only on screen at all while the top of the page is. That
+// is the owner's report: the mobile menu only works at the top.
+//
+// The 63 in that log is the band's CONTENT box at the time, which was one pixel
+// short of the design's 64 and is corrected above. It does not matter to the
+// mechanism: the bar is position: fixed either way, the panel is position: fixed
+// either way, and what made the panel resolve against the bar rather than against
+// the viewport was the filter and not the height.
+//
+// THE PSEUDO ELEMENT IS A CHILD OF THE BAR, so the sheet is not a descendant of
+// the filtered box and the fixed sheet goes back to resolving against the
+// viewport at every scroll position. The fill and the hairline stay on the bar
+// itself, which is where the must-not-regress measurement reads them from, so
+// the bar still reports rgba(10, 10, 11, 0.92) and rgb(38, 38, 38) once
+// scrolled and the page still does not shift by the border.
+//
+// z-index: -1 puts it above the bar's own fill and below its content, inside the
+// bar's stacking context, which is where a background belongs. pointer-events:
+// none because a full width box over the toggle must never take a click.
+// The bar is position: fixed, so inset: 0 covers the band exactly, and no
+// transition is declared because the design transitions colour and the blur was
+// never a transition either.
+.wp-block-group.site-header.is-scrolled::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
 	backdrop-filter: blur(12px);
+	pointer-events: none;
 }
 
 .wp-block-group.site-header__inner {
@@ -206,6 +281,23 @@ a.site-header__title:focus {
 	color: var(--wp--preset--color--accent);
 }
 
+// THE WORDMARK ANCHOR IS AN INLINE BOX, AND IT WAS AN INLINE ONE.
+//
+// core/site-title at level 0 renders a paragraph carrying the className, with a
+// bare anchor inside it, so the class is on the paragraph and the anchor is
+// anonymous. An inline anchor sits in an anonymous line box, and that line box is
+// 22 tall where the design's own brand anchor is 28: measured ours 163.38 by 22
+// at y 20.5 against the design's 163.38 by 28 at y 18, a delta of 6 in height and
+// 2.5 in position, on the element that is the primary way back to the home page.
+// The design's brand is itself an anchor.
+//
+// inline-block and not block, because the design's is a link inside a flex row
+// and not a stretched box, and block here would fill the flex track. This is the
+// same reason _site-footer.scss gives the footer wordmark inline-block.
+.site-header__title a {
+	display: inline-block;
+}
+
 // THE MENU TOGGLE IS A 44 PIXEL BOX. Header.tsx:194 gives the hamburger button
 // w-11 h-11, which is 44 by 44, and it was measuring 20 by 20 on the live site.
 //
@@ -221,12 +313,142 @@ a.site-header__title:focus {
 // At every width below the design's lg the toggle is the ONLY route to the
 // navigation, because the nav links are hidden there, so this box is the whole
 // of the navigation at 768 and below.
+//
+// ---------------------------------------------------------------------------
+// THE TOGGLE IS IN THE TOP RIGHT CORNER OF THE BAR, WITH THE DESIGN'S OWN CHROME.
+// THREE MEASURED DEFECTS, ONE RULE.
+//
+// 1. IT WAS 302 PIXELS LEFT OF THE DESIGN AT 768. Ours measured left 367.19,
+//    the design's 669, against a viewport content width of 753. The cause is
+//    distribution, not a per item bug: the design's bar has three flex children,
+//    the wordmark, the nav, and a right hand group that holds the channel links
+//    and the toggle together with an 8 pixel gap, so that group ends flush with
+//    the gutter at 713. Ours has three children too, the wordmark, the nav and
+//    the channel row, but the toggle lives INSIDE the nav, so it landed in the
+//    middle of the bar with one free space either side of it, and the channel row
+//    was pushed out to the far edge instead of sitting next to it.
+//
+//    The fix does not move a block. It takes the toggle out of the flow and pins
+//    it to the bar, and gives the channel row back the 52 pixels it needs to stop
+//    8 short of it. The <nav> element then has no in flow content below lg, so it
+//    measures 0 wide, and a zero wide flex child between two others is exactly
+//    neutral: justify-content: space-between splits the one free space into two
+//    equal halves that meet, which lands the wordmark and the right hand group at
+//    the design's positions at every width from sm to lg. That is arithmetic and
+//    not a coincidence: at 768 the design's group starts at 529 and so does ours.
+//
+// 2. IT HAD NO CHROME. Ours computed border 0px none over rgba(0, 0, 0, 0); the
+//    design computes 1px solid rgb(38, 38, 38) over rgb(17, 17, 19), which is the
+//    surface token over the line token. This is the same pair of declarations
+//    .site-header__menu-toggle already carries for the close control inside the
+//    open sheet, restated rather than shared, because the two controls sit in
+//    different parts of the tree and neither is an ancestor of the other.
+//
+// 3. THE BOX GREW BY TWO PIXELS WHEN THE BORDER WENT ON. Core sets
+//    box-sizing: content-box, so a 2.75rem width plus a one pixel border is 46
+//    and not 44. The design's box is 44 by 44 including its border, so
+//    box-sizing: border-box is stated here.
+//
+// NO TRANSFORM IS USED TO CENTRE IT. top: 50% with a negative margin does the
+// centring, because a transform on this button would make it a containing block
+// for anything fixed inside it, and the reason the blur on this bar lives on a
+// pseudo element rather than on the bar itself is exactly that class of accident.
+// A margin is enough arithmetic for one box of a known size.
+//
+// THE <nav> ITSELF LEAVES THE FLEX ROW BELOW lg, AND THAT IS WHAT PUTS THE
+// TOGGLE AND THE CHANNELS WHERE THE DESIGN PUTS THEM.
+//
+// The bar is a justify-content: space-between flex row, and the design's bar has
+// TWO children at 768: the wordmark, and a right hand group that holds the three
+// channel links and the toggle together with an 8 pixel gap. Ours has three, the
+// wordmark, the nav and the channel row, and the nav exists only to hold the
+// toggle, so below lg the nav is a zero width flex item in the middle of the
+// distribution. That is not neutral in general: measured, it left the channel row
+// at 366 and the toggle's containing block at 713, that is 347 pixels of empty bar
+// between two things the design draws 8 pixels apart, and the row at 366 against
+// the design's 529.
+//
+// So the nav is taken out of the row and pinned to the bar's end. Two children
+// remain, which is the design's count, and the one free space lands between the
+// wordmark and the group, so the group ends on the gutter and the 52 pixels of
+// padding on the channel row put the links 8 pixels clear of the toggle.
+//
+//   design at 768, viewport content width 753: links 529..661, toggle 669..713
+//   ours after this change, same viewport:        links 529..661, toggle 669..713
+//
+// IT IS THE NAV THAT IS PINNED, NOT THE BUTTON, because Core ships
+// .wp-block-navigation { position: relative } and the button's containing block
+// is therefore the nav rather than the bar. Pinning the nav puts its right edge on
+// the right edge of the bar, and the button's own right offset from there is the
+// gutter. Doing it the other way round, button to bar, measured the button at
+// left 282.19 instead of 669, because right: 2.5rem was resolving against a zero
+// width nav sitting in the middle of the row.
+//
+// NOTHING IN THE OPEN MENU DEPENDS ON THE NAV BEING IN THE ROW. The open sheet is
+// position: fixed with inset 0, and a fixed box resolves against the viewport
+// whatever its parent's position is. Taking the nav out of the flow does not
+// create a containing block for it, because the properties that do that are
+// transform, filter, backdrop-filter, perspective and contain, and none of them is
+// declared here. Verified by measuring the open sheet's rect at scrollY 0 and at
+// scrollY 3000, at 390 and at 768.
+//
+// THE DOM ORDER IS NOT TOUCHED. patterns/header.php keeps the wordmark, the nav and
+// the channel row in that order at every width, and that is the tab order, which
+// the owner has asked for twice over. Painting is a separate question and it is
+// answered with position alone here, so nothing about the reading order, the focus
+// order or the screen reader order changes.
+//
+// ABOVE lg THE NAV GOES BACK IN THE ROW, as the design's second child, between the
+// wordmark and the channels.
+// THE SELECTOR NAMES THE ELEMENT, nav.site-header__nav, AND IT HAS TO. Core
+// copies the navigation block's className onto the row <ul> as well as onto the
+// <nav>, so the served markup carries
+//   <nav class="is-responsive site-header__nav wp-block-navigation">
+//     ... <ul class="wp-block-navigation__container is-responsive site-header__nav ...">
+// and a bare .site-header__nav matches both. Written without the element name this
+// rule made the open sheet's own list position: absolute, which took it out of the
+// sheet's flow and dropped the six links and the channel row onto the top left
+// corner, on top of the close control. Every other rule in this file that reaches
+// the row uses a descendant combinator, .site-header__nav .wp-block-navigation__
+// container, which cannot match the element that carries both classes.
+nav.site-header__nav {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+
+// NO TRANSFORM IS USED TO CENTRE IT. top: 50% with a negative margin does the
+// centring, because a transform on this button would make it a containing block
+// for anything fixed inside it, and the reason the blur on this bar lives on a
+// pseudo element rather than on the bar itself is exactly that class of accident.
+// A margin is enough arithmetic for one box of a known size.
 .site-header__nav .wp-block-navigation__responsive-container-open:not(.always-shown) {
-	width: 2.75rem;
-	height: 2.75rem;
+	position: absolute;
+	top: 50%;
+	right: $header-inset;
+	width: $toggle-size;
+	height: $toggle-size;
+	margin-top: calc( -1 * $toggle-size / 2 );
 	padding: 0;
+	box-sizing: border-box;
 	align-items: center;
 	justify-content: center;
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+	cursor: pointer;
+	transition:
+		color $motion-duration $motion-ease,
+		background-color $motion-duration $motion-ease,
+		border-color $motion-duration $motion-ease;
+}
+
+.site-header__nav .wp-block-navigation__responsive-container-open:not(.always-shown):hover,
+.site-header__nav .wp-block-navigation__responsive-container-open:not(.always-shown):focus {
+	color: var(--wp--preset--color--accent);
+	background-color: var(--wp--preset--color--surface-2);
+	border-color: var(--wp--preset--color--accent);
 }
 
 // The nav container. Plus Jakarta Sans, 14px, weight 500. theme.json used to
@@ -331,15 +553,57 @@ a.site-header__title:focus {
 	flex-shrink: 0;
 }
 
+// THE BAR ROW LEAVES ROOM FOR THE TOGGLE, AND ONLY BELOW lg.
+//
+// The design's right hand group is the channel links and the toggle with an 8
+// pixel gap between them, so the row itself is 132 wide and the group is 184.
+// The toggle is pinned to the bar by the rule above rather than sitting in the
+// flow, so the row has to stop short of it, and the 52 pixels here are the
+// toggle's 44 plus the design's gap-2. Nothing else in the row moves: this is
+// padding on the end of the row, so the links keep their own 40 pixel boxes and
+// their own 6 pixel gaps and the row's left edge is where it always was.
+//
+// The measurement this restores, against a viewport content width of 753:
+//   design   channel links 529..661, toggle 669..713, right edge on the gutter
+//   ours     channel links 529..661, toggle 669..713, right edge on the gutter
+// Above lg the toggle is display: none and the group is the row alone, so the
+// padding comes off again below.
+.wp-block-social-links.site-header__social {
+	padding-inline-end: calc( #{$toggle-size} + 0.5rem );
+}
+
+// THE LIST ITEM IS A 40 PIXEL BOX AND THE ANCHOR INSIDE IT IS ALSO 40, WHICH
+// TAKES TWO DECLARATIONS TO SAY AND WAS TWO DECLARATIONS WRONG.
+//
+// Core sets box-sizing: content-box on the list item, so the 40 pixel width, the
+// 40 pixel height and the one pixel border added up to 42 by 42, and the row came
+// out 138 wide against the design's 132: three boxes of 42 and two gaps of 6.
+// That 6 pixel error in the row is a distribution error, because the row is a
+// flex child of a justify-content: space-between bar, so every pixel of extra
+// width there moves the nav and the nav's own gap distribution absorbs none of
+// it. The list item therefore declares box-sizing: border-box.
+//
+// THE BORDER IS ON THE ANCHOR AND NOT ON THE LIST ITEM, which is the second half.
+// With the border on the list item the list item is a correct 40 by 40 and the
+// anchor inside it measures 38 by 38, because the anchor fills the list item's
+// CONTENT box and the border has already taken 2 pixels. The design puts the
+// border on the anchor, its own anchor measures 40 by 40 including it, and the
+// hover fill and the hover hairline are on the anchor there as well. Measured
+// after this change, against the design at 1440:
+//
+//   ours before    li 42x42, anchor 40x52, y 5.5,  font-size 24px, row 138 wide
+//   design         anchor 40x40, y 12,   font-size 16px, row 132 wide
+//   ours after     anchor 40x40, y 12,   font-size 16px, row 132 wide
 .wp-block-social-links .wp-social-link.wp-social-link.site-header__social-link {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	box-sizing: border-box;
 	width: $social-size;
 	height: $social-size;
+	padding: 0;
 	color: var(--wp--preset--color--text-muted);
 	background-color: transparent;
-	border: 1px solid transparent;
 
 	// Core prints this on every social link, inlined in the document rather
 	// than in this stylesheet, so a search of the theme finds nothing:
@@ -357,8 +621,25 @@ a.site-header__title:focus {
 		border-color $motion-duration $motion-ease;
 }
 
-.wp-block-social-links .wp-social-link.site-header__social-link:hover {
+// The hover pair is on the ANCHOR, which is where the design puts it:
+// Header.tsx gives the anchor hover:text-[#FACC15], hover:bg-[#171719] and
+// hover:border-[#262626] as three states of one element. The list item keeps
+// hover: none of its own so there is exactly one box that changes.
+.wp-block-social-links .wp-social-link.site-header__social-link:hover,
+.wp-block-social-links .wp-social-link.site-header__social-link .wp-block-social-link-anchor:hover {
 	color: var(--wp--preset--color--accent);
+}
+
+.wp-block-social-links .wp-social-link.site-header__social-link .wp-block-social-link-anchor {
+	background-color: transparent;
+	border: 1px solid transparent;
+	transition:
+		background-color $motion-duration $motion-ease,
+		border-color $motion-duration $motion-ease;
+}
+
+.wp-block-social-links .wp-social-link.site-header__social-link .wp-block-social-link-anchor:hover,
+.wp-block-social-links .wp-social-link.site-header__social-link .wp-block-social-link-anchor:focus {
 	background-color: var(--wp--preset--color--surface-2);
 	border-color: var(--wp--preset--color--line);
 }
@@ -405,18 +686,42 @@ a.site-header__title:focus {
 // so nothing visible changes: the mark stays 16px and the box stays 40px. What
 // changes is that the whole box is now the link.
 //
-// The accessible name is not restated here. Core already renders the social
-// link label as screen reader only text inside the anchor, which is why the
-// anchors report a name of LinkedIn, GitHub and Email today, and the mark itself
-// is aria-hidden. This rule changes the geometry and nothing else.
+// The accessible name is not restated in CSS, because CSS cannot name an
+// element. Core renders the social link label as screen reader only text inside
+// the anchor, which is why the anchors report a name of LinkedIn, GitHub and
+// Email today, and the mark itself is aria-hidden. The design, measured, carries
+// no such span: its three anchors are icon only and each carries an aria-label
+// naming the person, which is longer than the word on the mark. The names are
+// added in functions.php by maulik_portfolio_header_social_link_names(), which
+// rewrites the rendered core/social-link so the accessible name is the design's
+// own sentence rather than one word, and the span is left in place underneath it
+// as the fallback for anything that ignores aria-label. This rule changes the
+// geometry and nothing else.
 // Core also ships .wp-block-social-links .wp-social-link a at two classes, and
 // it sets line-height: 0, so the same outranking applies here.
 .wp-block-social-links .wp-social-link.site-header__social-link .wp-block-social-link-anchor {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	box-sizing: border-box;
 	width: 100%;
 	height: 100%;
+	padding: 0;
+	border-radius: 0;
+}
+
+// THE ANCHOR IS 16px OF TYPE, NOT 24px.
+//
+// Core sets font-size: 24px on .wp-block-social-links, so every anchor in either
+// row inherits 24 and the design's own anchors compute to 16. Nothing renders at
+// 24 because the only text inside the anchor is the screen reader only label, but
+// the computed value is what a font size audit reads and the design's is 16, so
+// this is stated on the anchors rather than left to inherit. The two rules above
+// already outrank Core's own size rules for this row, at four classes against
+// its two, and this one is in the same group.
+.wp-block-social-links .wp-social-link.site-header__social-link .wp-block-social-link-anchor,
+.wp-block-social-links .wp-social-link.site-header__social-link {
+	font-size: 1rem;
 }
 
 // ---------------------------------------------------------------------------
@@ -504,6 +809,18 @@ a.site-header__title:focus {
 
 @include from( $bp-lg ) {
 
+	// The toggle is display: none at this width, so the group the design puts on
+	// the right of the bar is the channel row alone and it reserves no space, and
+	// the nav goes back into the flex row between the wordmark and the channels,
+	// which is the design's order at 1440: wordmark, six links, three channels.
+	.wp-block-social-links.site-header__social {
+		padding-inline-end: 0;
+	}
+
+	nav.site-header__nav {
+		position: static;
+	}
+
 	.site-header__nav .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
 		display: block;
 	}
@@ -518,6 +835,44 @@ a.site-header__title:focus {
 		gap: $header-gap;
 	}
 
+	// THE DESKTOP NAV ROW WAS 11 PIXELS LEFT OF THE DESIGN ON EVERY ONE OF ITS SIX
+	// ITEMS, AND THIS IS THE 28 PIXELS THAT CAUSED IT.
+	//
+	// MEASURED AT 1440, THE SAME DELTA ON EVERY ITEM:
+	//   ours    507.28  576.11  679.69  763.83  833.44  915.58
+	//   design  496.28  565.11  668.69  752.83  822.44  904.58
+	//   delta   +11.00  +11.00  +11.00  +11.00  +11.00  +11.00
+	// A constant offset on every item is distribution and not a per item bug, and
+	// the distribution here has one item too many. The row sits inside a
+	// justify-content: space-between bar, so the free space is divided between the
+	// gaps, and one extra gap takes half of it, which is 28 / 2 = 14.
+	//
+	// WHERE THE EXTRA ITEM COMES FROM. The channel links inside the open menu are
+	// an inner block of core/navigation, because the overlay covers the bar while
+	// it is open and a sibling group in the bar would not be in the menu at any
+	// width. Core's own render callback, get_markup_for_inner_block, wraps
+	// core/social-links in
+	//
+	//   <li class="wp-block-navigation-item">
+	//
+	// and get_inner_blocks_html opens the navigation row <ul> around it, so the
+	// desktop row carries a seventh list item. At this width the channel row
+	// inside it is display: none, so the item measures 0 by 0, and a zero wide
+	// flex item still takes a whole gap out of the distribution. Measured: the row
+	// reported 491.83 wide against the design's 463.83, which is exactly one gap
+	// more than six items at gap 28 need.
+	//
+	// The ITEM is hidden rather than its contents, because hiding the contents
+	// leaves the gap and hiding the item removes both. :has() is what can select a
+	// parent from a child here: the wrapper is the only list item in the row that
+	// contains a <ul> rather than an <a>, and the six navigation links are the
+	// only ones that contain an <a>. The rule sits inside the lg block on purpose.
+	// Below lg the row is not a flex row at all, and this item is the channel
+	// links, which have to stay in the open menu and stay visible in it.
+	.site-header__nav .wp-block-navigation__container > li:has( > .site-header__menu-social ) {
+		display: none;
+	}
+
 	// THE TWO MOBILE MENU PIECES ARE NOT IN THE DESKTOP HEADER. Both are inner
 	// blocks of core/navigation, so Core renders them into the same container
 	// that is the desktop nav row, and the container is displayed here. Without
@@ -526,6 +881,18 @@ a.site-header__title:focus {
 	.site-header__nav .site-header__menu-social,
 	.site-header__nav .site-header__menu-toggle {
 		display: none;
+	}
+}
+
+// The button's own offset from the end of the pinned nav is the page gutter, and
+// the gutter is a step, so the offset is a step too: 1.5rem below the design's md
+// and 2.5rem from it. That is the design's px-6 and md:px-10 read against the
+// same right edge the channel row's own inset is read against, which is what puts
+// the two 8 pixels apart at every width from sm to lg.
+@include from( $bp-md ) {
+
+	.site-header__nav .wp-block-navigation__responsive-container-open:not(.always-shown) {
+		right: $header-inset-md;
 	}
 }
 

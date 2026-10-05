@@ -190,10 +190,29 @@ defined( 'ABSPATH' ) || exit;
  * ONE ADDRESS ONLY. This is the same single address patterns/footer.php:299 and
  * the hero use, and the repo wide CI gates in .github/workflows/ci.yml permit
  * exactly that one mailto and that one raw address, so the header introduces
- * no second one. There is deliberately no bare address here and no address in
- * an aria-label: the accessible name is the design's own, the word Email, as
- * screen reader only text inside the anchor, which is how Core names the other
- * two as well.
+ * no second one. There is deliberately no bare address here and none in any
+ * aria-label.
+ *
+ * THE ARIA-LABELS ARE THE DESIGN'S OWN SENTENCES, NOT INVENTIONS. Measured on
+ * the design, its three channel anchors carry no text node at all and name
+ * themselves:
+ *   Connect with Maulik Bhalodiya on LinkedIn
+ *   View Maulik Bhalodiya on GitHub
+ *   Send an email to Maulik Bhalodiya
+ * The short label stays in the array as well, because Core's own render callback
+ * emits it as the screen reader only span inside the anchor, and it is the
+ * fallback for anything that ignores aria-label.
+ *
+ * core/social-link CANNOT CARRY AN aria-label. render_block_core_social_link
+ * builds the anchor itself and writes only href, class, rel and target onto it,
+ * then emits the label as a span; no attribute on the block reaches the anchor.
+ * So the two core/social-link entries get their names in functions.php, from
+ * maulik_portfolio_header_social_link_names(), which rewrites the rendered block
+ * by service name and only inside a block carrying this theme's own social-link
+ * class. That function and not this file holds the LinkedIn and GitHub strings,
+ * so each string is written down exactly once. The mail entry below is not a
+ * core/social-link, so it is written as a wp:html list item and its aria-label
+ * is read from the 'aria_label' key in the same array as everything else.
  *
  * The first two URLs are the ones patterns/channel-links.php carries, and they
  * are duplicated rather than shared because that pattern registers its own
@@ -227,8 +246,9 @@ $maulik_portfolio_header_channels = array(
 	 * cannot claim it. Same ordering as the footer.
 	 */
 	array(
-		'label'  => __( 'Email', 'maulik-portfolio' ),
-		'mailto' => 'mailto:maulikbhalodiya9999@gmail.com',
+		'label'      => __( 'Email', 'maulik-portfolio' ),
+		'aria_label' => __( 'Send an email to Maulik Bhalodiya', 'maulik-portfolio' ),
+		'mailto'     => 'mailto:maulikbhalodiya9999@gmail.com',
 	),
 );
 
@@ -256,7 +276,7 @@ $maulik_portfolio_render_header_channels = static function ( array $channels ) {
 		 */
 		if ( isset( $channel['mailto'] ) ) {
 			$markup .= '<!-- wp:html -->' . "\n";
-			$markup .= '<li class="wp-social-link wp-social-link site-header__social-link"><a class="wp-block-social-link-anchor" href="' . esc_url( $channel['mailto'] ) . '">';
+			$markup .= '<li class="wp-social-link wp-social-link site-header__social-link"><a class="wp-block-social-link-anchor" href="' . esc_url( $channel['mailto'] ) . '" aria-label="' . esc_attr( $channel['aria_label'] ) . '">';
 
 			/*
 			 * THE DESIGN'S OWN MAIL GLYPH, lifted from the rendered SVG rather
@@ -268,9 +288,24 @@ $maulik_portfolio_render_header_channels = static function ( array $channels ) {
 			 */
 			$markup .= '<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>';
 
-			// The accessible name, and the design's own: the word Email. It is
-			// screen reader only, which is how Core names the other two links,
-			// so all three announce the same way.
+			/*
+			 * The accessible name, and it is an aria-label, not a visible label.
+			 * MEASURED ON THE DESIGN, all three of its channel anchors are icon
+			 * only, carry no text node at all, and each names itself with a
+			 * longer sentence that includes the person:
+			 *   Connect with Maulik Bhalodiya on LinkedIn
+			 *   View Maulik Bhalodiya on GitHub
+			 *   Send an email to Maulik Bhalodiya
+			 * So this anchor carries the design's own sentence, and the
+			 * screen reader only span below stays as the fallback for anything
+			 * that does not read aria-label.
+			 *
+			 * There is still no plaintext address here and none in the
+			 * aria-label, which is why the repo wide CI gates in
+			 * .github/workflows/ci.yml permit exactly this one mailto and
+			 * exactly one raw address. The address is written literally once,
+			 * in the array above.
+			 */
 			$markup .= '<span class="wp-block-social-link-label screen-reader-text">' . esc_html( $channel['label'] ) . '</span>';
 			$markup .= '</a></li>' . "\n";
 			$markup .= '<!-- /wp:html -->' . "\n";

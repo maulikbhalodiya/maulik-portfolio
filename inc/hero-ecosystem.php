@@ -479,10 +479,18 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_render' ) ) {
 			esc_attr__( 'Reset Orientation', 'maulik-portfolio' )
 		);
 
+		/*
+		 * The readout is one panel that every node tab controls, so there is no
+		 * single fixed pair of tab and panel to state once: the panel takes the
+		 * name of the node it is currently showing, which is $active here and
+		 * whatever node the view script has selected afterwards. A tabpanel with
+		 * no accessible name is announced as an unnamed panel, so without this
+		 * the relationship exists only where the visitor can hear it on the tab.
+		 */
 		$footer = sprintf(
 			'<div class="maulik-hero-footer">'
 				. '<div class="maulik-hero-tabs" role="tablist" aria-label="%1$s">%2$s</div>'
-				. '<div class="maulik-hero-readout" id="maulik-hero-panel" role="tabpanel" aria-live="polite">'
+				. '<div class="maulik-hero-readout" id="maulik-hero-panel" role="tabpanel" aria-labelledby="maulik-hero-tab-%6$s" aria-live="polite">'
 				. '<div><p class="maulik-hero-readout-title" data-maulik-hero-readout-title>%3$s</p>'
 				. '<p class="maulik-hero-readout-summary" data-maulik-hero-readout-summary>%4$s</p>'
 				. '</div>'
@@ -492,7 +500,8 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_render' ) ) {
 			$tabs,
 			esc_html( $active['label'] . ' · ' . $active['category'] ),
 			esc_html( $active['summary'] ),
-			$inspect
+			$inspect,
+			esc_attr( $active['id'] )
 		);
 
 		/*

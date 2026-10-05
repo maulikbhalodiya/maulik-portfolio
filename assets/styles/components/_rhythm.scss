@@ -89,12 +89,54 @@
 // every width needs a width that is relative to the window, and that is what
 // 100vw is for.
 //
-// 100vw AND THE SCROLLBAR. 100vw counts the classic scrollbar, so the section is
-// up to one scrollbar wider than the document can show. This theme already sets
-// overflow-x: hidden on body in base/_reset.scss, taken from the design's own
-// index.css, so that overshoot is clipped and produces no horizontal scrollbar.
-// That guard is what makes 100vw safe here, and it is load bearing: removing it
-// would reintroduce the overshoot as a real scrollbar.
+// 100vw AND THE SCROLLBAR. 100vw counts the classic scrollbar, so a surface sized
+// in vw units is one scrollbar wider than the window can show, and an escape built
+// out of vw units lands half a scrollbar off. MEASURED, WITH A CLASSIC SCROLLBAR,
+// BEFORE THE ESCAPE BELOW WAS RESTATED: every one of the eight homepage sections
+// reported left -7.5 at 360, 390, 768, 1440 and 1920 alike, documentElement
+// scrollWidth was 8 more than clientWidth at all of them, and the page could be
+// dragged sideways by 8 pixels. The design, measured with the same classic
+// scrollbar in the same browser, reports left 0, right at clientWidth, and no
+// horizontal overflow at all.
+//
+// THE ESCAPE IS NOW A SUBTRACTION, NOT A CENTRING. The old value was
+// calc( 50% - 50vw ), which reads: put the middle of this box on the middle of the
+// window. That is correct arithmetic and the wrong target twice over. The middle
+// of the window is not where a full bleed surface starts, the left EDGE of the
+// viewport content area is, and the two differ by however much the containing
+// block is offset inside it. And the window is not the content area, because the
+// window counts the scrollbar and the content area does not.
+//
+// The value below subtracts one from the other:
+//
+//   margin-inline: calc( ( 100% - 100cqw ) / 2 )
+//
+// 100% is the containing block and 100cqw is the viewport content area, so the
+// difference is the containing block's own offset and half of it is exactly the
+// escape. It is exact at every width, above the measure cap as well as below it,
+// which no vw based expression can be, and it needs no knowledge of the gutter,
+// the cap or the scrollbar width.
+//
+// WHY NOT 100% WITH A NEGATIVE MARGIN, STILL. Because the containing block is
+// capped at 1440. Above that a 100% surface would stop at the cap and leave a
+// bare strip either side that is wider than the gutter, which is the original
+// defect moved. The width therefore stays viewport relative.
+//
+// WHY 100cqw AND NOT 100vw, AND WHY THAT NEEDS A QUERY CONTAINER ON html. The
+// arithmetic above needs the viewport CONTENT width, which is clientWidth, and
+// 100vw is not it. See the long note on the html container further down; the
+// short version is that CSS has no unit for the scrollbar exclusive width, so one
+// is manufactured from the root element's own content box.
+//
+// THE OVERFLOW IS CLIPPED, NOT SCROLLED, AND THAT IS THE OTHER HALF. clip, and
+// not hidden, is the value on html. overflow-x: hidden creates a scroll
+// container, so the document is still programmatically scrollable sideways by
+// exactly the 8 pixels measured above even though no scrollbar is painted.
+// overflow-x: clip does not create a scroll container, so the same pixels are
+// unreachable and maxScrollX is 0. This is why the guard is declared on html and
+// not on body: the propagation rules make the root element's overflow the
+// viewport's, and nothing else on the page can stand between the overshoot and
+// the user that way.
 //
 // WHAT THIS DOES NOT CHANGE, WHICH IS THE WHOLE POINT. The box gets wider and the
 // content does not move. padding-inline gives the section back precisely the
@@ -138,7 +180,10 @@
 // because padding-inline and margin-inline are the axis being changed and the two
 // never collide.
 .entry-content > section:is( .is-style-section, .is-layout-constrained ) {
-	width: 100vw;
+	// 100cqw and not 100vw. The design's own surfaces end at the viewport content
+	// width, which is clientWidth, and 100vw overshoots it by one classic
+	// scrollbar. See the note on the html query container further down.
+	width: 100cqw;
 	max-width: none;
 
 	// stylelint-disable-next-line declaration-no-important --
@@ -150,12 +195,15 @@
 	//   }
 	// Those auto margins centre a constrained child inside its parent, which is
 	// right for a column of text and wrong for a surface that has to reach both
-	// edges of the window. Measured with the plain declaration, the section still
-	// reported left 40 and right 1480, that is it did not move at all, because
-	// auto resolved to 0 against the over wide width. theme.css loads after the
-	// inline global styles, so an !important here is later in the cascade and
-	// wins. The footer already does this for the same reason, see _site-footer.
-	margin-inline: calc( 50% - 50vw ) !important;
+	// edges of the viewport. The value below subtracts the containing block from
+	// the viewport, which is the negative of the containing block's own offset and
+	// is therefore exact at every width, above the measure cap as well as below
+	// it. 100cqw is the viewport CONTENT width and 100vw is not; see the note on
+	// the html query container further down for why that distinction is the whole
+	// problem. theme.css loads after the inline global styles, so an !important
+	// here is later in the cascade and wins. The footer already does this for the
+	// same reason, see _site-footer.
+	margin-inline: calc( ( 100% - 100cqw ) / 2 ) !important;
 
 	/*
 	 * The inset the content gets back, which is the design's own arithmetic.
@@ -207,7 +255,7 @@
 		var( --wp--style--root--padding-left, 1.5rem ),
 		calc(
 			(
-				( 100vw - var( --wp--style--global--content-size, 90rem ) ) / 2
+				( 100cqw - var( --wp--style--global--content-size, 90rem ) ) / 2
 			) + var( --wp--style--root--padding-left, 1.5rem )
 		)
 	);
@@ -253,6 +301,110 @@
 		--wp--style--root--padding-left: 2.5rem;
 		--wp--style--root--padding-right: 2.5rem;
 	}
+}
+
+// ---------------------------------------------------------------------------
+// THE HORIZONTAL OVERFLOW GUARD. THIS IS THE OTHER HALF OF THE FULL BLEED FIX.
+//
+// MEASURED WITH A CLASSIC SCROLLBAR, WHICH IS THE ONLY WAY TO SEE THE DEFECT.
+// The full bleed claim on this site was carried for several passes on the
+// strength of a headless session with overlay scrollbars, where clientWidth
+// equals innerWidth and every one of the eight sections measures left 0 and
+// right at clientWidth. Force a classic scrollbar, which is 15px on this
+// platform, and every one of the eight reports left -7.5, scrollWidth is 8 more
+// than clientWidth, and window.scrollTo( 8, 0 ) succeeds: the page pans sideways
+// by half a scrollbar. The design, measured the same way, reports left 0 and no
+// overflow at 360, 390, 768, 1440 and 1920.
+//
+// WHY html AND WHY clip.
+//
+//   html, not body. The root element's overflow is propagated to the viewport,
+//   and no other element's is. Putting the guard anywhere else leaves the
+//   document itself scrollable sideways.
+//
+//   clip, not hidden. overflow-x: hidden creates a scroll container, so the
+//   overshoot stops being visible and starts being reachable: the scrollbar is
+//   gone but window.scrollTo( 8, 0 ) still works, which is the panning the owner
+//   reported. overflow-x: clip clips the same pixels without creating a scroll
+//   container at all, so maxScrollX is 0 rather than 8.
+//
+// base/_reset.scss sets overflow-x: hidden on body, taken from the design's own
+// index.css, and that is restated as clip below rather than removed, because
+// base/ is not this file's to change and because the two values do not conflict:
+// hidden on body still clips the overshoot, and clip on html is what makes the
+// document itself unscrollable.
+//
+// clip PAIRED WITH visible IS VALID, and that pairing is the whole trick. The
+// computed value of the other axis only changes from visible to auto when the
+// declared pair is visible with something that is neither visible nor clip, so
+// clip leaves the vertical axis alone and the page still scrolls vertically.
+html,
+body {
+	overflow-x: clip;
+}
+
+// ---------------------------------------------------------------------------
+// THE VIEWPORT CONTENT WIDTH, AS A LENGTH CSS CAN READ.
+//
+// 100vw IS NOT IT. 100vw is the width of the viewport INCLUDING a classic
+// scrollbar, and documentElement.clientWidth is the width EXCLUDING one, so on a
+// machine with a classic scrollbar the two differ by the full scrollbar width,
+// 15px here. That single number is the whole reason a full bleed surface built
+// out of vw units cannot land on left 0.
+//
+// THE ARITHMETIC, WHICH IS WORTH WRITING DOWN BECAUSE IT CLOSES THE DOOR ON
+// EVERY OTHER FORM. Let W be the containing block's content width and S the
+// scrollbar width. The containing block is always centred in the viewport
+// CONTENT area, so its own left offset is
+//
+//   X = ( ( innerWidth - S ) - W ) / 2
+//
+// Any escape written as a combination of 100% and 100vw therefore resolves to
+// minus S over 2, and no choice of coefficients changes that: measured, every one
+// of the eight homepage sections reported left -7.5 at 360, 390, 768, 1440 and
+// 1920 alike with the classic scrollbar on, which is exactly -15 over 2. The
+// scrollbar is the only unknown in the expression, and CSS cannot read it from a
+// length unit, because vw, vh, vmin and vmax are all defined against the
+// scrollbar inclusive box and no unit is defined against the exclusive one.
+//
+// So html is made an inline size query container and the full bleed surfaces are
+// sized in cqw. A container's content box on the root element IS the viewport
+// content area, so 100cqw is exactly documentElement.clientWidth, and the escape
+// becomes an ordinary subtraction of two quantities in the same space:
+//
+//   width: 100cqw                                   the viewport content width
+//   margin-inline: calc( ( 100% - 100cqw ) / 2 )   the negative of X, exactly
+//
+// which lands left on 0 and right on clientWidth at every width, above the cap as
+// well as below it. The design's own surfaces are the viewport content area and
+// not the window, so this reproduces it rather than approximating it: at 1920
+// with a classic scrollbar the design reports footer left 0 and right 1905, and
+// its inner container left 232.5.
+//
+// WHY THE ROOT AND NOT body. body is the wrong host for a reason that is not
+// cosmetic: container-type applies layout containment, and a layout containment
+// box is the containing block for every position: fixed descendant of it. The
+// header is position: fixed, so making body a container would silently unfix the
+// header, and the mobile menu panel with it. On the root element that containment
+// does not change what the viewport is, which is why html is the host.
+//
+// html carries no horizontal padding of its own, so its content box is the whole
+// content area and 100cqw is clientWidth. The page gutter lives on
+// .wp-site-blocks, below it.
+html {
+	container-type: inline-size;
+}
+
+// THE ROOT COLOUR WAS OFF PALETTE AND INVISIBLE. Computed html colour was
+// #FFFFFF, which is not one of the theme's twelve, and it reached 53 elements,
+// every one of them head, meta, link, style, script, title or html itself, none
+// of which paints. The design's own root colour is rgb(0, 0, 0), and #000000
+// IS on the palette as the black preset, so the fix is to match the design and
+// stay inside the palette at the same time. It is declared on html and not on
+// body because body already carries its own colour from theme.json, so nothing
+// inside body can inherit this by accident.
+html {
+	color: var( --wp--preset--color--black );
 }
 
 // Inner page heroes. The design gives every route other than home a shorter

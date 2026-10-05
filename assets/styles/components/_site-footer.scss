@@ -82,10 +82,28 @@ $footer-legal-padding: 2rem;
 // footer, and the two custom properties it reads are the same two WordPress
 // derives from theme.json.
 //
-// 100vw COUNTS THE SCROLLBAR. base/_reset.scss already sets overflow-x: hidden
-// on body, taken from the design's own index.css, so the overshoot is clipped
-// and no horizontal scrollbar appears. That guard is load bearing here exactly
-// as it is in _rhythm.scss.
+// THE WIDTH AND THE ESCAPE ARE THE SAME STATEMENT AS IN _rhythm.scss, on the one
+// full width surface that is not a section, and for the same reason.
+//
+// MEASURED BEFORE THIS RULE WAS RESTATED, WITH A CLASSIC SCROLLBAR AT 1440: the
+// footer reported left -7.5 and right 1432.5, and the grid inside it reported left
+// 32.5 against the design's 40. The old escape was calc( 50% - 50vw ), which
+// centres the box on the WINDOW rather than starting it at the left edge of the
+// viewport CONTENT area, so the error was exactly half a scrollbar. The design at
+// the same viewport with the same scrollbar reports footer left 0, right 1905 at
+// 1920 and left 0, right 1425 at 1440, and its inner container left 232.5 and 0
+// respectively.
+//
+// 100cqw, NOT 100vw, IN BOTH PLACES. 100vw counts a classic scrollbar that the
+// viewport content area does not, and the design's surfaces end at clientWidth.
+// _rhythm.scss declares the html inline size query container that makes 100cqw
+// equal clientWidth, and the long note there is the arithmetic; this is the same
+// two declarations applied to the footer.
+//
+// THE OVERFLOW GUARD IS IN _rhythm.scss AND IT IS LOAD BEARING HERE. That file
+// restates base/_reset.scss's overflow-x: hidden on body as overflow-x: clip on
+// html, which does not create a scroll container, so the overshoot is unreachable
+// and maxScrollX is 0 rather than 8.
 //
 // THE BACKGROUND IS THE HEADER'S, AND THE DESIGN'S #000000 IS REFUSED. This is
 // the owner's call and it is a deliberate deviation, so the reason is here.
@@ -126,12 +144,12 @@ $footer-legal-padding: 2rem;
 // loses to it and the footer stays the design's #000000 with the rule sitting
 // in the stylesheet looking correct.
 .wp-block-group.site-footer {
-	width: 100vw;
+	width: 100cqw;
 	max-width: none;
 	padding-block: $footer-padding-block;
 	padding-inline: max(
 		var( --wp--style--root--padding-left, 1.5rem ),
-		calc( ( 100vw - var( --wp--style--global--content-size, 90rem ) ) / 2 )
+		calc( ( 100cqw - var( --wp--style--global--content-size, 90rem ) ) / 2 )
 	);
 	// The header's solid, scrolled colour, at full opacity. See the note above.
 	background-color: var(--wp--preset--color--base) !important; // stylelint-disable-line declaration-no-important -- Core prints .has-black-background-color with !important. See the note above.
@@ -144,7 +162,52 @@ $footer-legal-padding: 2rem;
 	//       margin-left: auto !important;
 	//       margin-right: auto !important;
 	//   }
-	margin-inline: calc( 50% - 50vw ) !important;
+	// Those auto margins centre a constrained child inside its parent, which is
+	// right for a column of text and wrong for a surface that has to reach both
+	// edges of the viewport. The value subtracts the containing block from the
+	// viewport content area, which is the negative of the containing block's own
+	// offset and is exact at every width; see the note above.
+	margin-inline: calc( ( 100% - 100cqw ) / 2 ) !important;
+}
+
+// ---------------------------------------------------------------------------
+// THERE WERE 24 PIXES OF NOTHING BETWEEN THE PAGE AND THE FOOTER, ON ALL SIX
+// ROUTES, AND IT WAS NOT THE FOOTER'S OWN PADDING.
+//
+// MEASURED AT 1440, THE SAME 24 ON EVERY ROUTE:
+//   /            main bottom 10406.81, footer top 10430.81, gap 24.00
+//   /about/      main bottom  4609.09, footer top  4633.09, gap 24.00
+//   /contact/    main bottom  2344.41, footer top  2368.41, gap 24.00
+//   /projects/   main bottom  3844.91, footer top  3868.91, gap 24.00
+//   /rankkernel/ main bottom  6065.13, footer top  6089.13, gap 24.00
+//   /resume/     main bottom  3385.06, footer top  3409.06, gap 24.00
+// The design's gap is 0.00 at 1440 and at 390 alike: the design puts no margin
+// between the last section and the footer at all, and the 1 pixel hairline on the
+// footer's own top edge is the only thing between them.
+//
+// IT IS NOT IN THE FOOTER AND NOT IN ANY SECTION RULE. The margin is on the
+// element that WRAPS the footer, which is the footer template part that
+// templates/*.html print as
+//
+//   <footer class="wp-block-template-part">
+//
+// and it belongs to Core's block gap:
+//   :root :where(.is-layout-flow) > * { margin-block-start: var(--wp--preset--spacing--50); }
+// where --wp--preset--spacing--50 is the theme's own 1.5rem standard spacing
+// size. Measured directly: the wrapper's computed margin-top is 24px and the
+// footer's own is 0px. It is invisible to a per section comparison, because it is
+// not in a section, and it is the second half of the page height delta that
+// section by section measurement could not account for.
+//
+// templates/ is not this file's to change, so the margin is cancelled here, on
+// the wrapper, by selector rather than by editing the template. The selector is
+// the wrapper's own tag plus its own class and nothing else, so it cannot reach
+// anything else on the page: there is one footer template part and it is this
+// one. It outranks Core's rule on specificity rather than on load order, because
+// :where() contributes nothing and :root is a single pseudo-class, so Core's
+// selector is (0,1,0) and this one is (0,1,1).
+footer.wp-block-template-part {
+	margin-block-start: 0;
 }
 
 .wp-block-group.site-footer .site-footer__grid {
@@ -285,7 +348,15 @@ $footer-legal-padding: 2rem;
 // core/heading wrapping an anchor now, so the class is on the heading and the
 // anchor is a descendant of it. The class is on the heading either way, so
 // nothing above this rule needed changing.
+//
+// inline-block ON THE ANCHOR, WHICH WAS display: inline. An inline anchor sits in
+// an anonymous line box whose height is the font's line box rather than the
+// heading's, so the wordmark measured 29 tall at y 10488.81 where the design's
+// measures 32 at y 10455.22. The design's own brand anchor reads display
+// inline-block, and this is the same fix _site-header.scss makes to the header
+// wordmark, for the same reason.
 .wp-block-group.site-footer .site-footer__brand a {
+	display: inline-block;
 	color: var(--wp--preset--color--text);
 	text-decoration: none;
 }

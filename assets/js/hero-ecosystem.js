@@ -164,7 +164,6 @@
 		this.nodeDetails = [];
 		this.projected = [];
 		this.frameId = 0;
-		this.resizeFrameId = 0;
 		this.destroyed = false;
 		this.inView = true;
 		this.pageVisible = true;
@@ -187,6 +186,7 @@
 		this.onPointerMove = null;
 		this.onPointerLeave = null;
 		this.onCanvasClick = null;
+		this.onNodeClick = null;
 		this.onToggleClick = null;
 		this.onResetClick = null;
 		this.onKeyDown = null;
@@ -294,9 +294,15 @@
 		this.onMediaQueryChange = function ( event ) {
 			self.prefersReducedMotion = event.matches;
 
-			if ( event.matches ) {
-				self.isPaused = true;
-			}
+			/*
+			 * The preference decides the paused state in both directions. When
+			 * motion is reduced the scene holds still and the control offers to
+			 * resume it; when the preference is lifted the scene resumes and the
+			 * control offers to pause it again. Leaving the state untouched on the
+			 * way back meant a visitor who had reduced motion at load was left
+			 * looking at a still scene with a Pause control that did nothing.
+			 */
+			self.isPaused = event.matches;
 
 			self.syncToggleLabel();
 			self.scheduleRender();
@@ -342,6 +348,26 @@
 			}
 		};
 
+		this.onNodeClick = function ( event ) {
+			const pill = event.target.closest
+				? event.target.closest( '[data-maulik-hero-node]' )
+				: null;
+
+			if ( ! pill || ! self.container.contains( pill ) ) {
+				return;
+			}
+
+			const id = pill.getAttribute( 'data-maulik-hero-node' );
+
+			if ( ! id ) {
+				return;
+			}
+
+			self.selectedNodeId = id;
+			self.syncReadout();
+			self.scheduleRender();
+		};
+
 		this.onToggleClick = function () {
 			self.isPaused = ! self.isPaused;
 			self.syncToggleLabel();
@@ -365,6 +391,15 @@
 		this.container.addEventListener( 'pointerleave', this.onPointerLeave );
 		this.container.addEventListener( 'keydown', this.onKeyDown );
 
+		/*
+		 * One delegated listener on the container rather than one anonymous
+		 * listener on each of the eight pills. The anonymous form could not be
+		 * removed again, because nothing held a reference to it, so the only
+		 * teardown available was to clone every pill, which dropped focus and
+		 * every attribute added after load.
+		 */
+		this.container.addEventListener( 'click', this.onNodeClick );
+
 		if ( this.canvas ) {
 			this.canvas.addEventListener( 'click', this.onCanvasClick );
 		}
@@ -373,22 +408,20 @@
 	};
 
 	/**
-	 * Wire the pause, reset and node tab controls.
+	 * Wire the pause and reset controls.
+	 *
+	 * The node pills are handled by the delegated click listener on the
+	 * container, so they are not bound here.
 	 *
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.bindButtons = function () {
-		const self = this;
 		const toggle = this.container.querySelector(
 			'[data-maulik-hero-toggle]'
 		);
 		const reset = this.container.querySelector(
 			'[data-maulik-hero-reset]'
 		);
-		const tabs = this.container.querySelectorAll(
-			'[data-maulik-hero-node]'
-		);
-		let i;
 
 		if ( toggle ) {
 			toggle.addEventListener( 'click', this.onToggleClick );
@@ -396,22 +429,6 @@
 
 		if ( reset ) {
 			reset.addEventListener( 'click', this.onResetClick );
-		}
-
-		for ( i = 0; i < tabs.length; i++ ) {
-			( function ( tab ) {
-				tab.addEventListener( 'click', function () {
-					const id = tab.getAttribute( 'data-maulik-hero-node' );
-
-					if ( ! id ) {
-						return;
-					}
-
-					self.selectedNodeId = id;
-					self.syncReadout();
-					self.scheduleRender();
-				} );
-			} )( tabs[ i ] );
 		}
 	};
 
@@ -493,12 +510,19 @@
 	/**
 	 * Whether the scene should advance on this frame.
 	 *
+	 * The paused flag alone decides. It used to also test the reduced motion
+	 * preference, which meant the preference, not the control, owned the state:
+	 * the button read "Resume Orbit", a click flipped it to "Pause Orbit", and
+	 * nothing moved, so every state the control could show was a lie, shown to
+	 * exactly the visitors least able to tolerate motion. initReducedMotion sets
+	 * the flag when the preference is on and clears it when the preference is
+	 * lifted, so a visitor who wants the motion can have it.
+	 *
 	 * @return {boolean} True when motion is wanted.
 	 */
 	HeroEcosystem.prototype.isAnimating = function () {
 		return (
 			! this.isPaused &&
-			! this.prefersReducedMotion &&
 			this.inView &&
 			this.pageVisible &&
 			! this.destroyed
@@ -522,7 +546,12 @@
 		try {
 			this.draw();
 		} catch {
-			// A drawing failure must never escape into the page.
+			/*
+			 * A drawing failure must never escape into the page, and this runs
+			 * sixty times a second, so it deliberately stays silent and stops the
+			 * loop. The block is left holding its last good frame rather than
+			 * blank, and there is nothing here a visitor could act on.
+			 */
 			this.destroy();
 			return;
 		}
@@ -577,6 +606,13 @@
 		const fov = isCompact ? FOV_COMPACT : FOV_WIDE;
 		let i;
 
+		/*
+		 * Read once per frame and used by both the step below and the signal
+		 * packet later on. Nothing between the two reads changes any of the
+		 * inputs, so the second call could only ever have repeated the first.
+		 */
+		const animating = this.isAnimating();
+
 		ctx.clearRect( 0, 0, width, height );
 
 		// Subtle radial architectural lighting.
@@ -595,7 +631,7 @@
 		ctx.fillStyle = radialGrad;
 		ctx.fillRect( 0, 0, width, height );
 
-		if ( this.isAnimating() ) {
+		if ( animating ) {
 			this.rotation.yaw += YAW_STEP;
 			this.pulseTime += PULSE_STEP;
 		}
@@ -614,8 +650,6 @@
 			( targetPitch - this.rotation.pitch ) * PITCH_EASE;
 
 		this.rotation.pitch = currentPitch;
-
-		const animating = this.isAnimating();
 
 		// Two technical orbital reference rings.
 		[ 140, 200 ].forEach( function ( radius, idx ) {
@@ -913,35 +947,81 @@
 	};
 
 	/**
-	 * Keyboard equivalent of the node tabs, so the block is operable without a
-	 * pointer and the hovered node is never the only way to change selection.
+	 * The node pills, read fresh so a node added after load is picked up.
+	 *
+	 * @return {Array<HTMLElement>} The pills in document order.
+	 */
+	HeroEcosystem.prototype.nodePills = function () {
+		return Array.prototype.slice.call(
+			this.container.querySelectorAll( '[data-maulik-hero-node]' )
+		);
+	};
+
+	/**
+	 * Arrow, Home and End navigation across the node pills.
+	 *
+	 * WHY IT IS GATED ON THE TARGET. This listener is on the container so it can
+	 * serve the whole tablist, but before the gate an ArrowLeft or ArrowRight
+	 * pressed anywhere inside the hero repointed the canvas and had its default
+	 * prevented. That killed the arrows on the Pause and Reset buttons, where
+	 * they are not this handler's to take, and made every key press inside the
+	 * panel silently change what the canvas was showing.
+	 *
+	 * WHY FOCUS MOVES AND SELECTION DOES NOT. This is manual activation, which is
+	 * what the ARIA authoring practices recommend wherever automatic activation
+	 * would be disruptive, and here it would: selection is the readout and the
+	 * inspector link, so arrowing across eight pills would swap eight panels
+	 * underneath a visitor who is only trying to find the one they want. Enter
+	 * and Space are not handled here at all, because a real button already
+	 * activates itself on both and that activation arrives as the click this
+	 * container delegates.
+	 *
+	 * WHY THERE IS NO preventDefault. A horizontal arrow key scrolls nothing, so
+	 * there is no default worth suppressing here, and suppressing one the visitor
+	 * did not hand us is what made the old hijack invisible.
 	 *
 	 * @param {KeyboardEvent} event Keyboard event.
 	 * @return {void}
 	 */
 	HeroEcosystem.prototype.handleKeyDown = function ( event ) {
-		if ( event.key !== 'ArrowRight' && event.key !== 'ArrowLeft' ) {
+		const key = event.key;
+
+		if (
+			'ArrowRight' !== key &&
+			'ArrowLeft' !== key &&
+			'Home' !== key &&
+			'End' !== key
+		) {
 			return;
 		}
 
-		const current = this.nodes.findIndex(
-			function ( node ) {
-				return node.id === this.selectedNodeId;
-			}.bind( this )
-		);
+		const pills = this.nodePills();
+		const current = pills.indexOf( event.target );
 
 		if ( current < 0 ) {
 			return;
 		}
 
-		const step = event.key === 'ArrowRight' ? 1 : -1;
-		const next = ( current + step + this.nodes.length ) % this.nodes.length;
+		let next = current;
 
-		this.selectedNodeId = this.nodes[ next ].id;
-		this.syncReadout();
-		this.scheduleRender();
+		switch ( key ) {
+			case 'ArrowRight':
+				next = ( current + 1 ) % pills.length;
+				break;
+			case 'ArrowLeft':
+				next = ( current - 1 + pills.length ) % pills.length;
+				break;
+			case 'Home':
+				next = 0;
+				break;
+			case 'End':
+				next = pills.length - 1;
+				break;
+			default:
+				return;
+		}
 
-		event.preventDefault();
+		pills[ next ].focus();
 	};
 
 	/**
@@ -952,19 +1032,34 @@
 	 */
 	HeroEcosystem.prototype.syncReadout = function () {
 		const activeId = this.hoveredNodeId || this.selectedNodeId;
-		const tabs = this.container.querySelectorAll(
-			'[data-maulik-hero-node]'
-		);
+		const pills = this.nodePills();
+		let activePill = null;
 		let i;
 
-		for ( i = 0; i < tabs.length; i++ ) {
+		for ( i = 0; i < pills.length; i++ ) {
 			const isActive =
-				tabs[ i ].getAttribute( 'data-maulik-hero-node' ) === activeId;
+				pills[ i ].getAttribute( 'data-maulik-hero-node' ) === activeId;
 
-			tabs[ i ].setAttribute(
+			pills[ i ].setAttribute(
 				'aria-selected',
 				isActive ? 'true' : 'false'
 			);
+
+			if ( isActive ) {
+				activePill = pills[ i ];
+			}
+		}
+
+		/*
+		 * The panel is labelled by the node it is showing. Every tab controls this
+		 * one panel, so there is no fixed pair to state once in the markup: the
+		 * name follows the active node, which is what the server rendered markup
+		 * establishes for the node selected before any script ran.
+		 */
+		const panel = this.container.querySelector( '#maulik-hero-panel' );
+
+		if ( panel && activePill && activePill.id ) {
+			panel.setAttribute( 'aria-labelledby', activePill.id );
 		}
 
 		const details = this.findNodeDetails( activeId );
@@ -1101,11 +1196,6 @@
 			this.frameId = 0;
 		}
 
-		if ( this.resizeFrameId ) {
-			window.cancelAnimationFrame( this.resizeFrameId );
-			this.resizeFrameId = 0;
-		}
-
 		if ( this.resizeObserver ) {
 			this.resizeObserver.disconnect();
 			this.resizeObserver = null;
@@ -1160,9 +1250,20 @@
 			this.canvas.removeEventListener( 'click', this.onCanvasClick );
 		}
 
-		if ( this.onToggleClick ) {
-			this.detachControls();
+		if ( this.onNodeClick ) {
+			this.container.removeEventListener( 'click', this.onNodeClick );
 		}
+
+		/*
+		 * Unconditional. It used to be guarded on this.onToggleClick, so a build
+		 * with no toggle button, or a block rendered without one, reached teardown
+		 * with the reset and node listeners still attached.
+		 */
+		this.detachControls();
+
+		this.onNodeClick = null;
+		this.onToggleClick = null;
+		this.onResetClick = null;
 
 		self.ctx = null;
 		self.projected = [];
@@ -1170,6 +1271,9 @@
 
 	/**
 	 * Remove the click listeners added to the control buttons.
+	 *
+	 * The node pills need nothing here: their single delegated listener is
+	 * removed from the container, which is the element it was added to.
 	 *
 	 * @return {void}
 	 */
@@ -1180,21 +1284,13 @@
 		const reset = this.container.querySelector(
 			'[data-maulik-hero-reset]'
 		);
-		const tabs = this.container.querySelectorAll(
-			'[data-maulik-hero-node]'
-		);
-		let i;
 
-		if ( toggle ) {
+		if ( toggle && this.onToggleClick ) {
 			toggle.removeEventListener( 'click', this.onToggleClick );
 		}
 
-		if ( reset ) {
+		if ( reset && this.onResetClick ) {
 			reset.removeEventListener( 'click', this.onResetClick );
-		}
-
-		for ( i = 0; i < tabs.length; i++ ) {
-			tabs[ i ].replaceWith( tabs[ i ].cloneNode( true ) );
 		}
 	};
 
@@ -1221,8 +1317,12 @@
 
 			try {
 				new HeroEcosystem( container );
-			} catch {
+			} catch ( error ) {
 				// Never let one broken block break the page.
+				console.warn(
+					'Hero ecosystem block failed to initialise.',
+					error
+				);
 				container.setAttribute( 'data-maulik-hero-error', 'true' );
 			}
 		}
@@ -1233,9 +1333,4 @@
 	} else {
 		initHeroEcosystems();
 	}
-
-	window.maulikHeroEcosystem = {
-		init: initHeroEcosystems,
-		HeroEcosystem,
-	};
 } )();
