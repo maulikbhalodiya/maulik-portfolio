@@ -1018,8 +1018,31 @@
 	min-width: 0;
 }
 
+// THE HEAD ROW WRAPS, AND THE REASON IS THE PANEL, NOT THE CHIP.
+//
+// Measured at 360, the inspector panel is 212px wide and its head row is a
+// flex row holding a title column and the status chip. The title column cannot
+// shrink below its own min-content, which is the width of its longest word at
+// 24px display bold, and the chip cannot shrink below the word COMPLETED at
+// 12px mono. 174.4 + 12 + 86.8 is 273.2px of min-content in a 212px row, so the
+// chip was pushed past the panel's right edge: COMPLETED painted 50.2px beyond
+// it at 360 and 20.2px at 390. WordPress is the longest subsystem name and the
+// one that decides the number.
+//
+// flex-wrap lets the chip drop onto its own line when the two cannot share one.
+// It is not a new breakpoint and nothing is hidden: the chip stays at 12px, the
+// title stays at 24px, and neither is given overflow or a scroller.
+//
+// THIS IS NOT THE HERO TAB ROW. That one wraps over a canvas drawn at a fixed
+// 500px, so wrapping there costs a row of the drawing, which is why the two are
+// not the same fix. This panel has no fixed-height drawing beneath it: the
+// diagram is a sibling column at xl and a block above it below that, and
+// nothing is painted into the space the chip's new line opens. The head
+// measures 85px before and 123px after at 360, and the panel grows with it,
+// which is what a text panel is for.
 .is-style-section .rk-inspector__head {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: flex-start;
 	justify-content: space-between;
 	gap: 0.75rem;
@@ -1041,6 +1064,13 @@
 // which is gap-1.5 in RankKernelArchitecture.tsx line 341. The mark is 14px, so
 // the chip's 16px text line still decides its height and the chip measures 26px
 // either way.
+//
+// THE NOWRAP HERE STAYS, AND IT IS NOT THE BUG. COMPLETED is one word with no
+// break opportunity in it, so this declaration changes nothing about how the
+// chip paints today. What pushed the chip past the panel edge was the head row
+// refusing to wrap, which is fixed on .rk-inspector__head above and measured
+// there. Removing this would make a future two-word status break across lines
+// inside a pill-shaped box, which is worse than the defect it would chase.
 .is-style-section .rk-chip {
 	margin-block: 0;
 	padding: 0.25rem 0.625rem;
@@ -1373,7 +1403,27 @@
 	// button padding and border box, which is why the inherited 1.625 printed a
 	// 29.5px chip against the design's 26px. 1.3333 is the 12px mono line.
 	line-height: 1.3333;
-	white-space: nowrap;
+	// THE CONNECTED SUBSYSTEM LABELS BREAK WHERE THEY MUST.
+	//
+	// The design's own button for these chips, at
+	// RankKernelArchitecture.tsx line 394, is `px-2.5 py-1 text-xs
+	// font-mono-tech bg-[#0A0A0B] text-[#D8D5CA] hover:text-[#FACC15] border
+	// border-[#262626] hover:border-[#FACC15] transition-colors`. There is no
+	// whitespace-nowrap in that class list, and the design's chips measured with
+	// white-space normal and scrollWidth equal to clientWidth on every one of
+	// them at 390 and 360. This file's nowrap was the theme's own addition and it
+	// is what pushed the labels out.
+	//
+	// Measured in the 212px panel at 360: "Robots and llms.txt · COMPLETED" is
+	// 245.2px as one run and painted 22.2px past the panel edge, and "Schema and
+	// JSON-LD · COMPLETED" is 238px and painted 15px past. Both labels are a
+	// subsystem name, a middot and a status, so they have breaks to take.
+	//
+	// The status chip in the head above keeps its nowrap. COMPLETED is one word
+	// with nothing to break at, so its own fix is the head wrapping, and the
+	// declaration there is what stops a future longer status from breaking
+	// mid-word inside a pill.
+	white-space: normal;
 	cursor: pointer;
 	transition:
 		color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
