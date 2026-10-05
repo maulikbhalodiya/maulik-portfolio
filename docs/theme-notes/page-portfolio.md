@@ -15,10 +15,11 @@ the inner text of one original comment, in the order it appeared in the file.
 ## Comment 1 of 2 (originally at templates/page-portfolio.html line 1)
 
 ```text
-	CONDITION: a page using the "portfolio" custom template. Registered in
-	theme.json customTemplates under the name "portfolio". Served at
-	/projects/{slug}/ for case study pages. The page that lists them is
-	page-projects.html.
+	CONDITION: never served. There is no page with this slug, no template
+	file for it, and theme.json has no customTemplates key. There is also
+	no /projects/{slug}/ route: a project single view was deliberately not
+	created, so those URLs 404 by design. The page that lists work is
+	the Projects page at /projects/, served by templates/page.html.
 
 	TWELVE NUMBERED SECTIONS, AND THE ORDER IS THE FRAMEWORK. The design does
 	NOT use a case / approach / solution / impact structure. This is the

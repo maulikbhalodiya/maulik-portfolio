@@ -15,8 +15,10 @@ the inner text of one original comment, in the order it appeared in the file.
 ## Comment 1 of 2 (originally at templates/page-projects.html line 1)
 
 ```text
-	CONDITION: a page using the "projects" custom template. Registered in
-	theme.json customTemplates under the name "projects". Served at /projects/.
+	CONDITION: any published page. There is no custom template: theme.json
+	has no customTemplates key and templates/ registers no page-specific
+	template. The page is served by templates/page.html, which renders
+	wp:post-content for whatever slug this page has. Served at /projects/.
 
 	THE ARCHIVE. A heading and a core/query that is ready for content. The
 	query is non-inheriting so it does not silently adopt the page query.
