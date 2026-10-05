@@ -950,6 +950,57 @@
 	font-size: 9.5px;
 }
 
+// "Schema and JSON-LD" PAINTS 151 USER UNITS INSIDE A 136 UNIT BOX. THIS IS
+// NOT FIXABLE FROM HERE, AND THIS COMMENT IS HERE SO THAT THE NEXT ATTEMPT
+// DOES NOT REBUILD IT FROM NOTHING.
+//
+// The box is the design's. In
+// /home/ubuntu/design-reference/src/components/RankKernelArchitecture.tsx
+// lines 272 to 275 every subsystem node is one fixed rect,
+// `x="-68" y="-26" width="136" height="52"`, and nothing anywhere in that
+// component widens it for a longer name. The label is lines 284 to 288, one
+// single-line text element at `text-[12px]` with no wrap and no tspan, which
+// is what the 12px above states.
+//
+// The design's own node names are in src/data/portfolioData.ts lines 474 to
+// 562: Modules, Settings, Metadata, Schema, REST, Sitemaps, Content Analysis,
+// Redirects, 404 Monitoring. The longest of them, Content Analysis, measures
+// 112.72 in that same 136 box, so the design leaves 23.28 units of slack and
+// has no such defect. "Schema and JSON-LD" is not a design name and appears
+// nowhere in the design source or in its built bundle. Our content uses a
+// longer name in a box sized for the design's shorter ones.
+//
+// Measured on the deployed site at 390 and 360, on both this page and the
+// homepage copy of the same diagram: 151 against 136, over by 15, which is
+// 7.5 on each side. Every other node fits. Robots and llms.txt is 127.5.
+//
+// The styles-only levers, each measured rather than assumed:
+//
+//   widening the rect       the design states 136 for every node
+//   two-line wrap           SVG text has no CSS wrapping, so this needs a
+//                           second text element or a tspan, which is content
+//   font-size reduction     the design states 12px at every width, so going
+//                           under it is a type change made to fit a number
+//   textLength              honoured as an SVG attribute only. From CSS it
+//                           does nothing in Chrome: the same string measures
+//                           130.05 with the declaration and 130.05 without,
+//                           and 100 with the attribute. It is not exposed in
+//                           computed style either.
+//   letter-spacing squeeze  fits the number by altering tracking, and leaves
+//                           one of nine labels inconsistent with the rest
+//   transform scale         does not change getBBox, so the probe still
+//                           reports 151, and it distorts the glyphs
+//
+// THE FIX IS ONE STRING AND IT IS NOT A STYLE. Rename the node to the
+// design's own "Schema" in content/pages/rankkernel.html and in the matching
+// node in content/pages/home.html. Both are content files and neither is in
+// this partial's scope.
+//
+// TO CHECK IT LATER, COMPARE THE TEXT WITH THE SIBLING RECT IN USER UNITS:
+// getBBox().width against the rect's width attribute. Do not compare with the
+// parent g. A group's bbox is the union of its children, so it is always at
+// least as wide as its own text and that comparison can never fail while a
+// label is visibly overrunning.
 .is-style-section .rk-svg-name {
 	font-family: var(--wp--preset--font-family--display);
 	font-size: 12px;
