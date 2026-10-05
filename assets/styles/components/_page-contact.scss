@@ -74,27 +74,88 @@
 }
 
 // ---------------------------------------------------------------------------
+// CORE PUTS AN INLINE AUTO MARGIN ON EVERY CHILD OF A CONSTRAINED GROUP.
+//
+// global styles ships
+//   .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull))
+//     { max-width: var(--wp--style--global--content-size);
+//       margin-left: auto !important; margin-right: auto !important; }
+//
+// so every direct child of every constrained group is shrink wrapped and
+// centred unless this file says otherwise. Measured on the live page at 1440
+// that produced .contact-hero-lede at x=328.5 instead of 40,
+// .contact-destinations-label at x=241.8 instead of 40, the routing panel head
+// at 527.22 wide instead of 582.5 and the routing map at 304.59 wide instead of
+// 582.5, which is the defect the owner reported against the routing group. The
+// padding on those groups is NOT affected, which is why the panel's own padding
+// already measured 32px, the design's own md:p-8. It is the children that are
+// wrong, so that is what this rule removes.
+//
+// The auto margin is !important, so this one is too. It is scoped to this
+// page's own groups and to their direct children, so core's behaviour is
+// untouched everywhere else in the theme.
+$ct-groups: (
+	'contact-hero',
+	'contact-destinations-grid',
+	'contact-destinations-lead',
+	'contact-destinations-head',
+	'contact-destinations-cards',
+	'contact-routing',
+	'contact-routing-head',
+	'contact-routing-map',
+	'contact-routing-action',
+	'contact-routing-action-body'
+);
+
+@each $name in $ct-groups {
+
+	.wp-block-group.#{$name} > * {
+		margin-inline: 0 !important;
+		max-width: none;
+	}
+}
+
+// ---------------------------------------------------------------------------
 // The inner page hero stack.
 //
 // Core puts the theme block gap on every child of a constrained group, which
 // would replace the design's own stack, so each child states the gap the
 // design asks for and the first one states nothing.
 //
-// THE ORDER OF THIS FILE MATTERS AND THE REASON IS SPECIFICITY. This rule is
-// two classes plus the child, so 0,2,0. The four element rules further down
-// carry the same two classes and then the element's own class, so they tie with
-// it at 0,3,0 and win by being later in the file. When they carried
-// `margin-block: 0` rather than `margin-block-end: 0`, every one of them
-// deleted the gap this rule had just set and the hero measured 470px against
-// the design's 542px: exactly the 12px of the title pair plus three 20px stack
-// gaps, 72px in total. The rule the title pair needs is stated here at 0,3,0 as
-// well, so the same order dependency is now visible in one place.
-.wp-block-group.contact-hero > * {
-	margin-block-start: 1.25rem;
+// THE HERO IS A TWELVE COLUMN GRID, NOT A STACK. InnerPageHero.tsx line 67
+// states grid-cols-1 lg:grid-cols-12 gap-10 items-end and line 68 puts the
+// contact page's lead column on lg:col-span-9, because ContactPage passes no
+// rightPanel. Reproducing that as a grid rather than as a max-width is what
+// makes the column measure 998.75px at 1440, which is what the design's own
+// lead column measured: 1345px of measure, eleven 40px gutters and twelve
+// tracks of 75.4167, so nine tracks and eight gutters is 9 * 75.4167 + 8 * 40.
+//
+// The design states 40px between the two grid columns and, separately, 20px
+// between the stack items inside the lead column. With only one column in
+// play the 40px never applies to anything, so it is kept as the column gap and
+// the 20px is kept as the row gap, which is where the stack items sit.
+.wp-block-group.contact-hero {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	column-gap: 2.5rem;
+	row-gap: 1.25rem;
+	align-items: end;
 }
 
-.wp-block-group.contact-hero > :first-child {
-	margin-block-start: 0;
+.wp-block-group.contact-hero > * {
+	grid-column: span 1;
+	margin-block: 0;
+}
+
+@include from( $bp-lg ) {
+
+	.wp-block-group.contact-hero {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.wp-block-group.contact-hero > * {
+		grid-column: span 9;
+	}
 }
 
 // The h1. text-4xl sm:text-5xl md:text-6xl is 36px, 48px and 60px, which is a
@@ -123,22 +184,17 @@
 	}
 }
 
-// The title pair is space-y-3, which is 12px, so this one child sits closer to
-// the h1 than the rest of the column does. This selector carries the same two
-// classes as the rule below it and comes first, so the value below has to leave
-// margin-block-start alone. See the note on the rule below.
-.wp-block-group.contact-hero > .contact-hero-subtitle {
-	margin-block-start: 0.75rem;
-}
-
 // The subtitle. text-xl sm:text-2xl font-display font-semibold in amber.
 //
-// Only the trailing margin is zeroed here. This rule and the `> *` stack rule
-// above it both carry two classes plus the child, so they tie at 0,3,0 against
-// 0,2,0 and this one is later in the file, which means a `margin-block: 0` here
-// silently deleted every gap in the hero and left the section 72px short. That
-// is the same trap content/pages/projects.html hit, and it is the same fix.
+// The trailing margin is zeroed so the grid row gap is the only spacing below
+// it, and the leading value is the one correction the design's nested stack
+// needs: see the note inside.
 .wp-block-group.contact-hero .contact-hero-subtitle {
+	// The title pair is space-y-3, 12px, inside a space-y-5 column, 20px. A grid
+	// states one gap for every row, so the row gap stays the design's 20px and
+	// this child takes 8px back off the top, which is 12px. Measured: the h1
+	// ended at 260.8 and the design's subtitle started at 272.8.
+	margin-block-start: -0.5rem;
 	margin-block-end: 0;
 	font-family: var(--wp--preset--font-family--display);
 	font-size: 1.25rem;
@@ -218,7 +274,6 @@
 }
 
 .wp-block-group.contact-hero .contact-hero-actions > *,
-.contact-card-actions > *,
 .contact-routing-action .wp-block-button {
 	margin-block-start: 0;
 }
@@ -285,6 +340,18 @@
 	padding: 0.625rem 1rem;
 	font-size: 0.75rem;
 	line-height: 1.3333;
+}
+
+// The 16px leading icon the design puts in every button on this page, and the
+// amber variant the design gives the resume icon on the dark button.
+.wp-block-button.contact-btn .contact-btn-icon {
+	flex: none;
+	width: 1rem;
+	height: 1rem;
+}
+
+.wp-block-button.contact-btn .contact-btn-icon-amber {
+	color: var(--wp--preset--color--accent);
 }
 
 // ---------------------------------------------------------------------------
@@ -407,68 +474,33 @@
 	}
 }
 
-// A destination card. p-6 on the panel ground behind a #262626 hairline, and a
-// 24px gap between the label row and the title pair.
-.wp-block-group.contact-card {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	gap: 1.5rem;
-	padding: 1.5rem;
-	margin-block: 0;
-	background-color: var(--wp--preset--color--surface);
-	border: 1px solid var(--wp--preset--color--line);
-	color: var(--wp--preset--color--text);
-}
-
-.wp-block-group.contact-card > * {
-	margin-block-start: 0;
-}
-
-// The primary card is the design's own active route treatment: the signal panel
-// fills and strokes its active node with amber, so the primary destination
-// takes the amber hairline rather than the muted one.
-.wp-block-group.contact-card.contact-card-primary {
-	border-color: var(--wp--preset--color--accent);
-}
-
-.wp-block-group.contact-card .contact-card-label {
-	margin-block: 0;
-	font-family: var(--wp--preset--font-family--mono);
-	font-size: 0.75rem;
-	line-height: 1.3333;
-	color: var(--wp--preset--color--accent);
-	font-variant-numeric: tabular-nums;
-}
-
-.wp-block-group.contact-card .contact-card-title {
-	margin-block: 0;
-	font-family: var(--wp--preset--font-family--display);
-	font-size: 1.25rem;
-	font-weight: 700;
-	line-height: 1.4;
-	color: var(--wp--preset--color--text);
-}
-
-.wp-block-group.contact-card .contact-card-meta {
-	margin-block: 0.375rem 0;
-	font-family: var(--wp--preset--font-family--mono);
-	font-size: 0.75rem;
-	line-height: 1.3333;
-	color: var(--wp--preset--color--text-muted);
-}
-
-.wp-block-group.contact-card .contact-card-actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 1rem;
-	margin-block: 0;
-}
-
-// A destination the reader can follow is the whole card, so the card itself is
-// the link. The design draws it as one anchor with the label, the title and the
-// value stacked inside it, and the button preset's mono 14px is undone here so
-// the three voices below are the design's own.
+// THE FOUR DESTINATION CARDS ARE ONE SHAPE AND THEY ARE THE SAME HEIGHT.
+//
+// ContactPage.tsx line 65 gives the design `grid grid-cols-1 sm:grid-cols-2
+// gap-4` and lines 66 to 151 are four anchors with an identical two child
+// shape: a label row and a space-y-1.5 body. That is the whole mechanism. There
+// is no fixed height, no align-items and no explicit track: the four are the
+// same height because they are the same shape, and a grid row is as tall as its
+// tallest item, so each row equalises by itself.
+//
+// OUR FOUR WERE THREE SHAPES. Measured on the live page at 1440 the cards came
+// out 287.61 x 251.95, 237.2 x 163.97 and 244.41 x 163.97 against the design's
+// 316.25 x 140 four times over, for two separate reasons:
+//
+//   WIDTH. core hands every direct child of a constrained group
+//   `margin-left: auto !important; margin-right: auto !important`, so each card
+//   shrank to its own content instead of filling its 316.25px track. The rule
+//   above removes that for this page's groups.
+//
+//   HEIGHT. card 01 was a group with a fourth child, an "Open the contact page"
+//   button, which made it 88px taller than the design's 140px and dragged the
+//   rest of its grid row to match. The design has no such button: its card 01 is
+//   the email anchor. All four are anchors below, with the same two children.
+//
+// A destination the reader can follow is the whole card, so the card is the
+// link. The design draws it as one anchor with the label row above the title
+// pair, and the button preset's mono 14px is undone here so the three voices
+// below are the design's own.
 .wp-block-button.contact-card {
 	display: flex;
 	margin-block: 0;
@@ -476,12 +508,12 @@
 }
 
 .wp-block-button.contact-card .wp-block-button__link {
-	display: flex;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
 	flex: 1 1 auto;
-	flex-direction: column;
-	align-items: stretch;
+	align-items: start;
 	justify-content: space-between;
-	gap: 1.5rem;
+	row-gap: 1.5rem;
 	padding: 1.5rem;
 	text-align: left;
 	text-decoration: none;
@@ -500,8 +532,25 @@
 	border-color: var(--wp--preset--color--accent);
 }
 
+// THE LABEL AND ITS ICON ARE ONE ROW.
+//
+// The design draws it as `flex items-center justify-between` around the label
+// and a 16px trailing icon, so the label shrink wraps: it measured 72.02px for
+// "01 · Email" where a stretched block would have taken the card's full
+// 266.25px measure. This theme's block vocabulary has no bare div, so the two
+// are made into a grid row by ordering the label first and the icon second and
+// placing them on one line, which is what justify-between amounts to when
+// there are exactly two children.
+.wp-block-button.contact-card .wp-block-button__link {
+	grid-template-rows: auto auto;
+}
+
 .wp-block-button.contact-card .contact-card-label {
 	display: block;
+	grid-row: 1;
+	grid-column: 1;
+	justify-self: start;
+	margin-block: 0;
 	font-family: var(--wp--preset--font-family--mono);
 	font-size: 0.75rem;
 	line-height: 1.3333;
@@ -509,9 +558,36 @@
 	font-variant-numeric: tabular-nums;
 }
 
+.wp-block-button.contact-card .contact-card-icon {
+	flex: none;
+	grid-row: 1;
+	grid-column: 2;
+	justify-self: end;
+	width: 1rem;
+	height: 1rem;
+	color: var(--wp--preset--color--accent);
+}
+
+// The title pair, which the design wraps in space-y-1.5 so the title and the
+// value sit 6px apart while the label row above them stays 24px away. This
+// wrapper is what that nesting is made of here, and it spans both columns of
+// the card grid because the design's card has no right hand element on this row.
+.wp-block-button.contact-card .contact-card-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+	grid-row: 2;
+	grid-column: 1 / -1;
+	margin-block: 0;
+}
+
+// text-xl font-display font-bold, which the design draws as
+// `flex items-center gap-2` around an optional brand icon.
 .wp-block-button.contact-card .contact-card-title {
-	display: block;
-	margin-block-start: 0;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block: 0;
 	font-family: var(--wp--preset--font-family--display);
 	font-size: 1.25rem;
 	font-weight: 700;
@@ -519,9 +595,16 @@
 	color: var(--wp--preset--color--text);
 }
 
+.wp-block-button.contact-card .contact-card-title-icon {
+	flex: none;
+	width: 1rem;
+	height: 1rem;
+}
+
+// font-mono-tech text-xs in the secondary text colour.
 .wp-block-button.contact-card .contact-card-meta {
 	display: block;
-	margin-block-start: 0.375rem;
+	margin-block: 0;
 	font-family: var(--wp--preset--font-family--mono);
 	font-size: 0.75rem;
 	line-height: 1.3333;
@@ -560,12 +643,19 @@
 
 // The panel head. A flex row with a 16px hairline under it: the panel's own
 // title in amber, the active node in the muted colour.
+// NO flex-wrap AND NO gap, and both are measured. The design states this row as
+// `flex items-center justify-between` with no wrap utility and no gap utility,
+// so at 390 the design's title wraps to two lines at 204.73px wide and its state
+// to two lines at 72.27px wide, side by side, which together are exactly the
+// 277px panel measure with nothing between them. Ours carried gap: 1rem, which
+// stole 16px from both and measured 192.91 and 68.09 instead. A wrap is wrong for
+// the same reason: the state dropped below the title and the row measured 81px,
+// which is the 16px of the extra line the whole routing panel was then too tall
+// by.
 .wp-block-group.contact-routing-head {
 	display: flex;
-	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	gap: 1rem;
 	padding: 0 0 1rem;
 	margin-block: 0;
 	border-bottom: 1px solid var(--wp--preset--color--line);
@@ -592,72 +682,237 @@
 	font-variant-numeric: tabular-nums;
 }
 
-// The map. The design's SVG is a 500 by 340 view box at p-4 on the base ground
-// behind a hairline, so the box keeps that ratio and the nine cells keep the
-// design's own order: two channel nodes either side of a wire, the origin
-// node in the middle row, then the active route and the resume.
+// The map. THE DESIGN'S SVG, MEASURED.
+//
+// ContactSignalNetwork.tsx line 81 gives the view box as 0 0 500 340 and line 82
+// caps it with max-h-[340px] and w-full. The canvas below reproduces that box
+// as an aspect-ratio box, then places every element at the percentage the
+// design's own SVG coordinates give it. Nothing here is a number chosen to make
+// the page look right; each one is the design's coordinate divided by its view
+// box, and the list is below.
+//
+//   origin      Maulik   centre 250, 170 on a 116 by 52 rect
+//   email       centre 110,  80 on a 128 by 48 rect
+//   linkedin    centre 390,  80
+//   github      centre 110, 260
+//   resume      centre 390, 260
+//
+// So a node's left offset is (centre x - half its width) / 500 and its top
+// offset is (centre y - half its height) / 340. The nodes are absolutely
+// positioned because the design's is a drawing, and a grid cannot place a box
+// at 22% of the width and 23.5294% of the height at the same time.
+//
+// The wires are the four lines the design draws from the origin to each
+// channel. They are rotated one pixel rules, anchored at the origin and turned
+// by the angle of the design's own line, because a straight rule is the only
+// shape this theme's vocabulary has for a straight line and a rotated rule is
+// still a straight rule. Angles are atan2 of the design's own deltas.
 .wp-block-group.contact-routing-map {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	grid-template-rows: repeat(3, minmax(0, 1fr));
-	aspect-ratio: 500 / 340;
 	padding: 1rem;
 	margin-block: 0;
 	background-color: var(--wp--preset--color--base);
 	border: 1px solid var(--wp--preset--color--line);
 }
 
-.wp-block-group.contact-routing-map > * {
-	margin-block-start: 0;
+// THE CANVAS IS 500px WIDE AND CENTRED, NOT THE FULL WIDTH OF THE MAP.
+//
+// The design's svg is w-full with max-h-[340px] on a 0 0 500 340 view box, and
+// an svg letterboxes: at 1440 the element measured 548.5 by 340 while its
+// content, at scale 1, is 500 by 340 centred inside it, which put the design's
+// email node rect at x=856.75 where 786.5 + (548.5 - 500) / 2 + (110 - 64) =
+// 856.75. So the drawing is 500 wide, centred, and 340 tall, and the map's own
+// padding is what is left over on each side. 31.25rem is 500px, and the
+// aspect ratio gives the 340. Below 500px of map width the canvas takes what
+// there is and the height follows the same ratio, which is what the design's
+// svg does too: at 390 it measured 243 by 165.23.
+// The !important is because core's inline auto margin reset above is scoped to
+// this page's groups and their direct children, and the canvas is a direct
+// child of one of them. This selector is the same shape as that rule, so it
+// needs the same weight to say the opposite thing.
+.wp-block-group.contact-routing-map > .wp-block-group.contact-routing-canvas {
+	position: relative;
+	inline-size: min(100%, 31.25rem);
+	aspect-ratio: 500 / 340;
+	margin: 0 auto !important;
+
+	// THE CANVAS IS ALSO THE SIZE CONTAINER, AND THAT IS WHAT MAKES THE TYPE
+	// SCALE.
+	//
+	// The design's map is one SVG, so its labels scale with the drawing: at 1440
+	// the node name is a 12px Syne line and at 390, where the drawing is 243 wide
+	// instead of 500, the same label measures 7px tall rather than 14. Ours was
+	// a fixed 12px inside a box that had already shrunk, so at 390 `ACTIVE ROUTE`
+	// wrapped to two lines and the state overflowed its 23.31px node outright.
+	// Declaring the canvas a size container and stating every node dimension in
+	// cqw is the design's own uniform scale expressed in CSS: 12 of 500 is 2.4cqw,
+	// so a 500px canvas gives exactly 12px and a 243px canvas gives exactly the
+	// 5.83px the design's own scaled SVG gives.
+	container-type: inline-size;
+}
+
+// A signal line. The design strokes the UNSELECTED lines at 1.2 in #343434 and
+// the SELECTED one at 2 in #FACC15, all four drawn from the origin outwards. It
+// is anchored at the origin, which is the design's 250, 170, so left and top are
+// the origin, and the rule then grows rightwards and is turned by the angle
+// below.
+//
+// The design's lines are 140 by 90 from the origin to each channel, which is
+// 166.43 long, and 166.43 of the 500 wide view box is 33.2866%. The strokes are
+// stated in cqw so they scale with the drawing exactly as an SVG stroke does: the
+// unselected stroke is 1.2 of 500, which is 0.24cqw, and the selected one is 2 of
+// 500, which is 0.4cqw. A fixed 1px with a min-height floor could not do that,
+// because it does not shrink when the canvas does.
+.wp-block-group.contact-wire {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 33.2866%;
+	height: 0.24cqw;
+	margin: 0;
+	background-color: var(--wp--preset--color--line-strong);
+	transform-origin: 0 50%;
+}
+
+// The four angles. The design's deltas from the origin at 250, 170 are
+// (-140, -90), (140, -90), (-140, 90) and (140, 90) in view box units. atan2
+// of each, in the order the classes below apply them:
+//
+//   email     atan2( -90, -140) = -147.2678deg, and the rule reaches 166.43
+//   linkedin  atan2( -90,  140) =  -32.7356deg, also 166.43
+//   github    atan2(  90, -140) =  147.2678deg, also 166.43
+//   resume    atan2(  90,  140) =   32.7356deg, also 166.43
+//
+// 166.43 is sqrt(140^2 + 90^2), which is 33.2866% of the 500 wide view box.
+//
+// THE EMAIL LINE IS THE SELECTED ONE. ContactSignalNetwork.tsx line 115 strokes
+// `isSelected ? '#FACC15' : '#343434'` and line 116 the width `2` against `1.2`.
+// The page opens with activeChannel = 'email' (line 12), so the email node carries
+// contact-node-active and this is the line the design draws in amber at twice the
+// weight. Read off the live design DOM, not inferred: the email line carries
+// stroke="#FACC15" stroke-width="2" and the other three #343434 at 1.2.
+.wp-block-group.contact-wire-email {
+	transform: rotate(-147.2678deg);
+}
+
+.wp-block-group.contact-wire.contact-wire-email {
+	height: 0.4cqw;
+	background-color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.contact-wire-linkedin {
+	transform: rotate(-32.7356deg);
+}
+
+.wp-block-group.contact-wire-github {
+	transform: rotate(147.2678deg);
+}
+
+.wp-block-group.contact-wire-resume {
+	transform: rotate(32.7356deg);
 }
 
 // A channel node. The design's node rectangle is 128 by 48 on #171719 behind a
-// #343434 stroke, with a Syne 12px name over a mono 9px state.
+// 1.5 unit #343434 stroke, with a Syne 12px name over a mono 9px state. 128 of
+// 500 is 25.6% of the width and 48 of 340 is 14.1176% of the height.
+//
+// left and top below are the TOP LEFT CORNER of the design's rectangle, not its
+// centre, so there is no translate on this rule. An earlier draft translated by
+// half the node's own size and put every channel 64px left and 24px above where
+// the design draws it.
+//
+// THE STROKE IS IN cqw BECAUSE THE DESIGN'S IS. ContactSignalNetwork.tsx line
+// 200 strokes the node rect at strokeWidth 1.5, which is 1.5 of the 500 unit
+// view box, so 0.3cqw. A fixed 1px cannot shrink, and at 390 the design's stroke
+// is 0.73px while ours stayed at 1px, which is the same reason the labels had to
+// move into cqw.
 .wp-block-group.contact-node {
+	position: absolute;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 0.25rem;
-	padding: 0.5rem;
-	margin-block: 0;
+	width: 25.6%;
+	height: 14.1176%;
+	margin: 0;
 	text-align: center;
 	background-color: var(--wp--preset--color--surface-2);
-	border: 1px solid var(--wp--preset--color--line-strong);
+	border: 0.3cqw solid var(--wp--preset--color--line-strong);
+}
+
+// The four channel positions, and the origin. Each is the design's own centre
+// minus half the design's own rectangle: (110 - 64) / 500 and (80 - 24) / 340
+// for email, and the same two numbers again for linkedin, github and resume.
+.wp-block-group.contact-node-email {
+	left: 9.2%;
+	top: 16.4706%;
+}
+
+.wp-block-group.contact-node-linkedin {
+	left: 65.2%;
+	top: 16.4706%;
+}
+
+.wp-block-group.contact-node-github {
+	left: 9.2%;
+	top: 69.4118%;
+}
+
+.wp-block-group.contact-node-resume {
+	left: 65.2%;
+	top: 69.4118%;
+}
+
+// The origin is the one rectangle on the base ground with a 2px amber stroke,
+// 116 by 52 on centre 250, 170, so (250 - 58) / 500 and (170 - 26) / 340.
+.wp-block-group.contact-node-origin {
+	left: 38.4%;
+	top: 42.3529%;
+	width: 23.2%;
+	height: 15.2941%;
 }
 
 .wp-block-group.contact-node > * {
 	margin-block-start: 0;
 }
 
+// The node labels, in cqw, because the design's are inside a scaling SVG.
+// ContactSignalNetwork.tsx lines 154 and 163 state the name at text-[12px] and
+// the state at text-[9px], in a 500 unit view box, so 2.4cqw and 1.8cqw. At a
+// 500px canvas that is exactly 12px and 9px; at the 243px canvas of the 390
+// layout it is the 5.83px and 4.37px the design's own scaled text measures.
+// `white-space: nowrap` is the design's own effect: an SVG text element never
+// wraps, so ACTIVE ROUTE is one line in the design at every width.
 .wp-block-group.contact-node .contact-node-name {
 	display: block;
 	margin-block: 0;
 	font-family: var(--wp--preset--font-family--display);
-	font-size: 0.75rem;
+	font-size: 2.4cqw;
 	font-weight: 700;
 	line-height: 1.3333;
 	color: var(--wp--preset--color--text);
+	white-space: nowrap;
 }
 
 .wp-block-group.contact-node .contact-node-state {
 	display: block;
 	margin-block: 0;
 	font-family: var(--wp--preset--font-family--mono);
-	font-size: 0.5625rem;
+	font-size: 1.8cqw;
 	line-height: 1.3333;
 	color: var(--wp--preset--color--text-muted);
+	white-space: nowrap;
 }
 
 // The origin node is the one rectangle in the design's map that is on the base
-// ground with a 2px amber stroke.
+// ground with a 2 unit amber stroke, which is 2 of the 500 unit view box, so
+// 0.4cqw, and its name at text-[14px], which is 2.8cqw.
 .wp-block-group.contact-node.contact-node-origin {
 	background-color: var(--wp--preset--color--base);
-	border: 2px solid var(--wp--preset--color--accent);
+	border: 0.4cqw solid var(--wp--preset--color--accent);
 }
 
 .wp-block-group.contact-node.contact-node-origin .contact-node-name {
-	font-size: 0.875rem;
+	font-size: 2.8cqw;
 	line-height: 1.2857;
 }
 
@@ -678,23 +933,6 @@
 
 .wp-block-group.contact-node.contact-node-active .contact-node-state {
 	color: var(--wp--preset--color--base);
-}
-
-// The wires. Each is a one pixel #343434 rule, which is the stroke the design
-// gives an unselected signal line.
-.wp-block-group.contact-wire {
-	align-self: center;
-	justify-self: stretch;
-	width: 100%;
-	height: 1px;
-	background-color: var(--wp--preset--color--line-strong);
-}
-
-.wp-block-group.contact-wire.contact-wire-vertical {
-	align-self: stretch;
-	justify-self: center;
-	width: 1px;
-	height: 100%;
 }
 
 // The selected channel panel. p-5 on the raised ground behind a hairline, a
@@ -718,8 +956,43 @@
 	}
 }
 
+// BELOW 640px THE BUTTON IS THE FULL MEASURE OF THE PANEL.
+//
+// The design states the panel as `flex flex-col sm:flex-row`, so in the column
+// the button is a direct flex child and stretches: at 390 it measures 235, which
+// is the whole body measure. This theme's block vocabulary wraps every button in
+// a core/buttons group, and that wrapper is the flex child instead, so without
+// this the wrapper is full width and the button inside it shrink wraps to
+// 202.41, 32.59 short of the design.
+//
+// This is deliberately scoped to the column. Stating it unconditionally made the
+// wrapper claim 100% in the row as well, where the design's body stack is
+// 322.09 and its button 202.41 and the two share the measure, so the body was
+// squeezed to 237.7 and the routing panel came out 15.95 too tall.
+// 639.98 is the largest width that is still below $bp-sm, written out because
+// abstracts/_mixins.scss ships `from` and nothing for the other direction, and
+// abstracts/ is not in this change's write scope. components/_page-projects.scss
+// line 916 states the same threshold the same way.
+@media ( max-width: 639.98px ) {
+
+	.wp-block-group.contact-routing-action > .wp-block-buttons,
+	.wp-block-group.contact-routing-action .wp-block-button.contact-btn {
+		width: 100%;
+	}
+}
+
 .wp-block-group.contact-routing-action > * {
 	margin-block-start: 0;
+}
+
+// The label and the description sit in one space-y-1 block inside the row, so
+// the panel is one left stack and one button, which is what the design draws.
+.wp-block-group.contact-routing-action-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin-block: 0;
+	min-width: 0;
 }
 
 .wp-block-group.contact-routing .contact-routing-action-label {
