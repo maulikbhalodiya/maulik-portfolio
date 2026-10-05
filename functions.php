@@ -89,6 +89,7 @@ function maulik_portfolio_enqueue_section_switcher_script() {
 }
 add_action( 'wp_enqueue_scripts', 'maulik_portfolio_enqueue_section_switcher_script' );
 require_once MAULIK_PORTFOLIO_DIR . 'inc/project-filters.php';
+require_once MAULIK_PORTFOLIO_DIR . 'inc/portfolio-cpt.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/rankkernel-filters.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/resume-document.php';
 

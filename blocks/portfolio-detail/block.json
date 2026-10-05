@@ -1,0 +1,26 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "maulik-portfolio/portfolio-detail",
+	"version": "0.5.0",
+	"title": "Portfolio Detail",
+	"category": "portfolio",
+	"icon": "index-card",
+	"description": "Renders the single project being viewed, for use inside a project template. Dynamic, so the template stays one block rather than a copy per project.",
+	"keywords": [ "project", "detail", "case study", "single", "portfolio" ],
+	"textdomain": "maulik-portfolio",
+	"attributes": {
+		"showMeta": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"align": [ "wide", "full" ],
+		"html": false,
+		"interactivity": true
+	},
+	"render": "file:./render.php",
+	"viewScriptModule": "file:./view.js",
+	"editorScript": [ "file:./edit.js", "file:./index.js" ]
+}
