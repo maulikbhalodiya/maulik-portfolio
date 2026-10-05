@@ -446,10 +446,6 @@ a,
   max-width: 100%;
 }
 
-.wp-block-group.hero__col--visual .wp-block-maulik-portfolio-hero-ecosystem .maulik-hero-tabs {
-  flex-wrap: wrap;
-}
-
 .wp-block-group.hero__col {
   margin-block: 0;
 }
@@ -3193,6 +3189,7 @@ a,
 
 .is-style-section .rk-inspector__head {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
@@ -3409,7 +3406,7 @@ a,
   font-family: var(--wp--preset--font-family--mono);
   font-size: 0.75rem;
   line-height: 1.3333;
-  white-space: nowrap;
+  white-space: normal;
   cursor: pointer;
   transition: color 0.15s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
