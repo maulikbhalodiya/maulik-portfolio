@@ -87,8 +87,8 @@ $maulik_portfolio_cta_channels = array(
 $maulik_portfolio_cta_mailto = 'mailto:maulikbhalodiya9999@gmail.com';
 
 ?>
-<!-- wp:group {"anchor":"hiring-cta","ariaLabelledby":"heading-hiring-cta","backgroundColor":"black","className":"is-style-section section-cta hz-section hz-hiring","layout":{"type":"constrained"}} -->
-<section class="wp-block-group is-style-section section-cta hz-section hz-hiring has-black-background-color has-background" id="hiring-cta" aria-labelledby="heading-hiring-cta">
+<!-- wp:group {"anchor":"hiring-cta","ariaLabelledby":"heading-hiring-cta","className":"is-style-section section-cta hz-section hz-hiring is-style-surface-dark-grid","layout":{"type":"constrained"}} -->
+<section class="wp-block-group is-style-section section-cta hz-section hz-hiring is-style-surface-dark-grid" id="hiring-cta" aria-labelledby="heading-hiring-cta">
 	<!-- wp:group {"className":"hz-hiring__card","layout":{"type":"default"}} -->
 	<div class="wp-block-group hz-hiring__card">
 		<!-- wp:group {"className":"hz-stack-6 hz-hiring__inner","layout":{"type":"default"}} -->
