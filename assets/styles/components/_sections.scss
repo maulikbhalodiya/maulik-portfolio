@@ -830,14 +830,61 @@
 // anchor is stretched to 276 and the row overflows by the icon as well as by the
 // text. The design's arrow, which carries no shrink rule, collapses to zero
 // width under those conditions and its document measures scrollWidth 417 against
-// clientWidth 390; pinning the arrow at 16px measures 439. The 27px of overflow
-// the label itself causes is inherent to A2 at 390 and is the design's behaviour
-// too. The 22px difference is one visible 16px arrow against a collapsed one,
-// and a collapsed arrow is a defect, not a reference.
+// clientWidth 390; pinning the arrow at 16px measures 439. The 22px difference is
+// one visible 16px arrow against a collapsed one, and a collapsed arrow is a
+// defect, not a reference. The label's own 27px of overflow is no longer carried
+// by this anchor at all: the rule further down lets it break below 640px, which is
+// the width at which the footer is a column and has a line to spare.
 .hz-section a.hz-capabilities__detail-cta svg {
 	flex-shrink: 0;
 	width: 1rem;
 	height: 1rem;
+}
+
+// THE CASE STUDY LABEL IS ALLOWED TO BREAK BELOW 640px, AND ONLY BELOW 640px.
+//
+// The shared hz-link voice above carries `white-space: nowrap`, which the
+// design states at src/pages/HomePage.tsx line 300 for this label. The label is
+// "Case Study: " plus the active capability's project title, which at 390 is the
+// 49 character run "Case Study: Employee Application Management System". At the
+// design's own 12px mono that is 360.02px of unwrappable text inside a 276px
+// content box, so the anchor is 276 wide and its contents are 382: the label
+// runs 27px past the right edge of a 390px window and the 16px arrow that sits
+// after it runs 49px past. At 360 the box is 246 and the overshoot is 57px for
+// the label and 79px for the arrow. The design reference measures the same 27px
+// at 390, so this overflow is the design's own and not a mistake in this file.
+//
+// WHY THE BREAK IS ALLOWED HERE AND NOWHERE ELSE. Below 640px the panel footer
+// is a column, stated at the .hz-capabilities__detail-foot rule above, so the
+// label has the full width of the panel and an unbounded height to spend. Two
+// 16px lines cost 16px of vertical space in a column that has it to spare, and
+// they cost the reader nothing. At 640px and above the same footer is a row
+// (flex-direction: row from $bp-sm), the anchor and the arrow share one line,
+// and nowrap is what keeps that line at 16px instead of 32. Measured at 640, 768,
+// 1024 and 1440 the label is 360.02px inside a 382px anchor, so it fits on one
+// line everywhere the row layout applies. nowrap is therefore left standing from
+// $bp-sm upwards and is not weakened anywhere.
+//
+// overflow-wrap is deliberately NOT used instead. It only engages when a single
+// unbreakable token is wider than the line, and this label has spaces in it, so
+// it would do nothing at all here. The break this needs is a break at a space,
+// which means letting white-space do its normal job, which means undoing nowrap
+// for this one control below the one width where the layout can absorb it.
+//
+// The threshold is stated as a maximum the same way
+// components/_page-contact.scss line 976 and components/_page-projects.scss line
+// 916 state it, because abstracts/_mixins.scss ships `from` and nothing for the
+// other direction. 639.98 is the largest width still below $bp-sm. No new
+// breakpoint is introduced.
+//
+// Measured after: the anchor is 276 wide at 390 and 246 at 360 with
+// scrollWidth equal to clientWidth at both, the label is two lines, and the arrow
+// sits at the end of the second line inside the panel.
+@media ( max-width: 639.98px ) {
+
+	.hz-section a.hz-capabilities__detail-cta {
+		white-space: normal;
+	}
 }
 
 // "Architecture Focus", the design's right hand note on the detail header. Mono
@@ -933,12 +980,14 @@
 //
 // align-items is not stated here, and that is deliberate. The design states no
 // align-items either, so its column layout stretches the children to the 276px
-// content box and the nowrap case study text overflows that box: its anchor
-// measures 276 wide at 390 with a 360.02px label inside it, and the design's own
-// document scrollWidth is 417 against a clientWidth of 390. Stating
+// content box. That box is what the case study label used to overflow, because
+// the label was nowrap: it is 360.02px wide inside 276px and the design's own
+// document measures scrollWidth 417 against a clientWidth of 390. Stating
 // align-items: flex-start here instead gave the anchor its full 382.02px content
 // width and pushed the document scrollWidth to 439, which is 22px worse than the
-// design on a page that had no overflow at all before this rule.
+// design on a page that had no overflow at all before this rule. The label is no
+// longer nowrap below 640px, so the stretch now costs nothing: the anchor is 276
+// at 390, its scrollWidth equals its clientWidth, and nothing leaves the panel.
 .hz-capabilities__detail-foot {
 	display: flex;
 	flex-direction: column;
