@@ -187,52 +187,61 @@ $hero-column-gap: 3rem;
 }
 
 // ---------------------------------------------------------------------------
-// THE NODE TAB ROW WRAPS. IT IS NINE CHIPS AND IT DOES NOT FIT ON A PHONE.
+// THE NODE TAB ROW DOES NOT WRAP. THIS DECLARATION IS THE ABSENCE OF ONE, AND
+// IT IS HERE SO THAT NOBODY PUTS IT BACK.
 //
-// The nine node tabs are nowrap by the design's own choice, at
-// src/components/Hero3DEcosystem.tsx line 433, which is
-// `whitespace-nowrap shrink-0`. Measured at 390 the row is 578px of chips with
-// 6px gaps against a 308px panel, so the last three tabs sit 79.5, 129.1 and
-// 229.1px past the right edge of a 390px window. At 360 it is four tabs, the
-// first of them 23.8px past. Those are exactly the measurements the design
-// reference itself reports at 390 for the same three chips, so this is the
-// design's own overflow arriving here rather than something this theme added.
+// The panel is a fixed 500px tall box holding a header, an absolutely
+// positioned canvas that fills the whole panel, and a footer that floats over
+// the bottom of that canvas. The canvas is the drawing and the footer is the
+// readout, so every pixel the footer grows is a pixel of drawing it covers.
 //
-// The design puts the row in `overflow-x-auto` at line 422, and the block
-// carries that over, so the row is a scroll container and the window does not
-// scroll sideways. What a reader sees is a row cut off mid chip at the panel
-// edge with three or four tabs unreachable and no affordance that there is
-// anything to the right. A hidden scroll container is the symptom, not the fix.
+// flex-wrap: wrap on this row was tried and reverted. The chips are eight of
+// them, they are nowrap by the design's own choice at
+// src/components/Hero3DEcosystem.tsx line 433, and where they do not fit on one
+// line the row wrapped to three. Measured against the design reference on the
+// same build, same fonts, same widths:
 //
-// flex-wrap: wrap is the fix, and it costs nothing where the row already fits.
-// Measured sw against clientWidth on the tablist: 578 against 308 at 390, 578
-// against 278 at 360, 578 against 558 at 640, 654 against 654 at 768, 578
-// against 414 at 1024 and 622 against 622 at 1440. At 768 and at 1440 the row
-// already fits on one line to the pixel, so wrapping changes nothing there. It
-// is also not a new breakpoint: no media query is stated, because the
-// declaration only engages at the widths where the chips cannot fit and at every
-// other width the row stays the single line the design draws.
+//   width   tabs row        footer    footer over canvas   drawing still visible
+//          design  ours     design ours   design  ours        design  ours
+//   390     30px   94px     157.5  221.5  157.5  221.5       251.5   187.5
+//   1024    30px   62px     138    170    138    170         383     355
+//   768     30px   30px     138    138    138    138         307     307
+//   1440    30px   30px     138    138    138    138         387     387
 //
-// 1024 IS A DESKTOP WIDTH AND IT IS INCLUDED. That is where the hero becomes two
-// columns and the panel takes half of them, so the row is 414px against 578px of
-// chips and three tabs are unreachable. The same defect, at the same cause, and
-// it is not left in place because a phone is where it was first noticed.
+// At 390 the row grows by 64px and the footer grows by exactly that 64px, which
+// is not a coincidence: the tab row is inside the footer. The canvas is 498px
+// tall and fixed, so the extra 64px comes straight off the drawing. The node
+// labels are painted onto that canvas, so they are not clipped or reflowed, they
+// are simply behind the readout. At 768 and 1440 the row already fits on one
+// line to the pixel, 654 against 654 and 622 against 622, so wrapping changed
+// nothing there and the whole trade bought nothing at any width.
 //
-// THE SPECIFICITY IS THREE CLASSES ON PURPOSE. The block ships its stylesheet as
-// a style element inside the rendered markup, so it is later in the document
-// than this stylesheet's link and it wins any cascade tie. One more class than
-// its `.wp-block-maulik-portfolio-hero-ecosystem .maulik-hero-tabs` is what
-// makes this declaration stick without editing a file this partial does not own.
+// The design's answer for the widths where the chips do not fit is at
+// Hero3DEcosystem.tsx line 422, which is `flex items-center gap-1.5
+// overflow-x-auto pb-1`: the row stays one line tall and scrolls. That is not
+// something being added here to paper over anything. It is the design's own
+// declaration, the block already carries it in the rule it ships, and
+// flex-wrap: wrap was cancelling it, which is why the row measured
+// scrollWidth equal to clientWidth and no longer scrolled at all. Removing the
+// wrap restores it. Measured scrollWidth against clientWidth on the row: 578
+// against 308 at 390, 578 against 278 at 360, 654 against 654 at 768, 578
+// against 414 at 1024, 622 against 622 at 1440, which are the design's figures
+// at every one of those widths.
 //
-// THE COST, STATED PLAINLY. At 390 the row becomes three lines and the footer
-// grows by 76px over a canvas the design draws at a fixed 500px panel height,
-// so the lowest row of the drawing sits behind the last chip row where the
-// hidden scroller left it visible. A tab a reader cannot reach is worse than a
-// node label a reader cannot see.
-.wp-block-group.hero__col--visual .wp-block-maulik-portfolio-hero-ecosystem
-	.maulik-hero-tabs {
-	flex-wrap: wrap;
-}
+// All eight tabs stay reachable. The row scrolls horizontally, every chip is a
+// focusable button with role="tab", so the keyboard reaches all eight in order
+// regardless of what is on screen, the noscript inventory in the block lists
+// all eight labels as text, and the window itself never scrolls sideways. The
+// cost is that a reader has to scroll the row to reach the far chips, which is
+// what the design draws at these widths and is a far smaller cost than a
+// drawing they cannot see.
+//
+// IF YOU ARE READING THIS AFTER ADDING flex-wrap AGAIN: measure the footer
+// against the canvas before and after, at 390 and at 1024, and screenshot the
+// panel. That is the only test that catches this, because no overflow probe
+// reports it, the window scrollWidth stays equal to clientWidth throughout, and
+// the drawing is canvas pixels rather than DOM nodes, so nothing in a DOM
+// measurement can see a label disappear behind the readout.
 
 .wp-block-group.hero__col {
 	margin-block: 0;
