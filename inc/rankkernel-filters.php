@@ -257,32 +257,57 @@ if ( ! function_exists( 'maulik_portfolio_rankkernel_filters_register' ) ) {
 		}
 
 		/*
-		 * API VERSION 3 STAYS AN INTEGER. PHPStan checks this call against
-		 * the @type string on the api_version key in core's own
-		 * register_block_type() docblock, but the block.json specification
-		 * and core's /wp/v2/block-types schema both declare apiVersion an
-		 * integer, and the editor only ever compares it numerically
-		 * (apiVersion <= 2, apiVersion > 1). The docblock is the outlier,
-		 * so the value is left alone and the report is suppressed on the
-		 * argument line alone. PHPStan raises a non ignorable error when a
-		 * suppression stops matching, so this one cannot rot unnoticed.
+		 * REGISTRATION TAKES A PATH, NOT A NAME AND AN ARRAY.
+		 *
+		 * register_block_type() reads every metadata key from block.json when it
+		 * is given a path, and delegates to
+		 * register_block_type_from_metadata(). The title, the category, the icon,
+		 * the keywords, the supports and apiVersion all move to
+		 * blocks/rankkernel-filters/block.json with this change. Passing the same
+		 * metadata again as an argument array would be a second copy of the
+		 * schema, and a second copy is a second thing to forget when the block
+		 * changes. inc/portfolio-cpt.php already does this for the two portfolio
+		 * blocks.
+		 *
+		 * THE ATTRIBUTES OBJECT IS EMPTY AND THAT IS CORRECT.
+		 *
+		 * The subsystem states are fixed by the design reference and are declared
+		 * once in the tab list in the render callback above. They are not author
+		 * input, so this block genuinely takes no attributes. block.json says so
+		 * with an empty attributes object rather than omitting the key, so the
+		 * editor shows a block with no settings instead of a block whose settings
+		 * are unknown.
+		 *
+		 * TWO KEYS STAY IN THE ARRAY BECAUSE THE BLOCK.JSON FILE CANNOT HOLD THEM.
+		 *
+		 * render_callback is a PHP callable, which has no JSON representation, and
+		 * view_script_handles names a handle this theme registers by hand in the
+		 * wp_register_script() call above rather than a file the metadata could
+		 * point at. Both are passed as $args, which core merges over the settings
+		 * it read from the file, so neither changes behaviour. The front end keeps
+		 * downloading the filter script only on the pages that render this block.
+		 *
+		 * NO wp:comment BLOCK IS INVOLVED ANYWHERE HERE. Serialising a dynamic
+		 * block into post content by hand requires embedding JSON in an HTML
+		 * comment, and the obvious way to escape that JSON is esc_attr(), which
+		 * emits &quot; for every double quote. WordPress does not decode those
+		 * entities before parsing the block comment, so the parser rejects the
+		 * block and it vanishes from the post with no error anywhere. A file
+		 * registered block has no comment to escape, so the failure cannot occur.
+		 *
+		 * THE BLOCK NAME DOES NOT CHANGE.
+		 *
+		 * MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_BLOCK and the "name" in block.json
+		 * are both maulik-portfolio/rankkernel-filters.
+		 * content/pages/rankkernel.html references that name in its block comment,
+		 * alongside a className value, so a rename would orphan the existing
+		 * instance rather than update it.
 		 */
+		$block_path = get_theme_file_path( 'blocks/rankkernel-filters' );
+
 		register_block_type(
-			MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_BLOCK,
-			// @phpstan-ignore argument.type
+			$block_path,
 			array(
-				'api_version'         => 3,
-				'title'               => __( 'RankKernel Filters', 'maulik-portfolio' ),
-				'category'            => 'design',
-				'icon'                => 'filter',
-				'description'         => __( 'A tablist of RankKernel subsystem states that narrows the status directory and dims the architecture diagram to one state at a time.', 'maulik-portfolio' ),
-				'keywords'            => array( 'rankkernel', 'filter', 'tablist', 'subsystem', 'status' ),
-				'textdomain'          => 'maulik-portfolio',
-				'attributes'          => array(),
-				'supports'            => array(
-					'html'      => false,
-					'className' => true,
-				),
 				'view_script_handles' => array( MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_HANDLE ),
 				'render_callback'     => 'maulik_portfolio_rankkernel_filters_render',
 			)

@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "maulik-portfolio/rankkernel-filters",
+	"version": "0.1.0",
+	"title": "RankKernel Filters",
+	"category": "design",
+	"icon": "filter",
+	"description": "A tablist of RankKernel subsystem states that narrows the status directory and dims the architecture diagram to one state at a time.",
+	"keywords": [ "rankkernel", "filter", "tablist", "subsystem", "status" ],
+	"textdomain": "maulik-portfolio",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"className": true
+	},
+	"editorScript": [ "file:./edit.js", "file:./index.js" ]
+}

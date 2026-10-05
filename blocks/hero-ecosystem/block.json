@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "maulik-portfolio/hero-ecosystem",
+	"version": "0.1.0",
+	"title": "Hero Interactive Ecosystem",
+	"category": "design",
+	"icon": "art",
+	"description": "A two dimensional canvas rendering of the engineering ecosystem, with hover highlighting and click to select node navigation.",
+	"keywords": [ "hero", "canvas", "ecosystem", "skills" ],
+	"textdomain": "maulik-portfolio",
+	"attributes": {
+		"selectedNode": {
+			"type": "string",
+			"default": "wordpress"
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"spacing": {
+			"margin": true,
+			"padding": false
+		},
+		"className": true
+	},
+	"editorScript": [ "file:./edit.js", "file:./index.js" ]
+}
