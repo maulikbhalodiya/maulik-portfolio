@@ -2,22 +2,34 @@
 /**
  * Server side render for the portfolio list block.
  *
- * WHY THIS FILE DECLARES NOTHING.
+ * WHY THIS FILE ECHOES INSTEAD OF RETURNING. THIS IS NOT A STYLE CHOICE.
  *
- * WordPress includes render.php once for every instance of the block type on a
- * request. A function or class declared here would therefore be declared again
- * for the second block on the page, which is a fatal redeclaration error. Every
- * shared helper this block needs, including the project role reader, lives in
+ * WordPress does not call a file rendered block the way it calls a
+ * render_callback. When block.json says "render": "file:./render.php", Core
+ * wraps the file in ob_start(), require s it, and returns ob_get_clean(). A
+ * return statement inside that file returns from the require, and its value is
+ * discarded, because the closure returns the buffer and never assigns what
+ * require produced. So a render.php that returns a string renders as an empty
+ * block with no error, no warning and no clue where the markup went.
+ *
+ * Every value printed below therefore goes out through printf with an
+ * esc_* on the argument, so the output escaping sniff has something real to
+ * check and so a future edit cannot accidentally print an unescaped attribute.
+ *
+ * WHY NOTHING IS DECLARED HERE.
+ *
+ * Core includes this file once per block instance on the request. A function or
+ * class declared in it would be declared again for the second block on the page,
+ * which is a fatal redeclaration error. The project role reader lives in
  * inc/portfolio-cpt.php, which functions.php loads once.
  *
  * WHY EVERY LOCAL IS PREFIXED.
  *
- * A render file is included into the global scope of the request, not into a
+ * This file is included into the global scope of the request, not into a
  * function, so a plain $count here is a genuine global variable and collides
  * with anything else on the request that happens to use the same name. The
- * theme's PHPCS ruleset enforces that with PrefixAllGlobals, which is correct
- * for an included file even though it reads like ceremony inside a file that
- * appears to be procedural.
+ * theme's PHPCS ruleset enforces that with PrefixAllGlobals, which is correct for
+ * an included file even though it reads like ceremony in a procedural file.
  *
  * WHY A WP_Query AND NOT REST.
  *
@@ -44,18 +56,14 @@ defined( 'ABSPATH' ) || exit;
  * rather than trusted server configuration. count is clamped into a range that
  * costs one bounded query, and order is matched against an explicit allow list
  * rather than handed to WP_Query, because orderby and order are two separate
- * arguments and an unmapped string here would be a query shape nobody intended.
+ * arguments and a lookup that resolves one while inferring the other is how an
+ * ascending request ends up descending.
  */
 $maulik_portfolio_list_count = isset( $attributes['count'] ) ? (int) $attributes['count'] : 6;
 $maulik_portfolio_list_count = min( 24, max( 1, $maulik_portfolio_list_count ) );
 
 $maulik_portfolio_list_show_excerpt = isset( $attributes['showExcerpt'] ) ? (bool) $attributes['showExcerpt'] : true;
 
-/*
- * One map, holding both arguments, because orderby and order are separate and a
- * lookup that resolves one and infers the other is how an ascending request
- * ends up descending. rand is excluded: WP_Query ignores order for it anyway.
- */
 $maulik_portfolio_list_order_map = array(
 	'date'     => array(
 		'orderby' => 'date',
@@ -104,13 +112,23 @@ $maulik_portfolio_list_query = new WP_Query( $maulik_portfolio_list_args );
 if ( ! $maulik_portfolio_list_query->have_posts() ) {
 	wp_reset_postdata();
 
-	$maulik_portfolio_list_empty = sprintf(
+	/*
+	 * get_block_wrapper_attributes() is Core's own attribute builder: it escapes
+	 * every value it prints and returns a ready made attribute string, so there
+	 * is nothing left here for esc_attr() to do and applying one would double
+	 * encode it. The text argument is escaped by the same statement.
+	 */
+		$maulik_portfolio_list_empty_attributes = get_block_wrapper_attributes( array( 'class' => 'portfolio-list__empty' ) );
+
+	printf(
 		'<p %1$s>%2$s</p>',
-		get_block_wrapper_attributes( array( 'class' => 'portfolio-list__empty' ) ),
+		$maulik_portfolio_list_empty_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core builds and escapes the attribute string itself.
 		esc_html__( 'No projects have been published yet.', 'maulik-portfolio' )
 	);
 
-	return $maulik_portfolio_list_empty;
+	unset( $maulik_portfolio_list_empty_attributes );
+
+	return;
 }
 
 $maulik_portfolio_list_cards = '';
@@ -218,16 +236,20 @@ if ( $maulik_portfolio_list_maxpage > 1 ) {
 	);
 }
 
-$maulik_portfolio_list_wrapper = sprintf(
-	'<div %1$s>%2$s</div>',
-	get_block_wrapper_attributes(
-		array(
-			'class'               => 'portfolio-list',
-			'data-wp-interactive' => 'maulik-portfolio/portfolio-list',
-		)
-	),
-	$maulik_portfolio_list_markup
+$maulik_portfolio_list_wrapper_attributes = get_block_wrapper_attributes(
+	array(
+		'class'               => 'portfolio-list',
+		'data-wp-interactive' => 'maulik-portfolio/portfolio-list',
+	)
 );
+
+printf(
+	'<div %1$s>%2$s</div>',
+	$maulik_portfolio_list_wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core builds and escapes the attribute string itself.
+	$maulik_portfolio_list_markup // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every fragment in it was escaped when it was built.
+);
+
+unset( $maulik_portfolio_list_wrapper_attributes );
 
 unset(
 	$maulik_portfolio_list_args,
@@ -245,8 +267,5 @@ unset(
 	$maulik_portfolio_list_role,
 	$maulik_portfolio_list_secondary,
 	$maulik_portfolio_list_show_excerpt,
-	$maulik_portfolio_list_title,
-	$maulik_portfolio_list_wrapper
+	$maulik_portfolio_list_title
 );
-
-return $maulik_portfolio_list_wrapper;
