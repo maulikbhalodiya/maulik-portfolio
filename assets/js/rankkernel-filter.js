@@ -31,6 +31,21 @@
  * visible subsystem count is the real count. The diagram nodes are dimmed to
  * the design's 0.3 for non-matching subsystems.
  *
+ * A tab whose state has no subsystem behind it is hidden, by the same argument:
+ * a control that always narrows the figure to nothing is a broken control. The
+ * rule is derived from the document on every pass rather than declared, so it
+ * holds now, when all nine modules are shipped and there is no planned member,
+ * and it will hold after a module is marked planned, with no edit here. See
+ * applyTabAvailability and watchStatuses.
+ *
+ * ONE VOCABULARY.
+ *
+ * A node's status is its status class and nothing else. There is no
+ * data-rk-status attribute, which used to hold IMPLEMENTED or IN PROGRESS
+ * beside a class that read is-completed or is-running. The tab values are the
+ * same three words with the is- prefix removed, so the class, the filter value
+ * and the badge all say one thing.
+ *
  * Behaviour measured from the design reference: the tabs are 6px 12px padding
  * at 12px mono, the selected tab is #FACC15 on #000000 at weight 600, the
  * unselected tabs are #171719 on #D8D5CA with a #262626 border, the status mark
@@ -55,7 +70,9 @@
  * One listener per event on the panel, so repeated clicks cannot double them up,
  * and every listener is removed on pagehide. Teardown also puts back the removed
  * directory entries, every subsystem panel and every node opacity, so the
- * document returns to its server rendered state.
+ * document returns to its server rendered state. Teardown also reveals every tab
+ * again, so a document already in a filtered state heals on unload rather than
+ * inheriting a hidden control from a script that has stopped running.
  */
 
 ( function () {
@@ -63,8 +80,6 @@
 
 	const TABLIST_SELECTOR = '[data-rk-filter]';
 	const TAB_SELECTOR = '[role="tab"]';
-	const STATUS_ATTRIBUTE = 'data-rk-status';
-	const STATUS_SELECTOR = '[' + STATUS_ATTRIBUTE + ']';
 	const SCOPE_SELECTOR = '.rk-arch';
 
 	const NODE_GROUP_SELECTOR = '.rk-svg-node';
@@ -83,7 +98,30 @@
 	const CLASS_DIRECTORY_SELECTED = 'rk-directory__item--selected';
 
 	/** Value of the tab that shows every subsystem. */
-	const ALL = 'ALL';
+	const ALL = 'all';
+
+	/*
+	 * THE STATUS VOCABULARY, DECLARED ONCE.
+	 *
+	 * These three class names are the only module states in this project, and
+	 * they are the single source of a node's status. The filter compares the
+	 * token after the is- prefix, so completed, running and planned are the same
+	 * words the diagram is styled from and the same words the tabs carry in
+	 * data-rk-filter-value.
+	 *
+	 * There is deliberately no data-rk-status attribute any more. It used to
+	 * read IMPLEMENTED or IN PROGRESS while the class beside it read is-completed
+	 * or is-running, so the markup carried two vocabularies, only one of which
+	 * anything acted on, and changing a module's state meant editing two things
+	 * in two files in step. Nothing outside this file ever read the attribute:
+	 * the stylesheet keys off the class, the directory entries carry the
+	 * visible word, and the homepage figure has its own node markup entirely.
+	 *
+	 * is-active, is-related, is-on and is-off share the is- prefix and are not
+	 * states, which is why the list is written out rather than matched by prefix.
+	 */
+	const STATUS_TOKENS = [ 'completed', 'running', 'planned' ];
+	const STATUS_CLASS_PREFIX = 'is-';
 
 	/** Opacity the design applies to a diagram node that does not match. */
 	const DIMMED_OPACITY = '0.3';
@@ -106,11 +144,13 @@
 		this.panels = [];
 		this.edges = [];
 		this.coreEdges = [];
+		this.statuses = {};
 		this.selected = '';
 		this.committed = '';
 		this.previewed = '';
 		this.destroyed = false;
 
+		this.observer = null;
 		this.onClick = null;
 		this.onKeyDown = null;
 		this.onPointerOver = null;
@@ -172,9 +212,18 @@
 		 * and the selected node classes are correct even if the two ever
 		 * disagree, and it is what makes the initial state identical whether or
 		 * not this file ever runs.
+		 *
+		 * readStatuses runs first so the availability pass below is deciding on
+		 * the statuses that are actually in the document rather than on whatever
+		 * the read methods happened to cache.
 		 */
+		this.readStatuses();
+		this.applyTabAvailability();
+
 		this.apply( ALL );
 		this.show( this.panels[ 0 ] ? this.panels[ 0 ].id : '', false );
+
+		this.watchStatuses();
 	};
 
 	/**
@@ -217,22 +266,20 @@
 	/**
 	 * Read the diagram node groups and their statuses.
 	 *
+	 * A node's status is its own status class. There is no second copy of it
+	 * anywhere, which is what lets a module change state by editing one class
+	 * on one element.
+	 *
 	 * @return {void}
 	 */
 	RankKernelPanel.prototype.readNodes = function () {
-		const nodes = this.scope.querySelectorAll( STATUS_SELECTOR );
+		const nodes = this.scope.querySelectorAll( NODE_GROUP_SELECTOR );
 
 		for ( let i = 0; i < nodes.length; i++ ) {
-			if ( ! nodes[ i ].classList.contains( 'rk-svg-node' ) ) {
-				continue;
-			}
-
 			this.nodes.push( {
 				id: nodes[ i ].getAttribute( 'data-rk-id' ),
 				element: nodes[ i ],
-				status: normaliseStatus(
-					nodes[ i ].getAttribute( STATUS_ATTRIBUTE )
-				),
+				status: statusFromClass( nodes[ i ] ),
 			} );
 		}
 	};
@@ -290,6 +337,142 @@
 				element: coreEdges[ i ],
 			} );
 		}
+	};
+
+	/**
+	 * Re-read every status in the panel and report whether any of them moved.
+	 *
+	 * The stored status strings are refreshed in place, so the handles held in
+	 * this.nodes and this.directoryItems never go stale. The boolean is what the
+	 * observer uses to stay quiet: painting the diagram adds and removes
+	 * is-active, is-related, is-on and is-off constantly, and every one of those
+	 * mutations would otherwise re-enter this pass.
+	 *
+	 * A status is a member of a state if any node carries that state class or
+	 * any directory entry shows that state word. The two are authored to agree,
+	 * and counting either one alone would let a state look empty because the
+	 * figure was edited without the list, or the reverse.
+	 *
+	 * @return {boolean} Whether the set of statuses changed since the last pass.
+	 */
+	RankKernelPanel.prototype.readStatuses = function () {
+		const seen = [];
+		let i;
+
+		for ( i = 0; i < this.nodes.length; i++ ) {
+			this.nodes[ i ].status = statusFromClass( this.nodes[ i ].element );
+
+			seen.push( this.nodes[ i ].status );
+		}
+
+		for ( i = 0; i < this.directoryItems.length; i++ ) {
+			const label = this.directoryItems[ i ].element.querySelector(
+				DIRECTORY_STATUS_SELECTOR
+			);
+
+			this.directoryItems[ i ].status = label
+				? normaliseStatus( label.textContent )
+				: '';
+
+			seen.push( this.directoryItems[ i ].status );
+		}
+
+		const signature = seen.join( '|' );
+
+		if ( signature === this.statuses.signature ) {
+			return false;
+		}
+
+		this.statuses.signature = signature;
+		this.statuses.members = tallyStatuses( seen );
+
+		return true;
+	};
+
+	/**
+	 * Hide the tabs whose state has no member, and reveal any that now has one.
+	 *
+	 * A control that reliably narrows the figure to nothing is a broken
+	 * control, so the row only offers states that have something behind them.
+	 * This is derived, not declared: the tab is hidden because the document
+	 * contains no member of its state, and it reappears the moment one exists,
+	 * with no edit to this file and no edit to the tab list in PHP. Marking a
+	 * module planned is therefore a one line change to one class in
+	 * content/pages/rankkernel.html, and the PLANNED tab appears on its own.
+	 *
+	 * The attribute is used rather than a class because the tab is
+	 * display: inline-flex and would otherwise keep its box, which is the same
+	 * reason .rk-inspector__panel carries an explicit [hidden] rule.
+	 *
+	 * @return {void}
+	 */
+	RankKernelPanel.prototype.applyTabAvailability = function () {
+		const members = this.statuses.members || {};
+		let hiddenSelected = false;
+		let i;
+
+		for ( i = 0; i < this.tabs.length; i++ ) {
+			const tab = this.tabs[ i ];
+			const value = tab.getAttribute( 'data-rk-filter-value' ) || ALL;
+			const isEmpty = value !== ALL && ! members[ value ];
+
+			tab.hidden = isEmpty;
+
+			if ( isEmpty && value === this.selected ) {
+				hiddenSelected = true;
+			}
+		}
+
+		/*
+		 * A filter that has just been emptied cannot stay selected, because
+		 * leaving it selected would leave the figure showing nothing with no
+		 * visible control to put it back. Falling back to All is the only state
+		 * that is always available.
+		 */
+		if ( hiddenSelected ) {
+			this.selected = ALL;
+		}
+	};
+
+	/**
+	 * Watch for a status class being changed so an emptied or refilled state
+	 * corrects itself without a reload.
+	 *
+	 * A MutationObserver is used rather than a second source of truth in this
+	 * file, because the point of the class vocabulary is that the diagram is the
+	 * truth. Two things here depend on that staying true: the row offered by
+	 * this script and the counts a reader would count by hand.
+	 *
+	 * The callback does no work for the mutations this script makes itself. It
+	 * asks readStatuses for a boolean and returns immediately when the statuses
+	 * have not moved, so painting is-active on hover cannot feed the observer
+	 * back into itself.
+	 *
+	 * @return {void}
+	 */
+	RankKernelPanel.prototype.watchStatuses = function () {
+		if ( typeof window.MutationObserver !== 'function' ) {
+			return;
+		}
+
+		const self = this;
+
+		this.observer = new window.MutationObserver( function () {
+			if ( self.destroyed || ! self.readStatuses() ) {
+				return;
+			}
+
+			self.applyTabAvailability();
+			self.apply( self.selected );
+		} );
+
+		this.observer.observe( this.scope, {
+			subtree: true,
+			childList: true,
+			characterData: true,
+			attributes: true,
+			attributeFilter: [ 'class' ],
+		} );
 	};
 
 	/**
@@ -366,7 +549,8 @@
 	 * @return {void}
 	 */
 	RankKernelPanel.prototype.handleTabKeyDown = function ( event ) {
-		const index = this.tabs.indexOf(
+		const visible = this.visibleTabs();
+		const index = visible.indexOf(
 			this.tablist.ownerDocument.activeElement
 		);
 
@@ -374,7 +558,7 @@
 			return;
 		}
 
-		const last = this.tabs.length - 1;
+		const last = visible.length - 1;
 		let target = null;
 
 		switch ( event.key ) {
@@ -398,10 +582,31 @@
 
 		event.preventDefault();
 
-		const tab = this.tabs[ target ];
+		const tab = visible[ target ];
 		const value = tab.getAttribute( 'data-rk-filter-value' ) || ALL;
 
 		this.selectFilter( value, true );
+	};
+
+	/**
+	 * The tabs that are currently on offer.
+	 *
+	 * The arrow keys move through this rather than through every tab, because a
+	 * hidden tab is out of the tab order and landing the keyboard on one would
+	 * move focus somewhere a visitor cannot see.
+	 *
+	 * @return {Element[]} The visible tabs, in document order.
+	 */
+	RankKernelPanel.prototype.visibleTabs = function () {
+		const visible = [];
+
+		for ( let i = 0; i < this.tabs.length; i++ ) {
+			if ( ! this.tabs[ i ].hidden ) {
+				visible.push( this.tabs[ i ] );
+			}
+		}
+
+		return visible;
 	};
 
 	/**
@@ -460,29 +665,45 @@
 	 * @return {void}
 	 */
 	RankKernelPanel.prototype.selectFilter = function ( value, moveFocus ) {
-		let matched = false;
+		let matched = -1;
 		let i;
 
 		for ( i = 0; i < this.tabs.length; i++ ) {
 			if (
-				this.tabs[ i ].getAttribute( 'data-rk-filter-value' ) === value
+				this.tabs[ i ].getAttribute( 'data-rk-filter-value' ) ===
+					value &&
+				! this.tabs[ i ].hidden
 			) {
-				matched = true;
+				matched = i;
 				break;
 			}
 		}
 
-		if ( ! matched ) {
-			value = ALL;
+		if ( matched < 0 ) {
+			for ( i = 0; i < this.tabs.length; i++ ) {
+				if (
+					this.tabs[ i ].getAttribute( 'data-rk-filter-value' ) ===
+					ALL
+				) {
+					matched = i;
+					break;
+				}
+			}
 		}
 
-		this.selected = value;
+		if ( matched < 0 ) {
+			return;
+		}
+
+		this.selected = this.tabs[ matched ].getAttribute(
+			'data-rk-filter-value'
+		);
 
 		if ( moveFocus ) {
-			this.tabs[ i ].focus();
+			this.tabs[ matched ].focus();
 		}
 
-		this.apply( value );
+		this.apply( this.selected );
 	};
 
 	/**
@@ -691,6 +912,11 @@
 
 		this.destroyed = true;
 
+		if ( this.observer ) {
+			this.observer.disconnect();
+			this.observer = null;
+		}
+
 		if ( this.onClick ) {
 			this.scope.removeEventListener( 'click', this.onClick );
 		}
@@ -709,6 +935,11 @@
 
 		if ( this.onPageHide ) {
 			window.removeEventListener( 'pagehide', this.onPageHide );
+		}
+
+		for ( i = 0; i < this.tabs.length; i++ ) {
+			this.tabs[ i ].hidden = false;
+			this.tabs[ i ].setAttribute( 'aria-selected', 'false' );
 		}
 
 		for ( i = 0; i < this.directoryItems.length; i++ ) {
@@ -772,14 +1003,65 @@
 	/**
 	 * Reduce a status string to the token the filter compares against.
 	 *
+	 * A directory entry shows the status as an uppercase word and the tabs carry
+	 * it lowercased, so the comparison is case insensitive in the direction that
+	 * makes the two meet: everything is folded to lower case. The word in the
+	 * markup stays uppercase for the visitor and the token stays lowercase for
+	 * the script, which is why the two are different cases on purpose.
+	 *
 	 * @param {string} value Raw status text.
-	 * @return {string} Uppercase status with runs of whitespace collapsed.
+	 * @return {string} Lowercase status with runs of whitespace collapsed.
 	 */
 	function normaliseStatus( value ) {
 		return String( value || '' )
 			.replace( /\s+/g, ' ' )
 			.trim()
-			.toUpperCase();
+			.toLowerCase();
+	}
+
+	/**
+	 * The status a node carries, read from its own status class.
+	 *
+	 * @param {Element} element Node group to read.
+	 * @return {string} The status token, or an empty string when the node
+	 *                   carries none of the three state classes.
+	 */
+	function statusFromClass( element ) {
+		for ( let i = 0; i < STATUS_TOKENS.length; i++ ) {
+			if (
+				element.classList.contains(
+					STATUS_CLASS_PREFIX + STATUS_TOKENS[ i ]
+				)
+			) {
+				return STATUS_TOKENS[ i ];
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Count how many entries carry each status.
+	 *
+	 * @param {string[]} statuses Status tokens to count.
+	 * @return {Object<string, number>} Counts keyed by status token. Only
+	 *                                  statuses with at least one member appear,
+	 *                                  so a missing key means an empty state.
+	 */
+	function tallyStatuses( statuses ) {
+		const counts = {};
+
+		for ( let i = 0; i < statuses.length; i++ ) {
+			const status = statuses[ i ];
+
+			if ( ! status ) {
+				continue;
+			}
+
+			counts[ status ] = ( counts[ status ] || 0 ) + 1;
+		}
+
+		return counts;
 	}
 
 	/**
