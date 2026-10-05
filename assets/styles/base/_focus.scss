@@ -1,0 +1,76 @@
+// Focus visibility.
+//
+// The design reference states one rule and nothing else in the whole codebase:
+//
+//   *:focus-visible { outline: 2px solid #FACC15; outline-offset: 3px }
+//
+// with the outline colour flipped to the base colour inside the two light
+// editorial surfaces, because an amber outline on cream is close to invisible
+// and on warm paper it is barely distinguishable from the surface itself.
+//
+// WHY focus-visible AND NOT focus. A mouse click on a button must not draw a
+// ring, but a keyboard Tab must. :focus-visible is the only selector that makes
+// that distinction without scripting.
+//
+// THE TWO EXTRA SELECTORS ARE NOT REDUNDANT. theme.json styles.elements.link
+// and styles.elements.button emit their own :focus outline, and both land at
+// specificity 0,2,0. The universal :focus-visible below is 0,1,0, so on its own
+// it would lose to them on points that do not change and rely on stylesheet
+// order for the rest. The link and button selectors below match the design rule
+// at 0,2,0 on the same elements, which puts them level with the theme.json
+// rules and lets the later stylesheet win. The design value is unchanged, only
+// the tie is broken.
+//
+// Inside the light surfaces the outline inverts, so it reads as a dark edge on
+// light paper rather than a light edge on light paper. The selectors are
+// is-style-* variations because that is the class WordPress emits from the
+// styles/ directory.
+/* stylelint-disable selector-class-pattern --
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by patterns/header.php, patterns/footer.php and the content
+   files, none of which this stylesheet can change. */
+
+
+@use '../abstracts' as *;
+
+$focus-outline-width: 2px;
+$focus-outline-offset: 3px;
+
+:focus-visible {
+	outline: $focus-outline-width solid var(--wp--preset--color--accent);
+	outline-offset: $focus-outline-offset;
+}
+
+a:focus-visible,
+.wp-block-button__link:focus-visible,
+.wp-block-navigation-item__content:focus-visible {
+	outline: $focus-outline-width solid var(--wp--preset--color--accent);
+	outline-offset: $focus-outline-offset;
+}
+
+// The flip on the light surfaces.
+//
+// This rule is the ONLY place in the theme that decides the focus outline colour
+// inside the cream and warm surfaces. It previously lost the argument: the two
+// light surface rules each carried their own nested link focus rule one level
+// deeper than this one, so they outranked it on specificity rather than on print
+// order, and a link focused inside the cream surface measured an outline colour
+// of rgb(138, 106, 0), the darkened amber, rather than the design's dark ink.
+// Those nested rules have been removed from the surface files so that this is
+// the owner and there is exactly one number here.
+//
+// The colour is the design's dark ink on paper, read from index.css where both
+// light editorial surfaces state color: #0A0A0B. In this theme's palette that
+// is the base and text-on-paper preset, so this introduces no colour the design
+// does not have.
+//
+// outline-width, style and offset are deliberately not restated. They are
+// inherited from the two rules above at 0,2,0 and 0,1,0 respectively, both of
+// which apply inside a light surface, so the flip only needs to say what it
+// changes and nothing else.
+.wp-block-group.is-style-surface-cream-editorial :focus-visible,
+.wp-block-group.is-style-surface-warm-editorial :focus-visible {
+	outline-color: var(--wp--preset--color--text-on-paper);
+}
+
+/* stylelint-enable selector-class-pattern */

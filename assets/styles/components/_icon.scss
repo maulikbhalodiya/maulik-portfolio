@@ -1,0 +1,146 @@
+@use '../abstracts' as *;
+
+/* stylelint-disable selector-class-pattern --
+   hz-icon--compact carries a double underscore, which is the same BEM element
+   marker as hz-section__head in _sections.scss. The rule is a naming
+   convention, and this file follows the convention the rest of the theme
+   already follows. */
+
+// The icon primitive.
+//
+// THIS FILE IS THE ONLY PLACE AN ICON GETS ITS SIZE. Every other file that has
+// to name a dimension for an icon states one and a comment saying where it came
+// from, which is exactly how the two defects below happened: the same 16px was
+// written four times, and one of the four was missed.
+//
+// WHAT WENT WRONG, MEASURED IN CHROME AT 1440 WIDE ON THE LIVE SITE.
+//
+//   View Complete Project Archive   120 x 120   design says 16 x 16
+//   View Case Study                  45 x  45   design says 16 x 16
+//   Header LinkedIn and GitHub       24 x  24   design says 16 x 16
+//   Pause Orbit in the hero canvas    0 x   0   design says 12 x 12
+//
+// The cause is identical in all four cases. An inline SVG authored with a
+// viewBox and no width and no height attribute has no intrinsic size, so it is
+// sized by whatever it lands in. An arrow inside an inline-flex anchor with no
+// explicit box took the flex line and came out at 120px. The hero control had no
+// fill and no stroke either, so its two paths painted nothing at all on top of
+// no box.
+//
+// So the rule this file exists to enforce is that an inline icon is never left
+// to be sized by its context. Every rule below that targets an svg states width
+// and height literally. There is no mixin for the box on purpose: a grep for
+// `svg` has to be able to answer the question without following an @include,
+// because the whole point of the file is that it is checkable by reading it.
+//
+// NEVER write width: auto and never write a rule that only sets one of the two
+// axes. An icon that inherits its size from a global svg rule, or from the
+// Gutenberg image defaults, is the same defect wearing a different hat.
+//
+// THE SIZES, AND WHERE EACH ONE WAS READ FROM THE DESIGN.
+//
+//   1rem      16px   w-4 h-4    ProjectCard.tsx:145, HomePage.tsx:301, 404, 447,
+//                              841 and 846, Header.tsx:163, 173 and 181.
+//   0.75rem   12px   w-3 h-3    Hero3DEcosystem.tsx:388, the Pause Orbit control.
+//
+// Tailwind v4 spacing is 0.25rem a step, so w-4 is 16px and w-3 is 12px. The
+// third size in this theme is 0.875rem, 14px, which is w-3.5 h-3.5 and belongs
+// to the RankKernel back link alone. That one is already stated where it is
+// used, in _page-rankkernel.scss, and is deliberately not repeated here.
+//
+// THE GAPS ARE PART OF THE PRIMITIVE, NOT PART OF THE BUTTON. The design puts
+// gap-2, 8px, on a button that carries an icon and a label, and gap-1.5, 6px, on
+// a bare text link that carries one. The bare text link already states 6px in
+// _sections.scss and is left alone. The button row is corrected below.
+
+$icon-size: 1rem;
+$icon-size-compact: 0.75rem;
+$icon-gap: 0.5rem;
+
+// The explicit class form, for markup that is authored rather than parsed.
+//
+// Nothing in content/pages/*.html carries these today, because those files are
+// page content and are not this change's to rewrite. They are here so that the
+// hero control and any future inline markup can ask for a size by name instead
+// of by selector.
+.hz-icon {
+	display: block;
+	width: $icon-size;
+	height: $icon-size;
+	flex-shrink: 0;
+	vertical-align: middle;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.hz-icon--compact {
+	display: block;
+	width: $icon-size-compact;
+	height: $icon-size-compact;
+	flex-shrink: 0;
+	vertical-align: middle;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+// THE DEFAULT, AND THE ONLY RULE THAT HAS TO CATCH THE REST.
+//
+// Every inline icon in the theme sits inside an anchor or a button. That is not
+// an assumption about this theme's content, it is what an icon is for, so the
+// default is written against the two elements rather than against a class that
+// only some of the icons carry. It is a low specificity rule on purpose: it is a
+// floor, not an override, and any component that states a size of its own keeps
+// it. This is what makes the 120px and the 45px impossible to reproduce, because
+// there is now nothing left for an icon to inherit.
+a svg,
+button svg {
+	display: block;
+	width: $icon-size;
+	height: $icon-size;
+	flex-shrink: 0;
+	vertical-align: middle;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+// The mobile menu toggle mark, at the design's own size rather than the default.
+//
+// This is the one icon in the header that is not 16px, and it is not an
+// exception invented here. Header.tsx:194 gives the Menu and X marks w-5 h-5,
+// which is 20px, on a button that is itself w-10 h-10. The 16px default below
+// would otherwise apply to it, because a rule that does not mention it is
+// exactly the kind of rule that lets a size arrive by accident: this icon was
+// measured at 24px on the live site, taking Core's own attribute, with no rule
+// in the theme naming it at all. Stating 20px is both the design's value and
+// the reason the default can stay one value instead of three.
+//
+// .not(.always-shown) is Core's own condition for the hamburger button and is
+// restated so the rule cannot reach the container close button inside the open
+// menu, which has no design size of its own and is hidden until the menu opens.
+.wp-block-navigation__responsive-container-open:not(.always-shown) svg {
+	display: block;
+	width: 1.25rem;
+	height: 1.25rem;
+	flex-shrink: 0;
+	vertical-align: middle;
+}
+
+// The gap between a label and the icon beside it.
+//
+// HomePage.tsx:443 and 750 both give the archive and about links gap-2, and
+// HomePage.tsx:838 and 845 give the two hero buttons gap-2 as well. The bare
+// text links, ProjectCard.tsx:140 among them, are gap-1.5 and already carry
+// their own.
+.hz-section a.hz-link.hz-btn-lg,
+.hz-section a.hz-work__archive-link {
+	gap: $icon-gap;
+}

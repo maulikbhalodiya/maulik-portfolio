@@ -11,7 +11,8 @@ the resume enrichment.
 ## 3.1 Content model
 
 - [ ] **Projects are pages with nested blocks. No custom post type, no
-      taxonomy, no custom block type.**
+      taxonomy, and no custom block that reads project data.** A presentational
+      custom block is still allowed; see [`../ARCHITECTURE.md`](../ARCHITECTURE.md).
 - [ ] `templates/page-project.html`, the 12-section case study
 - [ ] `page-projects.html` as the parent, `single.html` as the fallback
 - [ ] Content stays editable in the Site Editor forever, with no plugin
@@ -19,12 +20,15 @@ the resume enrichment.
 
 ### Why no CPT, stated once so nobody re-litigates it
 
-WordPress.org forbids custom post types, taxonomies and custom blocks in themes.
-We are not submitting, but building to that standard produces better
-architecture. The designer's own blueprint in the data file proposed a `project`
-CPT with four custom dynamic blocks. That is a plugin architecture, and its
-field list also omits `architectureFlows`, which the architecture diagram
-renders, so it would have broken on first use.
+WordPress.org forbids custom post types, taxonomies and custom blocks that read
+project data in themes. We are not submitting, but building to that standard
+produces better architecture. The line is presentation: a presentational block
+such as a card, a badge or a flow belongs in the theme and is allowed, while a
+`render.php` that queries posts, meta or terms is plugin territory. The four
+blocks the designer's blueprint proposed are all in the second group. That
+blueprint proposed a `project` CPT with those four custom dynamic blocks, which
+is a plugin architecture, and its field list also omits `architectureFlows`,
+which the architecture diagram renders, so it would have broken on first use.
 
 The instinct of separating content from presentation was right. A CPT is the
 wrong mechanism under a theme-only constraint. Nested blocks give the same

@@ -364,7 +364,7 @@ design's voice. Keep it.
 |---|---|---|
 | `mailto:` plus the raw address | mailto | 9, all to be removed |
 | `https://github.com/maulikbhalodiya` | external | 6 |
-| `https://www.linkedin.com/in/maulikbhalodiya/` | external | 7 |
+| `https://www.linkedin.com/in/maulik-bhalodiya-` | external | 7 |
 | Google Fonts CSS2, 3 families | third-party asset | 1, render-blocking |
 
 Plus 6 plaintext duplicates of the LinkedIn and GitHub handles that are
@@ -383,7 +383,7 @@ to a profile. Either create the repo or relabel the CTA.
 ## 7. BUILD SEQUENCE IMPLIED BY THE ANALYSIS
 
 1. Design tokens into `theme.json`, dark palette, two-yellow WCAG fix
-2. Templates and parts, with i18n content in patterns
+2. Templates and parts, with translatable strings in patterns and in post_content, never in a .html file
 3. Static SVG components as markup, HTML controls as the accessible layer
 4. Project content as nested blocks, no CPT
 5. Résumé modal, vanilla, with `inert` and `document.fonts.ready`

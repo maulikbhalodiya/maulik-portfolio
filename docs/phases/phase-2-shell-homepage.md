@@ -22,8 +22,26 @@ Fixed, 64px tall, transparent at rest.
 - [ ] Mobile menu button 44x44, `aria-expanded`, `aria-controls`
 - [ ] Escape closes the menu and returns focus to the button
 - [ ] Mobile panel ordered list with numeric prefixes
-- [ ] **No mail icon anywhere.** Every mailto becomes the contact form
-- [ ] LinkedIn and GitHub only, `target="_blank" rel="noopener noreferrer"`
+- [ ] **Mail icon included, and this supersedes the earlier "no mail icon
+      anywhere" rule.** Every mailto becoming the contact form was the original
+      instruction. It was reversed by the owner on 2026-10-02, who was told the
+      address had been spam listed once in production and ruled that it ships,
+      because the design's Email link is part of the design and replacing it is
+      itself a substitution. CI was narrowed rather than removed: `ci.yml`,
+      `ai-review.yml`, `ai-audit.yml` and `live-deploy.yml` permit exactly one
+      address, `maulikbhalodiya9999@gmail.com`, and reject any other `mailto:` or
+      raw address
+- [ ] LinkedIn, GitHub and Email, in the design's order. LinkedIn and GitHub are
+      `target="_blank" rel="noopener noreferrer"`; the Email anchor carries
+      neither, because a `mailto:` opens a local mail client rather than a
+      browsing context
+- [ ] The Email item is a `wp:html` list item carrying the same
+      `wp-social-link wp-social-link site-header__social-link` classes, because
+      `core/social-link` keys its icon off Core's fixed service table and would
+      render an empty anchor for `service: "mail"`. It therefore inherits the
+      identical box and mark as its two siblings
+- [ ] Both copies of the row, the bar's and the panel's, come from one shared
+      closure in `patterns/header.php`, so they cannot drift
 - [ ] Icon buttons 40x40 minimum, which is the touch target floor
 
 The header is `position: fixed`, so the first section on every page needs
@@ -40,7 +58,9 @@ Pure `#000000`, hidden on print.
 - [ ] Above the copyright row, a `#262626` rule
 - [ ] Copyright year from `current_time()`, not hardcoded
 - [ ] Right side mono technical line, per the design
-- [ ] **No email link**
+- [ ] **Email link** in the Connect column, carrying the design's own single
+      address. This supersedes the earlier "no email link" rule, on the same owner
+      decision of 2026-10-02 recorded in 2.1
 
 ## 2.3 Homepage, 8 sections
 

@@ -36,8 +36,12 @@ the site itself, so the portfolio is its own case study.
 ## 3. CONTENT MODEL, AND WHY NO CPT
 
 Research established that WordPress.org forbids custom post types, custom
-taxonomies and custom blocks in themes. We are not submitting, but we build to
-that standard because it produces better architecture.
+taxonomies and custom blocks that read project data in themes. We are not
+submitting, but we build to that standard because it produces better
+architecture. The boundary is presentation: presentational blocks such as a card,
+a badge or a flow belong in the theme and are allowed here, while a block whose
+`render.php` reads posts, meta or terms is plugin territory. See
+[`ARCHITECTURE.md`](ARCHITECTURE.md) for the full test.
 
 The designer's own blueprint in the data file proposed a `project` CPT with four
 custom blocks. That is a plugin architecture and it would also have broken on
@@ -159,8 +163,8 @@ both more honest and more impressive than either version.
 |---|---|
 | Resume 1 says `Qrologic Technologies` | **Qrolic.** Resume 2 and every other source use Qrolic. Standardise. |
 | Résumé contact line shows `github.com/XXXXXXXX` | Placeholder. Use the real profile URL. |
-| LinkedIn shown as `linkedin.com/in/maulik-bhalodiya-` with trailing dash | The real URL has no trailing dash. Verify before use. |
-| `+91 XXXXX XXXXX` | Placeholder. Phone is not published on the site at all. |
+| LinkedIn shown as `linkedin.com/in/maulik-bhalodiya-` with trailing dash | **Superseded 2026-10-03.** This row previously recorded "The real URL has no trailing dash. Verify before use." The owner has since stated the opposite: the trailing-dash form is the real profile, and the trailing-dash-free URL resolves to a different person also named Maulik Bhalodiya. The trailing-dash form is now in use. Not machine-verifiable: LinkedIn returns a bot challenge rather than the profile page, so the owner's word is the authority here. |
+| `+91 XXXXX XXXXX` | Placeholder. Superseded: the phone is published on the site as `+91 97269 20463`, in the Resume hero contact panel and nowhere else. |
 
 ---
 
@@ -174,9 +178,10 @@ maulik-portfolio/
 ├── theme.json                   v3, 13-value dark palette, 3 font families
 ├── functions.php                thin loader
 ├── readme.txt  screenshot.png
-├── templates/                   9 templates
+├── templates/                   9 templates, structure and hierarchy only
 ├── parts/                       header.html, footer.html, flat, no PHP
-├── patterns/                    all i18n content, one per section
+├── content/pages/               source of truth for post_content, the DB is generated
+├── patterns/                    reusable compositions and chrome i18n
 ├── styles/                      style variations as complete design systems
 ├── inc/                         setup, assets, seo, blocks, resume, contact
 ├── assets/css/                  COMMITTED
@@ -190,10 +195,14 @@ maulik-portfolio/
 **Never create `block-templates/` or `block-template-parts/`.** Core switches to
 legacy folders if either exists, which silently breaks everything.
 
-**All i18n content lives in `patterns/`, never in `parts/`.** Block theme
-template parts are `.html` and cannot contain PHP, so any translatable string in
-a part is impossible to translate. This is the most common block theme porting
-mistake and it is invisible in a screenshot.
+**Translatable strings in templates and template parts live in `patterns/` and in
+`post_content`, never in a `.html` file.** Block theme templates and parts are
+`.html` and are parsed rather than executed, so they cannot call `esc_html__()`
+and a literal string in one can never be translated. `patterns/*.php` and the
+`post_content` of a page are the two homes that work, because both run PHP.
+This is the most common block theme porting mistake and it is invisible in a
+screenshot. See [`ARCHITECTURE.md`](ARCHITECTURE.md) for where each kind of
+string belongs.
 
 ### 6.2 Two lines that decide performance
 

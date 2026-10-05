@@ -28,3 +28,23 @@ the inner text of one original comment, in the order it appeared in the file.
 	heading, because an untranslatable placeholder string shipped in a template is
 	permanently wrong for every non-English reader.
 ```
+
+---
+
+## Correction note, 2026-10-01
+
+The archived text above is verbatim and is not rewritten. Added because this note already
+argued for editor owned content.
+
+**The choice of `post-title` and `post-content` over a hardcoded heading is the editor
+first decision, already made in the original file.** The stated reason is that "an
+untranslatable placeholder string shipped in a template is permanently wrong for every
+non-English reader", and the remedy chosen was content derived blocks. That is the same
+reasoning that later moved whole page compositions into `post_content`: a template that
+carries copy hides the page from the editor.
+
+This fallback is now structure and hierarchy only. It is also worth recording that a
+`core/post-content` block sitting in this template never proved a page was editor first.
+The real test is whether the substantial composition lives in `post_content`, and before
+2026-10-01 the Home page had 92 blocks in its template and 1 in its `post_content`. See
+`docs/ARCHITECTURE.md`.

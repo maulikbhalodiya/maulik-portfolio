@@ -8,11 +8,29 @@
 // The amber rgba() stop is a colour literal because a texture is a raw
 // background-image on a page surface rather than a theme token, and a custom
 // property cannot carry the 14 percent alpha the dot needs.
-// WordPress strips unrecognised placeholder classes from block markup, so
-// .dark-subgrid is a documented hook name, attached through a theme.json style
-// variation rather than hand applied in the editor.
+// DEPRECATED. The .dark-subgrid rule below is a legacy hook name that exists
+// only until templates/404.html is migrated to the is-style-* vocabulary. It is
+// not a second canonical name and must not be used in new markup. The canonical
+// selector is .is-style-surface-dark-subgrid.
 
 .dark-subgrid {
+	background-image: radial-gradient(
+		circle at 1px 1px,
+		rgba(250, 204, 21, 0.14) 1px,
+		transparent 0
+	);
+	background-size: 32px 32px;
+}
+
+// Texture: surface-dark-subgrid, the canonical is-style-* selector.
+// Matches <div class="wp-block-group is-style-surface-dark-subgrid">. The second
+// class keeps specificity above a single-class utility without depending on
+// stylesheet order between this file and the global stylesheet.
+// Values are copied verbatim from .dark-subgrid above. No background-color and
+// no colour declaration are added here, for the reason documented at the top of
+// this file: the surface step must be inherited from the dark parent.
+
+.wp-block-group.is-style-surface-dark-subgrid {
 	background-image: radial-gradient(
 		circle at 1px 1px,
 		rgba(250, 204, 21, 0.14) 1px,

@@ -26,3 +26,23 @@ the inner text of one original comment, in the order it appeared in the file.
 	the editor supplies the real title. Same reasoning for the no-results block
 	below.
 ```
+
+---
+
+## Correction note, 2026-10-01
+
+The archived text above is verbatim and is not rewritten. This note is evidence for a
+decision, not a correction of the text.
+
+**The archived paragraph is the editor first decision, already made in the original
+file.** It leaves the heading empty so that "an untranslated placeholder string shipped in
+a template is permanently wrong", and it lets the editor supply the real title. That is
+the editor first principle applied to a template: the template must not carry copy it
+cannot own.
+
+What changed on 2026-10-01 is that this principle now extends from individual strings to
+whole page compositions. Under this architecture `templates/page-about.html` contributes
+only the header, the main wrapper, the post-content block and the footer, while hero,
+who I am, journey, technical focus, education and the CTA live in `post_content`,
+sourced from `content/pages/about.html`. So `Pages`, then `About`, then `Edit` shows the
+real page. See `docs/ARCHITECTURE.md`.

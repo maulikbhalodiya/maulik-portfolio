@@ -1,7 +1,22 @@
 // Component index. Forwards every component partial.
 // Partials are added to this file as they are written.
 @forward 'block';
+@forward 'hero';
+@forward 'page-resume';
+@forward 'page-projects';
+@forward 'page-rankkernel';
+@forward 'rhythm';
+@forward 'sections';
+@forward 'icon';
+@forward 'site-footer';
+@forward 'site-header';
+@forward 'page-about';
+@forward 'page-contact';
 @forward 'texture-dark-grid';
 @forward 'texture-dark-subgrid';
 @forward 'texture-cream-editorial';
 @forward 'texture-warm-editorial';
+
+// Must stay last. The print resets here override the screen surface rules
+// above, so they have to be emitted after them to win the cascade.
+@forward 'print-surfaces';

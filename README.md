@@ -15,7 +15,15 @@ Licence: GPL-2.0-or-later
 This is a block theme. That is a specific architectural commitment, not a label:
 
 - Templates are `.html` files containing block markup. They are parsed, not executed.
-- Theme supports, filters and enqueues live in PHP under `inc/`.
+- Template parts are global chrome: header and footer. Never page copy.
+- **The authored page lives in the page's `post_content`, and the editor is the interface.**
+  `Pages`, then `About`, then `Edit` shows the real page. `content/pages/*.html` is the
+  source of truth and the database is generated from it.
+- Patterns are reusable compositions that insert real editable blocks, not the page itself.
+- Surfaces and rhythm use block style variations, with CSS compiled into the theme
+  stylesheet and keyed on `is-style-*`.
+- Custom blocks are for presentation only. A block whose `render.php` reads posts, meta or
+  terms belongs in a plugin, and a theme gets no automatic block registration.
 - Design tokens live in `theme.json` and reach the browser as `--wp--preset--*` custom
   properties.
 - Project data lives in block attributes inside post content. There are no custom post
@@ -62,6 +70,8 @@ maulik-portfolio/
 ├── languages/
 │   ├── maulik-portfolio.pot
 │   └── .gitkeep
+├── content/
+│   └── pages/                      # source of truth for post_content, never edit the DB copy
 ├── parts/
 │   ├── footer.html                 # template parts, block markup only
 │   └── header.html
@@ -218,6 +228,40 @@ stops resolving, template parts go missing, and you get blank headers and footer
 no error anywhere. Block themes use `templates/` and `parts/`. CI asserts both legacy
 directories are absent.
 
+### Why this theme is editor first
+
+The page body lives in `post_content`, not in the template. `templates/page-about.html`
+contributes only header, main, post-content and footer; hero, who I am, journey,
+technical focus, education and the CTA live in `post_content`, sourced from
+`content/pages/about.html`. Opening `Pages`, then `About`, then `Edit` therefore shows the
+real page, which is the whole point.
+
+A `core/post-content` block sitting in a template does not prove this. That block was
+already there while the Home page had 92 blocks in its template and 1 in its
+`post_content`. The test is where the substantial composition lives.
+
+`content/pages/*.html` is the source of truth and the database is generated from it, so a
+change to the database alone does not survive the next generation run. That tradeoff is
+deliberate: content that cannot be diffed and reviewed is a worse artifact.
+
+Full breakdown, including the theme versus plugin test for custom blocks and why surface
+CSS is theme owned, is in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+
+### Why a theme gets no automatic block registration
+
+Core scans no theme `blocks/` directory. `wp_register_block_types_from_metadata_collection()`
+exists in `wp-includes/blocks.php` but nothing in core calls it for a theme, and Core's
+own test fixture registers by hand in `functions.php`. Auto registration from
+`blocks/*/block.json` is a `@wordpress/scripts` **plugin** convention, widely misrepeated,
+and wrong here.
+
+Registration is also mandatory rather than optional, because a block core does not know
+about on the server applies no `theme.json` styles at all.
+
+A custom block is still allowed, but only when it is presentational, such as a card, a
+badge or a flow. The test is whether its `render.php` reads a data model. If it queries
+posts, meta or terms, it belongs in a plugin.
+
 ### Why patterns cannot use the loop
 
 A pattern is included during `init`, long before there is a request context.
@@ -225,6 +269,25 @@ A pattern is included during `init`, long before there is a request context.
 data, `esc_html_e()` and `get_theme_file_uri()` work. Anything in a template part that
 needs translation or a dynamic value belongs in a pattern instead, which is why
 `parts/header.html` contains only a Site Title block that handles its own i18n.
+
+Authored page copy does not belong in a pattern either, because a pattern is a reusable
+composition rather than the page. It belongs in `post_content`, which runs PHP and is
+therefore translatable too. So there are three translatable homes: patterns,
+`post_content`, and language files for `theme.json` token names.
+
+### Why surface CSS is keyed on `is-style-*` and lives in the theme stylesheet
+
+`wp_get_global_stylesheet()` returns 6,344 bytes containing zero `is-style-surface-*`
+rules, even though the variations register and their `css` survives registration. In this
+setup WordPress does not emit the variation CSS to the frontend.
+
+The variation rules are therefore compiled into `assets/css/theme.css` and written against
+`is-style-*`, which is the class WordPress actually puts on the element. The bare slug in
+`styles/*.json` is the declaration; `is-style-` is the rendered class. Styling written
+against the bare slug matches nothing, and the failure looks identical to the variation
+CSS never loading. The variations stay registered so the editor can offer them from the
+Styles panel: registration for the editor and CSS delivery for the frontend are separate
+concerns.
 
 ### Why the two asset filters are the first thing in `inc/setup.php`
 
@@ -329,6 +392,9 @@ These are enforced in CI, not just documented.
 - **No PHPUnit suite.** Deliberate. See the `_comment` key in `composer.json` for the
   reasoning. Revisit the moment the theme has a `render.php` callback or any PHP with
   observable behaviour.
+- **`blocks/` does not exist yet.** No custom block is currently justified. If one is
+  added, it must be presentational rather than data reading, and it must be registered in
+  `functions.php`, because a theme gets no automatic block registration.
 - **No `build/` output.** That directory is marked `linguist-generated` in
   `.gitattributes` and is populated by whatever produces the release ZIP. It does not
   exist yet.
@@ -347,6 +413,7 @@ the full phase by phase to-do list, and the research that the decisions rest on.
 
 | Document | What it covers |
 |---|---|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Editor first architecture: which layer owns what, and the `is-style-*` vocabulary |
 | [`docs/PLAN.md`](docs/PLAN.md) | What this theme is and why it is built this way |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Build order across nine phases |
 | [`docs/README.md`](docs/README.md) | Phase index, critical path, working rules, open decisions |

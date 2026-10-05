@@ -1,0 +1,456 @@
+@use '../abstracts' as *;
+
+// Standard body sections. The design gives every homepage and inner page body
+// section the same vertical rhythm, py-20 then md:py-28, which is 80px then
+// 112px. styles/section.json supplies the 5rem base, matching the design's
+// py-20, and this rule supplies the desktop step the variation cannot express,
+// because a block style variation carries no media query of its own.
+// The block class is included so a single class utility cannot beat it without
+// depending on stylesheet order, which is not guaranteed.
+//
+// margin-block: 0 is the second half of the same statement and it is here for
+// the same reason. The design puts ZERO margin between sections: consecutive
+// sections abut and the only thing between them is the bottom padding of one,
+// the border-b of one, and the top padding of the next. Everything that reads
+// as spacing between two sections in the design is padding inside them.
+//
+// The margin was not ours. WordPress core emits, in the served global styles:
+//
+//    :root :where(.is-layout-constrained) > * {
+//        margin-block-start: var(--wp--preset--spacing--50);
+//    }
+//
+// and --wp--preset--spacing--50 is the theme's own "Standard" spacing size,
+// 1.5rem. Every section carries is-layout-constrained, because is-style-section
+// is a block style variation on core/group and the section is a constrained
+// group. So every section except the first matched that rule as a child of the
+// constrained wrapper around it and picked up 24px of margin above itself. It
+// was 24px at 1440, at 768 and at 390, on all seven non-hero sections.
+//
+// This went unnoticed because section PADDING was correct the whole time, and
+// padding is what a section rhythm check measures. The gap was a margin, and a
+// margin sits outside the element the check measured.
+//
+// WHY THE MARGIN IS DECLARED IN TWO PLACES. styles/section.json carries
+// margin.top and margin.bottom at 0, because that is where the intent belongs:
+// the block style variation is the thing that says what a section is, and an
+// editor choosing that variation gets a section with no margin. This rule
+// restates it at the block class, because the core selector above resolves to
+// (0,1,0) from :root alone and rests it on the cascade order of two inline
+// stylesheets, global styles and then block style variation styles. Restating
+// at (0,2,0) makes the outcome independent of that order, which is the reason
+// the padding above is stated in both places too and the reason it is stated
+// in both rather than one.
+//
+// WHAT THIS DOES NOT TOUCH. The core rule also supplies the gap between the
+// blocks INSIDE a section, from --wp--style--block-gap. That rule targets the
+// children of a constrained element, and this one targets the constrained
+// element itself, so the inner stack gap is untouched. Padding is untouched.
+// .section-inner and .section-inner-wide below are untouched. The only thing
+// that changes is the 24px that sat above each section and belonged to no one.
+.wp-block-group.is-style-section {
+	padding-block: 5rem;
+	margin-block: 0;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.is-style-section {
+		padding-block: 7rem;
+		margin-block: 0;
+	}
+}
+
+// THE HORIZONTAL INSET BELONGS TO THE CONTENT, NOT TO THE SECTION BOX.
+//
+// The defect this fixes: every section background, and every grid texture, and
+// the border-b that separates two sections, stopped 40px short of each edge of
+// the window. The section box was the CONTENT box of the page, so the surface
+// was painted only where text could stand. Measured before the fix at 1440, all
+// eight sections reported left 40 and right 1400 against a 1440 viewport. The
+// design at the same width reports left 0 and right 1440 for all eight, and
+// keeps reporting full width at 1600 and at 1920, so this is not a cap that
+// only applies at one size.
+//
+// WHY THE BOX WAS NARROW. .wp-site-blocks carries has-global-padding and spends
+// --wp--style--root--padding-left and -right on it, which is the gutter this
+// file also sets above, 1.5rem below 768 and 2.5rem from 768. Every ancestor of
+// a section (.entry-content, the article, main) sits inside that padding, so it
+// measured left 40 and right 1400, and a section, being a block that fills its
+// containing block, inherited exactly that. The background was never asked to be
+// narrow. It was given a narrow box and painted it honestly.
+//
+// WHY NOT SIMPLY NEGATIVE MARGINS. The obvious fix, margin-inline of minus the
+// gutter, would fix every width up to 1520 and then stop working, because above
+// that the 1440 content cap on the ancestor takes over and the section grows to
+// the cap plus the escape, leaving a bare strip either side that is wider than
+// the gutter. Measured at 1920 that leaves 200px unpainted on each side, which
+// is the same defect the user reported, just moved. Reaching the window at
+// every width needs a width that is relative to the window, and that is what
+// 100vw is for.
+//
+// 100vw AND THE SCROLLBAR. 100vw counts the classic scrollbar, so a surface sized
+// in vw units is one scrollbar wider than the window can show, and an escape built
+// out of vw units lands half a scrollbar off. MEASURED, WITH A CLASSIC SCROLLBAR,
+// BEFORE THE ESCAPE BELOW WAS RESTATED: every one of the eight homepage sections
+// reported left -7.5 at 360, 390, 768, 1440 and 1920 alike, documentElement
+// scrollWidth was 8 more than clientWidth at all of them, and the page could be
+// dragged sideways by 8 pixels. The design, measured with the same classic
+// scrollbar in the same browser, reports left 0, right at clientWidth, and no
+// horizontal overflow at all.
+//
+// THE ESCAPE IS NOW A SUBTRACTION, NOT A CENTRING. The old value was
+// calc( 50% - 50vw ), which reads: put the middle of this box on the middle of the
+// window. That is correct arithmetic and the wrong target twice over. The middle
+// of the window is not where a full bleed surface starts, the left EDGE of the
+// viewport content area is, and the two differ by however much the containing
+// block is offset inside it. And the window is not the content area, because the
+// window counts the scrollbar and the content area does not.
+//
+// The value below subtracts one from the other:
+//
+//   margin-inline: calc( ( 100% - 100cqw ) / 2 )
+//
+// 100% is the containing block and 100cqw is the viewport content area, so the
+// difference is the containing block's own offset and half of it is exactly the
+// escape. It is exact at every width, above the measure cap as well as below it,
+// which no vw based expression can be, and it needs no knowledge of the gutter,
+// the cap or the scrollbar width.
+//
+// WHY NOT 100% WITH A NEGATIVE MARGIN, STILL. Because the containing block is
+// capped at 1440. Above that a 100% surface would stop at the cap and leave a
+// bare strip either side that is wider than the gutter, which is the original
+// defect moved. The width therefore stays viewport relative.
+//
+// WHY 100cqw AND NOT 100vw, AND WHY THAT NEEDS A QUERY CONTAINER ON html. The
+// arithmetic above needs the viewport CONTENT width, which is clientWidth, and
+// 100vw is not it. See the long note on the html container further down; the
+// short version is that CSS has no unit for the scrollbar exclusive width, so one
+// is manufactured from the root element's own content box.
+//
+// THE OVERFLOW IS CLIPPED, NOT SCROLLED, AND THAT IS THE OTHER HALF. clip, and
+// not hidden, is the value on html. overflow-x: hidden creates a scroll
+// container, so the document is still programmatically scrollable sideways by
+// exactly the 8 pixels measured above even though no scrollbar is painted.
+// overflow-x: clip does not create a scroll container, so the same pixels are
+// unreachable and maxScrollX is 0. This is why the guard is declared on html and
+// not on body: the propagation rules make the root element's overflow the
+// viewport's, and nothing else on the page can stand between the overshoot and
+// the user that way.
+//
+// WHAT THIS DOES NOT CHANGE, WHICH IS THE WHOLE POINT. The box gets wider and the
+// content does not move. padding-inline gives the section back precisely the
+// inset it just escaped, and max() then restores the inset that the 1440 content
+// cap owes at wide viewports, so the measure is capped and centred exactly as
+// before. Measured after the fix: content left 40 at 1440, 80 at 1600, 240 at
+// 1920, against the design's 40, 120 and 280 in the same units of half gutter
+// plus half overflow. The gutter stays a step, 24px below 768 and 40px at and
+// above it, because it is still read from the same two custom properties.
+//
+// WHY THE SELECTOR IS THIS AND NOT is-style-section ALONE.
+//
+// is-style-section is the right vocabulary and it is what an editor choosing
+// the variation gets, but it is not sufficient on its own and the shortfall is
+// not a detail. Measured across all six routes, is-style-section matches 8 of 8
+// homepage sections, 5 of 5 on About, 6 of 6 on RankKernel and 2 of 2 on
+// Contact, and only 2 of 4 on Projects. The two it misses there are the filter
+// bar and the independent-development band, which paint their own base colour
+// and their own border-b and are therefore full bleed surfaces in exactly the
+// way the sections are, but which carry no variation.
+//
+// So the selector is the union of the two things that identify a top level
+// section on any route: the block style variation, and being a constrained
+// group, which is what a section that paints a full width surface with a rule
+// under it resolves to in the markup. Both are structural and both are already
+// in the served classes on every route. Nothing here names a page, a slug, a
+// position or a first or last child, so a new route inherits the fix without
+// anyone editing this file.
+//
+// WHAT IT DELIBERATELY DOES NOT MATCH. Resume's five numbered sections are
+// is-layout-flow, carry no variation, and are not the full bleed surfaces the
+// design draws. They are the black document card, and the design puts that card
+// inside the same max-w-[1440px] mx-auto px-6 md:px-10 container as everything
+// else: measured on the design at 1440 its box reads left 40, right 1400, which
+// is the content measure, not the window. So this selector leaves it exactly
+// where it is, which is correct, and the black band stays a card rather than
+// becoming a band. Verified: Resume still reports 40/1400 for those five after
+// this change and 0/1440 for the hero.
+//
+// padding-block and margin-block are untouched here and stay in the rules above,
+// because padding-inline and margin-inline are the axis being changed and the two
+// never collide.
+.entry-content > section:is( .is-style-section, .is-layout-constrained ) {
+	// 100cqw and not 100vw. The design's own surfaces end at the viewport content
+	// width, which is clientWidth, and 100vw overshoots it by one classic
+	// scrollbar. See the note on the html query container further down.
+	width: 100cqw;
+	max-width: none;
+
+	// stylelint-disable-next-line declaration-no-important --
+	// WordPress core prints this competing rule with !important, so a plain
+	// declaration here loses to it and the margin is silently discarded:
+	//   .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+	//       margin-left: auto !important;
+	//       margin-right: auto !important;
+	//   }
+	// Those auto margins centre a constrained child inside its parent, which is
+	// right for a column of text and wrong for a surface that has to reach both
+	// edges of the viewport. The value below subtracts the containing block from
+	// the viewport, which is the negative of the containing block's own offset and
+	// is therefore exact at every width, above the measure cap as well as below
+	// it. 100cqw is the viewport CONTENT width and 100vw is not; see the note on
+	// the html query container further down for why that distinction is the whole
+	// problem. theme.css loads after the inline global styles, so an !important
+	// here is later in the cascade and wins. The footer already does this for the
+	// same reason, see _site-footer.
+	margin-inline: calc( ( 100% - 100cqw ) / 2 ) !important;
+
+	/*
+	 * The inset the content gets back, which is the design's own arithmetic.
+	 *
+	 * THE DESIGN: <section class="bg-dark-grid"> holds
+	 * <div class="max-w-[1440px] mx-auto px-6 md:px-10">. At any viewport the
+	 * section paints edge to edge and the inner div is the thing that is
+	 * constrained, so the content's left edge is
+	 *
+	 *   max( gutter, ( 100vw - 1440 ) / 2 + gutter )
+	 *
+	 * that is the centred 1440 cap plus the container's own horizontal padding,
+	 * whichever of the two is larger. The gutter is INSIDE the cap, not beside
+	 * it, which is the part that is easy to get wrong.
+	 *
+	 * THIS RULE HAS THE GUTTER BOTH INSIDE AND OUTSIDE. The earlier form here
+	 * was max( gutter, ( 100vw - cap ) / 2 ), with no gutter inside the cap, so
+	 * at 1600 and at 1920 it resolved to half the overflow and the content sat
+	 * 40px left of where the design puts it. Measured: content left 40 at 1440,
+	 * 80 at 1600, 240 at 1920 against the design's 40, 120 and 280. The 1440
+	 * figure matched only because the overflow is zero there, which is exactly
+	 * the case where getting this wrong is invisible.
+	 *
+	 * WHICH IS THE GUTTER. var(--wp--style--root--padding-left) is the same
+	 * property the page gutter below sets, 1.5rem and then 2.5rem from 768, so
+	 * the measure still caps at 1440 and the gutter is still a step rather than
+	 * a ramp. Nothing here decides a width: below 768 the cap term is negative
+	 * and max() falls through to the gutter alone, so the 24px step is the
+	 * gutter and the 40px step is the same property read at its second value.
+	 *
+	 * THE INSET IS ALSO PUBLISHED AS A CUSTOM PROPERTY, and that is the second
+	 * reason this is written once. A section that hosts full bleed bands of its
+	 * own needs to hand them back exactly the inset they are nested inside,
+	 * because the bands cannot see this rule: it applies to the section, not to
+	 * its children. Publishing the value means a band says
+	 *
+	 *   margin-inline: calc( -1 * var( --hz-section-inset ) ) !important;
+	 *
+	 * and inherits the number, rather than restating the whole max() expression
+	 * and risking the two copies drifting. section 04 is the case: its two
+	 * bands paint a background and a border-b each and the design draws both
+	 * edge to edge, measured on the design at 1440 as left 0 and right 1440 for
+	 * both, while nested inside the section they measured 40 and 1400.
+	 *
+	 * The fallback is 0px rather than nothing, so a band outside a section that
+	 * sets the property simply does not move.
+	 */
+	--hz-section-inset: max(
+		var( --wp--style--root--padding-left, 1.5rem ),
+		calc(
+			(
+				( 100cqw - var( --wp--style--global--content-size, 90rem ) ) / 2
+			) + var( --wp--style--root--padding-left, 1.5rem )
+		)
+	);
+	padding-inline: var( --hz-section-inset );
+}
+
+// The horizontal gutter. It lives in this file and not in the header partial,
+// which is where it was until the move: it is a global body rule that sets the
+// page padding for every route and for every section, and the header is one
+// component that happens to sit at the top of every page. Nothing about the
+// header depends on it and nothing about it belongs to the header.
+//
+// theme.json's styles.spacing.padding can only carry one value, so it holds the
+// lower step, 1.5rem, which is the design's px-6. The design's other half is
+// md:px-10, which is 2.5rem, from 768px. The design states that with a Tailwind
+// breakpoint variant, and this rule is the same statement: from the design's md
+// breakpoint, the root padding becomes 40px. The gutter is therefore a step and
+// not a ramp, 24px below 768 and 40px at and above it.
+//
+// THE OLD VALUE WAS clamp(1.5rem, 4vw, 2.5rem), WHICH IS A RAMP AND NOT A STEP.
+// Measured against the design's px-6 md:px-10:
+//
+//   width   design   ramp     delta
+//   1440    40px     40px      0
+//   1024    40px     40px      0
+//    900    40px     36px     -4
+//    768    40px  30.72px  -9.28
+//    640    24px  25.59px  +1.59
+//
+// At 768 the ramp is 23 percent narrower than the design, and because one is a
+// step and the other a ramp there is no width between them where they agree
+// except at the clamp extremes.
+//
+// The custom properties are the ones WordPress derives from theme.json and then
+// spends in .has-global-padding. Restating them here rather than overriding
+// .has-global-padding directly keeps .alignfull's negative margins, which read
+// the same two properties, in step with the padding. theme.css is enqueued after
+// the inline global styles, so this body rule wins on order at equal
+// specificity.
+@include from( $bp-md ) {
+
+	body {
+		--wp--style--root--padding-left: 2.5rem;
+		--wp--style--root--padding-right: 2.5rem;
+	}
+}
+
+// ---------------------------------------------------------------------------
+// THE HORIZONTAL OVERFLOW GUARD. THIS IS THE OTHER HALF OF THE FULL BLEED FIX.
+//
+// MEASURED WITH A CLASSIC SCROLLBAR, WHICH IS THE ONLY WAY TO SEE THE DEFECT.
+// The full bleed claim on this site was carried for several passes on the
+// strength of a headless session with overlay scrollbars, where clientWidth
+// equals innerWidth and every one of the eight sections measures left 0 and
+// right at clientWidth. Force a classic scrollbar, which is 15px on this
+// platform, and every one of the eight reports left -7.5, scrollWidth is 8 more
+// than clientWidth, and window.scrollTo( 8, 0 ) succeeds: the page pans sideways
+// by half a scrollbar. The design, measured the same way, reports left 0 and no
+// overflow at 360, 390, 768, 1440 and 1920.
+//
+// WHY html AND WHY clip.
+//
+//   html, not body. The root element's overflow is propagated to the viewport,
+//   and no other element's is. Putting the guard anywhere else leaves the
+//   document itself scrollable sideways.
+//
+//   clip, not hidden. overflow-x: hidden creates a scroll container, so the
+//   overshoot stops being visible and starts being reachable: the scrollbar is
+//   gone but window.scrollTo( 8, 0 ) still works, which is the panning the owner
+//   reported. overflow-x: clip clips the same pixels without creating a scroll
+//   container at all, so maxScrollX is 0 rather than 8.
+//
+// base/_reset.scss sets overflow-x: hidden on body, taken from the design's own
+// index.css, and that is restated as clip below rather than removed, because
+// base/ is not this file's to change and because the two values do not conflict:
+// hidden on body still clips the overshoot, and clip on html is what makes the
+// document itself unscrollable.
+//
+// clip PAIRED WITH visible IS VALID, and that pairing is the whole trick. The
+// computed value of the other axis only changes from visible to auto when the
+// declared pair is visible with something that is neither visible nor clip, so
+// clip leaves the vertical axis alone and the page still scrolls vertically.
+html,
+body {
+	overflow-x: clip;
+}
+
+// ---------------------------------------------------------------------------
+// THE VIEWPORT CONTENT WIDTH, AS A LENGTH CSS CAN READ.
+//
+// 100vw IS NOT IT. 100vw is the width of the viewport INCLUDING a classic
+// scrollbar, and documentElement.clientWidth is the width EXCLUDING one, so on a
+// machine with a classic scrollbar the two differ by the full scrollbar width,
+// 15px here. That single number is the whole reason a full bleed surface built
+// out of vw units cannot land on left 0.
+//
+// THE ARITHMETIC, WHICH IS WORTH WRITING DOWN BECAUSE IT CLOSES THE DOOR ON
+// EVERY OTHER FORM. Let W be the containing block's content width and S the
+// scrollbar width. The containing block is always centred in the viewport
+// CONTENT area, so its own left offset is
+//
+//   X = ( ( innerWidth - S ) - W ) / 2
+//
+// Any escape written as a combination of 100% and 100vw therefore resolves to
+// minus S over 2, and no choice of coefficients changes that: measured, every one
+// of the eight homepage sections reported left -7.5 at 360, 390, 768, 1440 and
+// 1920 alike with the classic scrollbar on, which is exactly -15 over 2. The
+// scrollbar is the only unknown in the expression, and CSS cannot read it from a
+// length unit, because vw, vh, vmin and vmax are all defined against the
+// scrollbar inclusive box and no unit is defined against the exclusive one.
+//
+// So html is made an inline size query container and the full bleed surfaces are
+// sized in cqw. A container's content box on the root element IS the viewport
+// content area, so 100cqw is exactly documentElement.clientWidth, and the escape
+// becomes an ordinary subtraction of two quantities in the same space:
+//
+//   width: 100cqw                                   the viewport content width
+//   margin-inline: calc( ( 100% - 100cqw ) / 2 )   the negative of X, exactly
+//
+// which lands left on 0 and right on clientWidth at every width, above the cap as
+// well as below it. The design's own surfaces are the viewport content area and
+// not the window, so this reproduces it rather than approximating it: at 1920
+// with a classic scrollbar the design reports footer left 0 and right 1905, and
+// its inner container left 232.5.
+//
+// WHY THE ROOT AND NOT body. body is the wrong host for a reason that is not
+// cosmetic: container-type applies layout containment, and a layout containment
+// box is the containing block for every position: fixed descendant of it. The
+// header is position: fixed, so making body a container would silently unfix the
+// header, and the mobile menu panel with it. On the root element that containment
+// does not change what the viewport is, which is why html is the host.
+//
+// html carries no horizontal padding of its own, so its content box is the whole
+// content area and 100cqw is clientWidth. The page gutter lives on
+// .wp-site-blocks, below it.
+html {
+	container-type: inline-size;
+}
+
+// THE ROOT COLOUR WAS OFF PALETTE AND INVISIBLE. Computed html colour was
+// #FFFFFF, which is not one of the theme's twelve, and it reached 53 elements,
+// every one of them head, meta, link, style, script, title or html itself, none
+// of which paints. The design's own root colour is rgb(0, 0, 0), and #000000
+// IS on the palette as the black preset, so the fix is to match the design and
+// stay inside the palette at the same time. It is declared on html and not on
+// body because body already carries its own colour from theme.json, so nothing
+// inside body can inherit this by accident.
+html {
+	color: var( --wp--preset--color--black );
+}
+
+// Inner page heroes. The design gives every route other than home a shorter
+// first band than the home page body sections, so that an inner page still
+// shows a good deal of its own content in the first viewport.
+.wp-block-group.section-hero {
+	padding-block: 4rem;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.section-hero {
+		padding-block: 6rem;
+	}
+}
+
+// The closing call to action band. Taller than a standard section at both sizes.
+.wp-block-group.section-cta {
+	padding-block: 6rem;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.section-cta {
+		padding-block: 8rem;
+	}
+}
+
+// A run of blocks inside a section that has already been padded. No padding of
+// its own, only the inner stack gap. This is what replaced is-style-section-tight
+// in content/pages/*.html, and it deliberately carries no padding: the design's
+// tight runs are tight stacks, not tighter page edges.
+.section-inner {
+	--wp--style--block-gap: 3rem;
+}
+
+// The design's other inner stack width, 56px, used where a section holds one
+// wide block after another rather than a tight cluster. A class rather than a
+// variation, because it adds no padding and so is not a section rhythm at all.
+.section-inner-wide {
+	--wp--style--block-gap: 3.5rem;
+}
+
+/* stylelint-disable selector-class-pattern --
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by patterns/header.php, patterns/footer.php and the content
+   files, none of which this stylesheet can change. */
+
+/* stylelint-enable selector-class-pattern */

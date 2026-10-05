@@ -154,13 +154,28 @@ the ones that break silently:
 
 ## Scope discipline
 
-The initial scaffold deliberately excludes custom post types, taxonomies, shortcodes,
-form handling and `register_block_type()` in PHP. Project data lives in block attributes
-inside post content.
+The scaffold deliberately excludes custom post types, taxonomies, shortcodes and form
+handling. Project data lives in block attributes inside post content.
 
-That is not an accident to be quietly fixed. If a contribution needs one of those,
-raise it in an issue before writing the code, and expect the discussion about whether a
+That is not an accident to be quietly fixed. If a contribution needs one of those, raise
+it in an issue before writing the code, and expect the discussion about whether a
 portfolio theme should introduce a database schema at all.
+
+**Custom blocks are a different case, so do not read the rule above as a blanket ban on
+them.** The dividing line is whether the block reads a data model:
+
+| Case | Belongs in |
+|---|---|
+| Presentational block: card, badge, flow, canvas visual, modal | the theme |
+| Block whose `render.php` queries posts, meta or terms | a plugin |
+| Custom post type, taxonomy, shortcode, form handler | a plugin |
+
+So a presentational custom block is welcome here, and `register_block_type()` is the
+required way to register it. Note that a theme gets **no** automatic block registration:
+core scans no `blocks/` directory, so a `block.json` that nobody registers is dead code
+the editor will never offer. Auto registration from `blocks/*/block.json` is a
+`@wordpress/scripts` plugin convention and is wrong for themes. See
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) and `docs/RESEARCH-02-BLOCK-THEME.md`.
 
 Similarly, there are no skill percentage bars, no progress meters and no star ratings.
 A percentage with no data source is a claim the site cannot substantiate.

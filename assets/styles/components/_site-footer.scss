@@ -1,0 +1,522 @@
+@use '../abstracts' as *;
+/* stylelint-disable selector-class-pattern --
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by patterns/header.php, patterns/footer.php and the content
+   files, none of which this stylesheet can change. */
+
+
+// Site footer.
+//
+// EVERY CLASS IN THIS FILE WAS EMITTED BY patterns/footer.php AND HAD NO RULE.
+// The markup described an asymmetric 5/2/3/2 grid and it rendered as a stack of
+// paragraphs at full width in the default body type.
+//
+// The design, from src/components/Footer.tsx:
+//
+//   footer  bg-[#000000] text-[#FFFDF4] border-t border-[#262626]
+//
+// THE OWNER HAS DECIDED THE FOOTER IS NOT THE DESIGN'S #000000, AND THE DESIGN
+// IS BEING OVERRULED HERE ON PURPOSE. The footer takes the header's colour
+// instead. See the note on the footer rule below for the value and the alpha
+// decision. Nothing else in this file is a deviation.
+//     inner   max-w-[1440px] mx-auto px-6 md:px-10 py-14
+//       grid     grid-cols-1 md:grid-cols-12 gap-10 pb-12
+//                 border-b border-[#262626]
+//         brand   md:col-span-5 space-y-3
+//         explore md:col-span-2
+//         dev     md:col-span-3
+//         connect md:col-span-2
+//       legal  pt-8 flex sm:flex-row justify-between text-xs text-[#77746C]
+//
+// The column split is 5 / 2 / 3 / 2 and that is deliberate. Do not balance it to
+// three/three/three/three. The identity block genuinely has more to say than a
+// list of three links and the grid says so before a word has been read.
+//
+// THE GRID IS ONE AT A TIME AND TWELVE FROM 768px, WHICH IS THE DESIGN'S md. It
+// is not a flex row at every width. A four column footer at 640px wide gives
+// each column about 130px, which wraps every link label onto two lines.
+//
+// py-14 is 56px and pb-12 is 48px. Both are written as literals rather than
+// through a spacing preset because theme.json's spacing scale has no 56px step
+// and adding one to express a single value would widen the scale for every block
+// in the editor.
+//
+// THERE IS NO SEPARATOR RULE IN THIS FILE ANY MORE, AND THAT IS A FIX. There was
+// one, for a core/separator that patterns/footer.php no longer authors. The
+// hairline under the columns is the grid's own border-bottom, which is where the
+// design puts it, and a rule for a block that is not in the markup is a rule that
+// would quietly double the line the day somebody inserted one.
+//
+// THE PARAGRAPH RULES BELOW ALL CARRY FOUR CLASSES, AND THEY HAVE TO. The base
+// typography layer sets .site-footer p, which is one class and one element, and
+// from 640px it sets that at 18px in the secondary text colour. A rule that
+// targets an element directly always beats one the element would have inherited
+// from, so the 12px legal row was rendering at 18px in the wrong colour even
+// though its container said 12px. Putting font-size and color on the paragraphs
+// themselves at a higher specificity is the only thing that wins that, and it is
+// why the container rule below is not trusted to carry the size on its own.
+
+$footer-padding-block: 3.5rem;
+$footer-grid-gap: 2.5rem;
+$footer-grid-padding: 3rem;
+$footer-legal-padding: 2rem;
+
+// The footer carries no is-style-* rhythm variation, because it is a template
+// part rather than page content and page rhythm does not apply to it. The
+// design gives it py-14 directly on the footer element, so the top and bottom
+// padding is stated here rather than inherited from a variation.
+//
+// THE FOOTER REACHES BOTH EDGES OF THE WINDOW, AND IT DID NOT. The design's
+// footer element paints the full width of the viewport, with
+// max-w-[1440px] mx-auto px-6 md:px-10 as an inner container. Measured at 1440,
+// the design's footer reports left 0 and width 1440. Ours reported left 40 and
+// width 1360, so the band stopped 40px short of each edge and left a
+// #0A0A0B strip either side of it. That gap was visible in a pixel read of the
+// live band, and the strip and the band were two different colours. They are
+// one colour now, so the seam is not measurable any more, but the full bleed
+// stays because it is what puts the content on the design's grid.
+//
+// WHY THE BOX WAS NARROW. The same reason as every other section, and _rhythm
+// already solves it for .is-style-section. The footer wears no is-style class,
+// so it never received that rule. This rule is that rule, restated for the
+// footer, and the two custom properties it reads are the same two WordPress
+// derives from theme.json.
+//
+// THE WIDTH AND THE ESCAPE ARE THE SAME STATEMENT AS IN _rhythm.scss, on the one
+// full width surface that is not a section, and for the same reason.
+//
+// MEASURED BEFORE THIS RULE WAS RESTATED, WITH A CLASSIC SCROLLBAR AT 1440: the
+// footer reported left -7.5 and right 1432.5, and the grid inside it reported left
+// 32.5 against the design's 40. The old escape was calc( 50% - 50vw ), which
+// centres the box on the WINDOW rather than starting it at the left edge of the
+// viewport CONTENT area, so the error was exactly half a scrollbar. The design at
+// the same viewport with the same scrollbar reports footer left 0, right 1905 at
+// 1920 and left 0, right 1425 at 1440, and its inner container left 232.5 and 0
+// respectively.
+//
+// 100cqw, NOT 100vw, IN BOTH PLACES. 100vw counts a classic scrollbar that the
+// viewport content area does not, and the design's surfaces end at clientWidth.
+// _rhythm.scss declares the html inline size query container that makes 100cqw
+// equal clientWidth, and the long note there is the arithmetic; this is the same
+// two declarations applied to the footer.
+//
+// THE OVERFLOW GUARD IS IN _rhythm.scss AND IT IS LOAD BEARING HERE. That file
+// restates base/_reset.scss's overflow-x: hidden on body as overflow-x: clip on
+// html, which does not create a scroll container, so the overshoot is unreachable
+// and maxScrollX is 0 rather than 8.
+//
+// THE BACKGROUND IS THE HEADER'S, AND THE DESIGN'S #000000 IS REFUSED. This is
+// the owner's call and it is a deliberate deviation, so the reason is here.
+//
+// MEASURED, NOT ASSUMED. The header has two states and they are not the two
+// rules you would guess. At 1440, 768 and 390 alike, the resting header
+// computes to rgba(0, 0, 0, 0), transparent, with border-bottom transparent
+// and backdrop-filter none. The scrolled header, the one carrying .is-scrolled,
+// added by assets/js/site-header.js past 24 pixels, computes to
+// rgba(10, 10, 11, 0.92) with border-bottom rgb(38, 38, 38) and
+// backdrop-filter blur(12px). The scrolled rule is _site-header.scss:110 and
+// it is the one the footer takes. var(--wp--preset--color--surface-2) at
+// _site-header.scss:265 is the social link hover fill and has nothing to do
+// with the band.
+//
+// THE ALPHA IS DROPPED, AND THIS IS A JUDGEMENT CALL. The header's 0.92 is
+// there because the band floats over moving content and needs to let some of
+// it through. It is measured to render at (9, 9, 10) at x 5 and (10, 10, 11) at
+// x 195 at 390 wide, over a body ground of rgb(10, 10, 11): the blur is picking
+// up neighbours and shifting the result by one unit out of 255.
+//
+// The footer has none of that. It is the last thing in the document, it is not
+// fixed, and the only thing behind it is the page ground, which is the same
+// rgb(10, 10, 11) the header composites over. At 0.92 the footer would composite
+// to exactly the ground colour, so it would look identical to the header by
+// accident and would change colour the moment anything behind it changed. An
+// opaque #0A0A0B is the value that renders at (10, 10, 11), which is the
+// header's own measured pixel within one unit of 255 and the closest any
+// single opaque token can get. So: the same hue, the same token, alpha 1.
+//
+// THE !IMPORTANT IS LOAD BEARING AGAIN, FOR A SECOND REASON. The footer's black
+// does not come from this file at all. patterns/footer.php sets the black
+// backgroundColor block attribute, which Core renders as the class
+// has-black-background-color, and Core prints that as
+//   .has-black-background-color { background-color: var(--wp--preset--color--black) !important; }
+// which is one class with !important. An !important author declaration beats
+// a normal one whatever the specificity, so a plain background-color here
+// loses to it and the footer stays the design's #000000 with the rule sitting
+// in the stylesheet looking correct.
+.wp-block-group.site-footer {
+	width: 100cqw;
+	max-width: none;
+	padding-block: $footer-padding-block;
+	padding-inline: max(
+		var( --wp--style--root--padding-left, 1.5rem ),
+		calc( ( 100cqw - var( --wp--style--global--content-size, 90rem ) ) / 2 )
+	);
+	// The header's solid, scrolled colour, at full opacity. See the note above.
+	background-color: var(--wp--preset--color--base) !important; // stylelint-disable-line declaration-no-important -- Core prints .has-black-background-color with !important. See the note above.
+	border-top: 1px solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--text);
+
+	// WordPress prints this competing rule with !important, so a plain
+	// declaration here loses to it and the escape is silently discarded:
+	//   .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+	//       margin-left: auto !important;
+	//       margin-right: auto !important;
+	//   }
+	// Those auto margins centre a constrained child inside its parent, which is
+	// right for a column of text and wrong for a surface that has to reach both
+	// edges of the viewport. The value subtracts the containing block from the
+	// viewport content area, which is the negative of the containing block's own
+	// offset and is exact at every width; see the note above.
+	margin-inline: calc( ( 100% - 100cqw ) / 2 ) !important;
+}
+
+// ---------------------------------------------------------------------------
+// THERE WERE 24 PIXES OF NOTHING BETWEEN THE PAGE AND THE FOOTER, ON ALL SIX
+// ROUTES, AND IT WAS NOT THE FOOTER'S OWN PADDING.
+//
+// MEASURED AT 1440, THE SAME 24 ON EVERY ROUTE:
+//   /            main bottom 10406.81, footer top 10430.81, gap 24.00
+//   /about/      main bottom  4609.09, footer top  4633.09, gap 24.00
+//   /contact/    main bottom  2344.41, footer top  2368.41, gap 24.00
+//   /projects/   main bottom  3844.91, footer top  3868.91, gap 24.00
+//   /rankkernel/ main bottom  6065.13, footer top  6089.13, gap 24.00
+//   /resume/     main bottom  3385.06, footer top  3409.06, gap 24.00
+// The design's gap is 0.00 at 1440 and at 390 alike: the design puts no margin
+// between the last section and the footer at all, and the 1 pixel hairline on the
+// footer's own top edge is the only thing between them.
+//
+// IT IS NOT IN THE FOOTER AND NOT IN ANY SECTION RULE. The margin is on the
+// element that WRAPS the footer, which is the footer template part that
+// templates/*.html print as
+//
+//   <footer class="wp-block-template-part">
+//
+// and it belongs to Core's block gap:
+//   :root :where(.is-layout-flow) > * { margin-block-start: var(--wp--preset--spacing--50); }
+// where --wp--preset--spacing--50 is the theme's own 1.5rem standard spacing
+// size. Measured directly: the wrapper's computed margin-top is 24px and the
+// footer's own is 0px. It is invisible to a per section comparison, because it is
+// not in a section, and it is the second half of the page height delta that
+// section by section measurement could not account for.
+//
+// templates/ is not this file's to change, so the margin is cancelled here, on
+// the wrapper, by selector rather than by editing the template. The selector is
+// the wrapper's own tag plus its own class and nothing else, so it cannot reach
+// anything else on the page: there is one footer template part and it is this
+// one. It outranks Core's rule on specificity rather than on load order, because
+// :where() contributes nothing and :root is a single pseudo-class, so Core's
+// selector is (0,1,0) and this one is (0,1,1).
+footer.wp-block-template-part {
+	margin-block-start: 0;
+}
+
+.wp-block-group.site-footer .site-footer__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: $footer-grid-gap;
+	padding-bottom: $footer-grid-padding;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// THE INLINE MARGINS ARE CLEARED HERE, AND IT IS NOT OPTIONAL. WordPress prints
+// this in its global styles, on every child of a constrained layout group:
+//
+//   .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+//     max-width: var(--wp--style--global--content-size);
+//     margin-left: auto !important;
+//     margin-right: auto !important;
+//   }
+//
+// Both declarations carry !important, so only an !important of our own outranks
+// them, and that is why this one is written that way. Auto inline margins in a
+// grid cell resolve the item's width to its content rather than its track, so
+// every column collapsed to the width of its longest word. Measured at 1440 with
+// the margins in place, against the design measured the same way:
+//
+//   column       with auto margins   margins cleared   design
+//   identity            448px             543px         543px
+//   explore              55px             193px         193px
+//   development         174px             310px         310px
+//   connect              56px             193px         193px
+//
+// The Explore column at 55px is the visible symptom: it is narrower than the
+// word "RankKernel" in the column beside it.
+//
+// The inline gap is 0.5rem rather than 0.75rem, and the reason is the design's
+// own two-level spacing. The column is space-y-3, which is 12px, and that is
+// the gap from the heading down to the first link. The list inside it is
+// space-y-2, which is 8px, and that is the gap between links. One uniform gap
+// cannot express both, so the column carries the tighter 8px and the heading
+// carries the missing 4px as a margin, which restores 12px above the first link
+// and leaves 8px between links. The identity column keeps the uniform 12px,
+// because every child of it is space-y-3 in the design.
+.wp-block-group.site-footer .site-footer__col {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-block: 0;
+	margin-inline: 0 !important; // stylelint-disable-line declaration-no-important -- WordPress prints the competing rule with !important. See the note above.
+	// The competing rule also sets max-width to the global content size. The
+	// design puts no max width on a column, so the column is given none, which
+	// keeps it filling its track at any viewport rather than only while the
+	// content size happens to be wider than the track.
+	max-width: none;
+}
+
+// THE CHILDREN OF A COLUMN NEED THE SAME TWO CLEARANCES THE COLUMN ITSELF DOES,
+// AND THEY DID NOT HAVE THEM. A column is itself a constrained layout group, so
+// WordPress prints the auto margin and the content size max-width on every one
+// of its children as well, and a flex column stretches a child that has no auto
+// inline margin but centres one that has. Every child of every column was
+// therefore shrink-wrapped to its own content and centred in its track, which
+// put the wordmark, the identity line, the column headings and all eight links
+// in the middle of their columns. Measured at 1440, ours against the design:
+//
+//   element              ours x/w        design x/w
+//   brand                241 / 141       40 / 218
+//   identity line        102 / 420       40 / 543
+//   summary               88 / 448       40 / 448
+//   Explore heading      695 / 49        623 / 193
+//   Home link            699 / 41        623 / 193
+//
+// The summary is the one child the design does cap, at max-w-md, and it is
+// capped below in its own rule, which is later in this file and so wins on
+// source order at this equal specificity.
+.wp-block-group.site-footer .site-footer__col > * {
+	margin-inline: 0 !important; // stylelint-disable-line declaration-no-important -- WordPress prints the competing rule with !important. See the note above.
+	max-width: none;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.site-footer .site-footer__grid {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.wp-block-group.site-footer .site-footer__col--identity {
+		grid-column: span 5;
+	}
+
+	.wp-block-group.site-footer .site-footer__col--explore {
+		grid-column: span 2;
+	}
+
+	.wp-block-group.site-footer .site-footer__col--development {
+		grid-column: span 3;
+	}
+
+	.wp-block-group.site-footer .site-footer__col--connect {
+		grid-column: span 2;
+	}
+}
+
+// The identity column is space-y-3 throughout, so its gap is the full 12px and
+// not the 8px the link columns use. Without this the brand, the identity line
+// and the summary sit 8px apart where the design has them 12px apart.
+.wp-block-group.site-footer .site-footer__col--identity {
+	gap: 0.75rem;
+}
+
+// The wordmark in the footer is larger than the one in the header: text-2xl
+// against text-lg, both Syne at weight 700.
+.wp-block-group.site-footer .site-footer__brand {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	// text-2xl is 24px on a 32px line, a ratio of 1.3333.
+	// Stated unitless because the lint rule forbids rem on line-height.
+	line-height: 1.3333;
+	letter-spacing: -0.025em;
+	color: var(--wp--preset--color--text);
+}
+
+// The heading is sized to its content so the wordmark's hover box is the
+// wordmark. The design puts inline-block on the anchor, so its amber hover
+// covers the word and nothing else, and ours was a block heading filling the
+// whole 543 pixel identity column, which made the hover target the column.
+// Measured at 1440, the design's wordmark is 218 wide, ours was 543.
+.wp-block-group.site-footer .site-footer__brand {
+	width: fit-content;
+}
+
+// The wordmark anchor, which is a child of the heading and not the heading.
+//
+// The rule used to be a.site-footer__brand:hover, which matched nothing. The
+// className on a core/site-title block lands on the heading element, so the
+// anchor it renders inside never carries the class, and the hover colour the
+// design has at Footer.tsx line 30 was never applied. The wordmark is a
+// core/heading wrapping an anchor now, so the class is on the heading and the
+// anchor is a descendant of it. The class is on the heading either way, so
+// nothing above this rule needed changing.
+//
+// inline-block ON THE ANCHOR, WHICH WAS display: inline. An inline anchor sits in
+// an anonymous line box whose height is the font's line box rather than the
+// heading's, so the wordmark measured 29 tall at y 10488.81 where the design's
+// measures 32 at y 10455.22. The design's own brand anchor reads display
+// inline-block, and this is the same fix _site-header.scss makes to the header
+// wordmark, for the same reason.
+.wp-block-group.site-footer .site-footer__brand a {
+	display: inline-block;
+	color: var(--wp--preset--color--text);
+	text-decoration: none;
+}
+
+.wp-block-group.site-footer .site-footer__brand a:hover,
+.wp-block-group.site-footer .site-footer__brand a:focus {
+	color: var(--wp--preset--color--accent);
+}
+
+// The identity line. Mono at 12px in the secondary text colour. The design
+// states text-xs, not the 16px weight 600 amber of the hero identity line, so
+// the two are deliberately different and this file does not merge them.
+.wp-block-group.site-footer .site-footer__identity-line {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	// text-xs is 12px on 16px, not on 20px. The 20px here was the single line
+	// that pushed the identity column 4px past the design.
+	line-height: 16px;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// The descriptive line under the identity. Body face, not mono, because the
+// design sets it as prose: text-sm at 14px in the faint text colour, capped to
+// the design's max-w-md reading width, at a relaxed leading. This line used to
+// carry an employer name in the mono technical voice, which the design has no
+// equivalent for, so it now says what the work is.
+.wp-block-group.site-footer .site-footer__summary {
+	margin-block: 0;
+	max-width: 28rem;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-faint);
+}
+
+// The column headings are eyebrows: mono, 12px, amber.
+//
+// THE MARGIN HERE IS THE TOP HALF OF THE DESIGN'S TWO-LEVEL COLUMN SPACING. The
+// heading sits 12px above the first link and links sit 8px apart. The column
+// carries the 8px, so the extra 4px that makes the heading to link distance the
+// design's 12px is stated here. See the note on .site-footer__col.
+.wp-block-group.site-footer .site-footer__heading {
+	margin-block: 0 0.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 16px;
+	letter-spacing: normal;
+	color: var(--wp--preset--color--accent);
+}
+
+// The link list is text-sm, which is 14px on 20px. 1.5 gave 21px, one pixel
+// per link, and four links is four pixels of column height that the design does
+// not have.
+.wp-block-group.site-footer .site-footer__link {
+	margin-block: 0;
+	font-size: 0.875rem;
+	line-height: 20px;
+}
+
+.wp-block-group.site-footer .site-footer__link a,
+.wp-block-group.site-footer .site-footer__link a:visited {
+	color: var(--wp--preset--color--text-muted);
+	transition: color $motion-duration $motion-ease;
+}
+
+.wp-block-group.site-footer .site-footer__link a:hover,
+.wp-block-group.site-footer .site-footer__link a:focus {
+	color: var(--wp--preset--color--accent);
+}
+
+// The design's one accent link in the footer, which is Resume in the Explore
+// column: amber at rest, the lighter amber on hover, and half a step heavier,
+// which is font-medium at 500. Every other link in the footer is the muted
+// colour. Measured at 1440, the design's Resume anchor computes to
+// rgb(250, 204, 21) at weight 500 and ours was rgb(216, 213, 202) at 400, and
+// the same difference was measured on hover: rgb(253, 224, 71) against
+// rgb(250, 204, 21).
+.wp-block-group.site-footer .site-footer__link--accent a,
+.wp-block-group.site-footer .site-footer__link--accent a:visited {
+	color: var(--wp--preset--color--accent);
+	font-weight: 500;
+}
+
+.wp-block-group.site-footer .site-footer__link--accent a:hover,
+.wp-block-group.site-footer .site-footer__link--accent a:focus {
+	color: var(--wp--preset--color--accent-hover);
+}
+
+// The legal row. gap-4 is 16px and pt-8 is 32px, and the row stacks into a
+// column below 640px exactly as the design's flex-col sm:flex-row does.
+//
+// THE BLOCK MARGIN IS CLEARED, AND IT IS THE LARGEST SINGLE ITEM IN HM-15. The
+// footer is a constrained layout group, so WordPress gives this row a
+// margin-block-start of var(--wp--preset--spacing--50), which is 24px, on top
+// of the design's own pt-8. The design has no such gap between the grid and the
+// legal row: its 32px is the padding and nothing else. Twenty-four pixels of
+// the forty-two pixel excess was this one declaration.
+// THE ROW DOES NOT WRAP, AND IT WAS WRAPPING. The design writes flex flex-col
+// sm:flex-row justify-between gap-4, and Tailwind's flex utility is nowrap,
+// so at 768 the two lines sit side by side and each one wraps its own text
+// inside its own share of the row. Measured at 768, the design's legal row is
+// 64 tall: 32 of padding over two 32 pixel lines, one under each item. Ours was
+// 80, because the row carried flex-wrap: wrap and the two items together need
+// 248.67 + 16 + 489.61 in a 688 wide row, so the second item dropped below the
+// first instead of shrinking. nowrap puts it back where the design has it.
+.wp-block-group.site-footer .site-footer__legal {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	gap: 1rem;
+	margin-block: 0;
+	padding-top: $footer-legal-padding;
+	font-size: 0.75rem;
+	color: var(--wp--preset--color--text-faint);
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.site-footer .site-footer__legal {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+// THE LEGAL PARAGRAPHS CARRY THEIR OWN SIZE AND COLOUR. The design wants 12px in
+// the faint text colour for both of them, and .site-footer p in the base layer
+// would otherwise hand them 18px in the secondary colour from 640px up. The
+// size and the colour are stated on the paragraphs, not inherited, because that
+// is the only way to beat a rule that targets the element. The copyright stays in
+// the body face and the technical line stays in mono, which is the design's split
+// at Footer.tsx:174 to 178.
+.wp-block-group.site-footer .site-footer__legal .site-footer__copyright {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.75rem;
+	font-weight: 400;
+	// text-xs is 16px of line, so the row is 32px of padding over 16px of text.
+	// At 1.5 it was 18px of text and the row was 50px where the design is 48px.
+	line-height: 16px;
+	color: var(--wp--preset--color--text-faint);
+}
+
+.wp-block-group.site-footer .site-footer__legal .site-footer__technical {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 16px;
+	color: var(--wp--preset--color--text-faint);
+	// Tabular figures, as the design's font-mono-tech utility sets. The base
+	// typography layer only applies this to code and to the mono font family
+	// class, and the legal row states its family here rather than through a
+	// class, so the property is stated here too.
+	font-variant-numeric: tabular-nums;
+}
+
+/* stylelint-enable selector-class-pattern */

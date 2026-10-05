@@ -1,0 +1,1254 @@
+@use '../abstracts' as *;
+
+// The Resume page.
+//
+// WHAT THIS PAGE IS. A document, not a marketing page. The design puts one
+// textured hero on the 48px dark grid and then five numbered sections on a flat
+// black ground, each introduced by a 12px mono label rather than a display
+// heading. ResumePage.tsx renders the whole thing twice: once as the shared
+// InnerPageHero and once through ResumeDocumentContent in ResumeModal.tsx, which
+// is the component that owns sections 01 to 05. Everything below is traced to
+// one of those two files or to index.css.
+//
+// WHY THE FIVE NUMBERED SECTIONS SIT INSIDE ONE CARD AGAIN. ResumeModal.tsx puts
+// all five <section> elements inside a single document card div, and the card is
+// what carries the ground, the hairline and the p-6 sm:p-10 md:p-12 inset. A
+// wrapper group was removed from content/pages/resume.html once so the five could
+// be measured individually, and the page body was left carrying seven blocks: the
+// hero, 01 to 05, and the 06 and 07 panel grid. That arrangement painted five
+// separate black boxes with the page ground #0A0A0B showing through the 40px
+// between them, which is not what the design does. Exact parity wins, so .rs-doc
+// is the wrapper again and the page body carries three blocks: the hero, the
+// card, and the 06 and 07 panel grid, which ResumePage.tsx renders as a sibling
+// of the document card and which therefore cannot live inside it.
+//
+// WHAT THE WRAPPER COST, AND WHAT IT DID NOT. Per section measurement survives.
+// Every section keeps its own .rs-sec class and its own rs-sec-- modifier, so
+// .rs-sec--summary, .rs-sec--skills, .rs-sec--exp, .rs-sec--work and
+// .rs-sec--edu all still resolve from outside the card, and a getBoundingClientRect
+// on any one of them still returns the design's height for that section. What is
+// no longer directly readable is anything that used to be measured across the
+// page body rather than inside one section: the block gap between two consecutive
+// sections is now the card's own space-y-10 rather than a margin between two page
+// level siblings, and the page body's own top margin belongs to the card. Section
+// heights themselves are unaffected, because the card's inset is padding on the
+// card and the space-y-10 is a gap between its children, so neither lands inside
+// a section box.
+//
+// WHY EACH NUMBERED SECTION CARRIES NO PADDING OF ITS OWN. The design's five are
+// flat: no background image and no padding, and the rhythm between them is the
+// card's own space-y-10, which is 2.5rem. is-style-section, which supplies 5rem
+// then 7rem, is worn by none of them and _rhythm.scss is left alone. The inset
+// the card used to carry is on .rs-doc again.
+//
+// ZERO BORDER RADIUS, ZERO BOX SHADOW, both banned by base/_reset.scss.
+// NO LIGHT SURFACE. The card ground is #111113, the raised cards inside the work
+// section are #171719, the RankKernel card steps back down to #0A0A0B, and
+// nothing on this page wears a cream or warm editorial variation.
+//
+
+/* stylelint-disable selector-class-pattern --
+   The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by content/pages/resume.html, which this stylesheet cannot
+   change. */
+
+// The document card and every group inside it are WordPress layout groups, so
+// Core hands each one a horizontal page padding of its own and a 1.5rem gap
+// between its children. Neither belongs here: the page container already supplies
+// the design's px-6 then px-10, and the gaps are stated per group below from the
+// space-y utility the design uses at each place. The selectors carry the block
+// class so they outrank has-global-padding and :root :where(.is-layout-flow) > *
+// whichever of the two the theme happens to print later.
+$rs-groups: (
+	'rs-doc',
+	'rs-hero__grid',
+	'rs-hero__lead',
+	'rs-hero__title',
+	'rs-hero__aside',
+	'rs-hero__panel',
+	'rs-hero__panel-rows',
+	'rs-hero__row',
+	'rs-sec',
+	'rs-domains',
+	'rs-domain',
+	'rs-entries',
+	'rs-entry',
+	'rs-entry__head',
+	'rs-ppers',
+	'rs-rk',
+	'rs-rk__meta',
+	'rs-rk__head',
+	'rs-rk__links',
+	'rs-work-b',
+	'rs-projects',
+	'rs-project',
+	'rs-project__body',
+	'rs-project__foot',
+	'rs-edu',
+	'rs-edu__main',
+	'rs-closing',
+	'rs-panel',
+	'rs-contact__top',
+	'rs-contact__links',
+	'rs-tiles',
+	'rs-tile'
+);
+
+@each $name in $rs-groups {
+
+	.wp-block-group.#{$name} {
+		padding-inline: 0;
+	}
+}
+
+// The vertical gap each group puts between its own children. Every value is the
+// space-y utility ResumeModal.tsx states at that place, or the gap utility of
+// the flex or grid wrapper there: space-y-10 is 2.5rem, space-y-8 is 2rem,
+// space-y-6 is 1.5rem, space-y-4 is 1rem, space-y-3 is 0.75rem, space-y-2 is
+// 0.5rem, space-y-1.5 is 0.375rem and gap-1 is 0.25rem.
+//
+// A grid group is listed with zero because the gap there is the grid gap, which
+// the rule for that group states, and its children must not also carry a flow
+// margin on top of it.
+//
+// The five numbered sections are not one rule. The design states a different
+// stack at each: 01 and 05 are space-y-3, 02 is space-y-4, and 03 and 04 are
+// space-y-6. rs-sec carries the 01 value and the three modifier classes restate
+// it, because the modifier is a class the content file already carries.
+//
+// The document card is space-y-10, which is 2.5rem. The hero's lead column is
+// space-y-5, which is 1.25rem, the h1 and subtitle stack inside it is space-y-3,
+// which is 0.75rem, the hero contact panel is space-y-4 and its rows are
+// space-y-2.5, which is 0.625rem.
+$rs-gaps: (
+	'rs-doc': 2.5rem,
+	'rs-hero__grid': 0,
+	'rs-hero__lead': 1.25rem,
+	'rs-hero__title': 0.75rem,
+	'rs-hero__aside': 0,
+	'rs-hero__panel': 1rem,
+	'rs-hero__panel-rows': 0.625rem,
+	'rs-hero__row': 0,
+	'rs-hero__meta': 0,
+	'rs-sec': 0.75rem,
+	'rs-sec--skills': 1rem,
+	'rs-sec--exp': 1.5rem,
+	'rs-sec--work': 1.5rem,
+	'rs-sec--edu': 0.75rem,
+	'rs-domains': 0,
+	'rs-domain': 0.375rem,
+	'rs-entries': 2rem,
+	'rs-entry': 0.75rem,
+	'rs-entry__head': 0,
+	'rs-ppers': 0,
+	'rs-rk': 0.5rem,
+	'rs-rk__meta': 0,
+	'rs-rk__head': 0,
+	'rs-rk__links': 0,
+	'rs-work-b': 1rem,
+	'rs-projects': 0,
+	'rs-project': 0,
+	'rs-project__body': 0.375rem,
+	'rs-project__foot': 0,
+	'rs-edu': 0,
+	'rs-edu__main': 0,
+	'rs-closing': 0,
+	'rs-panel': 1.5rem,
+	'rs-contact__top': 1rem,
+	'rs-contact__links': 0.75rem,
+	'rs-tiles': 0,
+	'rs-tile': 0.375rem
+);
+
+// The loop that applies this map is at the end of this file. It has to be
+// there: several of the element rules below also set margin-block, at the same
+// specificity as the loop, so whichever came later would win. A rule that zeroed
+// one margin would silently delete a space-y gap. See the note at the foot of
+// this file.
+
+// The document card. bg-[#111113] border border-[#262626] p-6 sm:p-10 md:p-12
+// space-y-10 on the single div ResumeModal.tsx wraps sections 01 to 05 in.
+//
+// The ground is var(--wp--preset--color--surface), which theme.json declares as
+// #111113, and the hairline is var(--wp--preset--color--line), which is #262626.
+// Neither is the black this file used to paint the five sections with. The card
+// ground is what the design shows both inside the card and in the space-y-10
+// between the sections, which is why five separately painted boxes could not
+// reproduce it: the 40px between two sections belongs to the card, not to the
+// page behind it.
+//
+// The inset is stated here rather than per section, and the sections carry no
+// padding of their own, because in the design it belongs to the card.
+.wp-block-group.rs-doc {
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+	padding: 1.5rem;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.rs-doc {
+		padding: 2.5rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.rs-doc {
+		padding: 3rem;
+	}
+}
+
+// The five numbered sections are flat inside the card. No padding and no ground
+// of their own, because the card owns both. The backgroundColor attribute is
+// gone from the content file for the same reason: Core applies that attribute
+// through the global styles' `!important` rule, so a black attribute on a
+// section would paint black over the card.
+.wp-block-group.rs-sec {
+	padding: 0;
+	background-color: transparent;
+}
+
+// THE 1440 CAP IS A BORDER BOX HERE AND A CONTENT BOX IN THE DESIGN.
+//
+// MEASURED, at 1920, before this rule:
+//
+//   ours    site-main 240..1680, 1440 wide, padding-inline 0
+//   design  wrapper   240..1680, 1440 wide, padding-inline 40
+//   design  card      280..1640, 1360 wide
+//
+// The design's wrapper is max-w-[1440px] px-10, so its 40px gutter is INSIDE the
+// 1440 and the content is 1360. This theme's page column is max-width
+// var(--wp--style--global--content-size), which theme.json sets to 90rem, that is
+// 1440px, and the page body reports padding-inline 0 at every width, so the same
+// 1440 is the content width and this page's card comes out 80px wider than the
+// design's at 1920. Measured card inset at 1920 was 240..1680 against the
+// design's 280..1640.
+//
+// It is invisible at 1440 and below because there the overflow is zero: at 1440
+// the viewport less the outer 40px gutter is 1360, which is under the 1440 cap,
+// so the cap never binds and the two agree. At 1920 the cap binds and they do not.
+//
+// WHAT THIS RULE STATES. The content column is the cap less one gutter on each
+// side, so the box is the design's content box rather than its border box. The
+// gutter is the same custom property _rhythm.scss sets on body, so the 24px and
+// 40px steps are read from one place and a change there moves this with it.
+//
+// The proper home for this is the shared page gutter, in _rhythm.scss or base/,
+// where the same correction then applies to every page. It is stated here rather
+// than there because those files belong to another change, and stating it here is
+// exact for this page at all four measured widths without touching them. It should
+// move to the shared gutter as soon as that is free to be edited, and this rule
+// deleted, or the two will both be counting the same gutter.
+//
+// The hero is not touched: _rhythm.scss already states its inset with the
+// max( gutter, ( 100vw - cap ) / 2 + gutter ) arithmetic, and it measures
+// 280..1640 at 1920 already, which is the design's content edge.
+$rs-column: calc(var( --wp--style--global--content-size, 90rem ) - 2 * var( --wp--style--root--padding-left, 1.5rem ));
+
+.entry-content > .wp-block-group.rs-doc,
+.entry-content > .wp-block-group.rs-closing {
+	max-width: $rs-column;
+	margin-inline: auto;
+}
+
+// The gap above the card. The design's wrapper carries py-16, which is 4rem, and
+// the card is its first child, so 4rem is the measured distance from the hero's
+// border to the card's border at every width the design states.
+//
+// What this page does not reproduce is the card's own document header, the name
+// and direct contact block ResumeModal.tsx prints above section 01. This page
+// carries that information in the hero's right panel instead, including the
+// email mailto the design's block also carries, so nothing is lost by leaving it
+// out of the card. That block is 125px of content inside the card, so the
+// card is 125px shorter than the design's and section 01 sits higher inside it,
+// but the card's outer box lands exactly where the design puts it.
+.entry-content > .wp-block-group.rs-doc {
+	margin-block-start: 4rem;
+}
+
+// The recruiter panels sit below the document. The design puts this grid outside
+// the document card, as a sibling of the card rather than a child of section 05,
+// so it is authored that way here too: it is the page body's third block, the two
+// above it being the hero and the document card. It must not be the last child of
+// the card, because that puts the whole grid inside Education's box and section
+// 05 measures 766px instead of the design's 85px.
+//
+// The gap below the card and above the grid is the wrapper's space-y-16, which is
+// 4rem, and nothing else. The card's own 1px bottom border and its 3rem bottom
+// padding are inside the card's border box and are no longer added here: when the
+// five sections were the page body's own blocks this rule had to supply the
+// padding that the missing card would have carried, and it measured 113px. With
+// the card restored, 113px is the card's bottom padding counted twice, and the
+// design measures 64px from the card's border to the grid.
+//
+// Below the grid the wrapper's own py-16, also 4rem, closes the page. The grid
+// takes no horizontal margin of its own: it is outside the card in the design, so
+// the page body's own gutter is the whole inset.
+.entry-content > .wp-block-group.rs-closing {
+	margin-block-start: 4rem;
+	margin-block-end: 4rem;
+}
+
+// WHY THE PARAGRAPH RULES BELOW CARRY A SECOND CLASS. base/_typography.scss
+// line 149 sets `.page-shell p` to 1rem, and `.page-shell p` is two selectors
+// where a bare class is one, so it outranks every `p` rule written as a single
+// class in this file. The design size was therefore being ignored: every
+// text-xs, text-sm and 11px paragraph on this page rendered at 16px, each
+// paragraph took more lines than the design prints, and sections 02, 03 and 04
+// all grew. The fix is the one _page-projects.scss line 238 already uses for the
+// same reason: state the size against the block that owns the paragraph, so the
+// selector carries two classes and wins. Nothing in base/ is changed for it.
+
+// The 12px mono section label that opens each numbered section.
+//
+// font-mono-tech text-xs font-semibold text-[#FACC15] border-b border-[#262626]
+// pb-2. text-xs is 12px on a line height of calc(1 / 0.75), which is 1.3333.
+// The wrapper class is here for the same reason as the paragraphs below: the
+// closing panels print the label on a paragraph, not on a heading.
+.wp-block-group .rs-label {
+	margin-block: 0;
+	padding-block-end: 0.5rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// THE HERO, in the shape InnerPageHero.tsx gives it.
+//
+// py-16 md:py-24 on the section is already .section-hero in _rhythm.scss, which is
+// 4rem then 6rem, and it is left alone. What the section gains here is the hairline
+// the design puts on it, border-b border-[#262626], which was missing entirely.
+//
+// THE TWO COLUMNS. grid grid-cols-1 lg:grid-cols-12 gap-10 items-end, with the
+// lead column at lg:col-span-7 and the contact panel cell at lg:col-span-5. The
+// seven and five spans are what make the design's h1 wrap onto two lines: at 1440
+// the twelve tracks are 76.67px with eleven 40px gaps, so the lead column is
+// 776.66px and "Maulik Bhalodiya" at 60px does not fit on one line there, while it
+// does fit in the full 1360px this page's hero used to give it. Removing the panel
+// without restoring the grid is what put this page's h1 on one line, so the panel
+// and the grid are restored together.
+//
+// WHY THE GAPS ARE 20px AND NOT 56px. The hero is a WordPress layout group, and
+// is-style-section gives it a 3.5rem block gap from styles/section.json. That is
+// the theme's section rhythm, not the design's, and the design's hero is
+// space-y-8 on its inner container and space-y-5 on the lead column. Both are
+// stated here on the two wrappers, and both wrappers are the only children of the
+// section now, so the 3.5rem has nothing left to separate.
+// The section's own hairline. InnerPageHero.tsx puts border-b border-[#262626]
+// on it, and this page's hero carried none, which is 1px of the 19.59px the hero
+// was 597.59 against the design's 577.84. The vertical padding is not restated:
+// .section-hero in _rhythm.scss already gives it the design's py-16 then py-24.
+.wp-block-group.rs-hero {
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.wp-block-group.rs-hero__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2.5rem;
+}
+
+@include from( $bp-lg ) {
+
+	.wp-block-group.rs-hero__grid {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		align-items: end;
+	}
+}
+
+.wp-block-group.rs-hero__lead {
+	min-width: 0;
+}
+
+@include from( $bp-lg ) {
+
+	.wp-block-group.rs-hero__lead {
+		grid-column: span 7;
+	}
+
+	.wp-block-group.rs-hero__aside {
+		grid-column: span 5;
+		min-width: 0;
+	}
+}
+
+// The name and the role line share one space-y-3 stack, which is 0.75rem.
+.wp-block-group.rs-hero__title {
+	min-width: 0;
+}
+
+// text-4xl sm:text-5xl md:text-6xl font-display font-extrabold tracking-tight
+// leading-[1.08]. The ramp is 36px, then 48px from 640, then 60px from 768, and
+// 1.08 is the design's own line height rather than the 1.06 the theme's heading
+// scale uses. Two lines at 1440 is 129.6px, which is what the design measures.
+.rs-hero__title .wp-block-heading {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 2.25rem;
+	font-weight: 800;
+	line-height: 1.08;
+	letter-spacing: -0.025em;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.rs-hero__title .wp-block-heading {
+		font-size: 3rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.rs-hero__title .wp-block-heading {
+		font-size: 3.75rem;
+	}
+}
+
+// text-xl sm:text-2xl font-display font-semibold text-[#FACC15], which is 20px on
+// calc(1.75 / 1.25) and then 24px on calc(2 / 1.5).
+//
+// The selector carries two classes for the same reason the paragraphs on the
+// document card do: this is a paragraph, so a bare `.rs-hero__role` loses to
+// `.page-shell p` and rendered at 1rem instead of the design's 24px.
+.rs-hero__title .rs-hero__role {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 600;
+	line-height: 1.4;
+	color: var(--wp--preset--color--accent);
+}
+
+@include from( $bp-sm ) {
+
+	.rs-hero__title .rs-hero__role {
+		font-size: 1.5rem;
+		line-height: 1.3333;
+	}
+}
+
+// The lead paragraph. text-base sm:text-lg leading-relaxed max-w-3xl, which is
+// 16px then 18px on 1.625, in a 48rem measure. The two class selector is the same
+// reason the paragraphs on the document card use one.
+.rs-hero__lead .rs-hero__lede {
+	max-width: 48rem;
+	margin-block: 0;
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+@include from( $bp-sm ) {
+
+	.rs-hero__lead .rs-hero__lede {
+		font-size: 1.125rem;
+	}
+}
+
+// The metadata row. pt-2 font-mono-tech text-xs in #77746C, with each item in
+// #D8D5CA and the separators in #77746C, laid out with a 10px column gap and a
+// 4px row gap. text-xs is 12px on a line height of 1.3333, which is 16px, so the
+// row is 8px of padding plus one 16px line: 24px, which is the design's height.
+//
+// The size is stated on each child as well as on the group, for the reason the
+// paragraphs on the document card carry a second class: the group is a
+// .wp-block-group and the children are paragraphs, so `.page-shell p` at two
+// selectors sets 1rem on them and the inherited 0.75rem never applies. Without
+// the child rules every item rendered at 16px and the row measured 58px.
+.wp-block-group.rs-hero__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	padding-block-start: 0.5rem;
+	column-gap: 0.625rem;
+	row-gap: 0.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+.wp-block-group.rs-hero__meta .rs-hero__meta-item,
+.wp-block-group.rs-hero__meta .rs-hero__meta-sep {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+}
+
+.wp-block-group.rs-hero__meta .rs-hero__meta-item {
+	color: var(--wp--preset--color--text-muted);
+}
+
+.wp-block-group.rs-hero__meta .rs-hero__meta-sep {
+	color: var(--wp--preset--color--text-faint);
+}
+
+// THE HERO CONTACT PANEL.
+//
+// p-6 bg-[#111113] border border-[#262626] space-y-4, with a 12px mono amber
+// label on a 1px #262626 hairline at pb-3, then space-y-2.5 rows of 12px mono.
+//
+// The design's panel carries three rows: Email, LinkedIn and GitHub. All three
+// are here again. The Email row was previously omitted on the grounds that this
+// page carried no email address and no mailto at all, which kept the panel one
+// row shorter than the design's. The owner's own resume carries the address as
+// a mailto: link in its header contact line, and this page now carries it here,
+// so the panel is the header contact line this page has: Email, Phone,
+// Location, LinkedIn, GitHub. Phone and Location are the two rows the owner's
+// resume states above the same two social links and this page did not have.
+// The address is the one address the site publishes and the only mailto on this
+// page, so this panel is the single source of truth for it.
+.wp-block-group.rs-hero__panel {
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.wp-block-group.rs-hero__panel .rs-hero__panel-label {
+	margin-block: 0;
+	padding-block-end: 0.75rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.rs-hero__panel-rows {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+}
+
+// The size is stated on the children rather than inherited, for the same
+// `.page-shell p` reason the metadata row above states it. text-xs is 12px on
+// 1.3333, and one row is one 16px line.
+.wp-block-group.rs-hero__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.wp-block-group.rs-hero__row .rs-hero__row-key,
+.wp-block-group.rs-hero__row .rs-hero__row-value {
+	min-width: 0;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+}
+
+.wp-block-group.rs-hero__row .rs-hero__row-key {
+	color: var(--wp--preset--color--text-faint);
+}
+
+.wp-block-group.rs-hero__row .rs-hero__row-value {
+	color: var(--wp--preset--color--text);
+}
+
+.wp-block-group.rs-hero__row .rs-hero__row-value a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.wp-block-group.rs-hero__row .rs-hero__row-value a:hover,
+.wp-block-group.rs-hero__row .rs-hero__row-value a:focus {
+	color: var(--wp--preset--color--accent);
+}
+
+// THE PANEL ROW, WHEN THE VALUE DOES NOT FIT BESIDE THE KEY.
+//
+// A handle that does not fit the measure breaks inside the value rather than
+// pushing the row past its panel, and a value that cannot fit at all as a
+// wrapped word moves onto its own line instead of being cut mid string. The
+// design gets the second behaviour for free because its value is a span in a
+// flex row that wraps, which is what this row is; the break inside the value is
+// stated here because a WordPress paragraph is a block, not a span.
+//
+// MEASURED, IBM Plex Mono 12px on the real page. The visible value is the handle
+// its own href carries, linkedin.com/in/maulik-bhalodiya-, and it needs 237.609px
+// unbroken. At 390 the row is 292px wide. The key shrank from its own 57.609px to
+// 55.422px under flex shrink and the 8px gap took 8px, which still left only
+// 228.578px for the value, so the value broke mid string into 2 lines. Closing
+// that 9.031px gap without changing the design is not available: a 9px narrower
+// value is a size the design does not carry, and dropping the 8px gap outright
+// still leaves the value 1.031px short of fitting. Letting the row wrap is the
+// honest fix, because a row that cannot hold its value on one line stacks
+// instead, and the value then has the row's whole 292px and breaks nowhere.
+//
+// MEASURED, no desktop change. flex-wrap only alters a row whose content exceeds
+// the line, and no row on this page does at 768, 1440 or 1920: the LinkedIn row
+// carries 303.218px of content, 57.609px of key, 8px of gap and 237.609px of
+// value, against a 638px row at 768 and a 493.328px row at 1440 and 1920. Every
+// geometry and every computed value at 1440 and 1920 is identical to the
+// hundredth, and all 5 of the 5 panel rows still sit on one line at 768. Only the
+// LinkedIn row stacks at 390, and it is the only row that cannot fit there.
+.wp-block-group.rs-hero__row {
+	flex-wrap: wrap;
+}
+
+// Kept as the fallback for a width narrower than 390, where the value does not
+// fit the row even on a line of its own, and as the reason the value degrades to
+// a break rather than an overflow at any width.
+.wp-block-group.rs-hero__row .rs-hero__row-value a {
+	overflow-wrap: anywhere;
+}
+
+// THE HERO ACTION ROW.
+//
+// pt-3 flex flex-wrap items-center gap-4 in InnerPageHero.tsx, centred on the line.
+// The three controls it carries are stated at px-6 py-3.5 in font-mono-tech,
+// text-xs then text-sm from sm, semibold. That is the theme's button preset at a
+// step the preset does not carry, so both sizes are restated here on a selector
+// that carries the button class.
+//
+// All three of the design's controls are now on the page, in the design's own
+// order. Its first control, "Download Resume", and its third, "Print View", are
+// now anchors on one PDF endpoint, /wp-admin/admin-ajax.php?action=maulik_resume,
+// on relative URLs so the pair survives a domain change. "Download Resume"
+// carries the download attribute so the browser saves the PDF rather than
+// rendering it in place. "Print View" carries target="_blank" and
+// rel="noopener noreferrer", so the resume PDF opens inline in its own tab and
+// the visitor's print dialog holds only that document and not this themed page.
+// Neither control needs script, and nothing on this page calls window.print().
+// The row's pt-3 is the design's own.
+//
+// The row is a child of .rs-hero__lead now, so the lead column's space-y-5 owns
+// the gap above it and this row's own margin is zero.
+.wp-block-buttons.rs-hero__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+	padding-block-start: 0.75rem;
+}
+
+.wp-block-buttons.rs-hero__actions > * {
+	margin-block-start: 0;
+}
+
+.wp-block-button.rs-btn .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.875rem 1.5rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-button.rs-btn .wp-block-button__link {
+		font-size: 0.875rem;
+		line-height: 1.4286;
+	}
+}
+
+// px-6 py-3.5 bg-[#111113] text-[#FFFDF4] border border-[#343434]
+// hover:border-[#FACC15] hover:text-[#FACC15].
+.wp-block-button.rs-btn--dark .wp-block-button__link {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.wp-block-button.rs-btn--dark .wp-block-button__link:hover,
+.wp-block-button.rs-btn--dark .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// px-6 py-3.5 bg-[#FACC15] text-[#000000] hover:bg-[#FDE047]. The design's
+// Download Resume button, which is its one amber control in the action row and
+// the first of the three. It wears no border, and it states the same amber pair
+// _page-contact.scss already states for contact-btn-amber, so the primary
+// button reads the same on both pages. It is an anchor here, not a button,
+// because it serves a file rather than running a generator.
+.wp-block-button.rs-btn--download .wp-block-button__link {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--black);
+	border: 0;
+}
+
+.wp-block-button.rs-btn--download .wp-block-button__link:hover,
+.wp-block-button.rs-btn--download .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--accent-hover);
+	color: var(--wp--preset--color--black);
+}
+
+// px-4 py-3.5 bg-[#171719] text-[#FFFDF4] border border-[#343434]
+// hover:border-[#FACC15]. The design's smaller of its two hero button sizes.
+.wp-block-button.rs-btn--print .wp-block-button__link {
+	padding: 0.875rem 1rem;
+	background-color: var(--wp--preset--color--surface-2);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+	cursor: pointer;
+}
+
+.wp-block-button.rs-btn--print .wp-block-button__link:hover,
+.wp-block-button.rs-btn--print .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--surface-2);
+	color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// 01 Professional Summary. text-base leading-relaxed, which is 16px on 1.625.
+//
+// The paragraph colour is #D8D5CA, which is var(--wp--preset--color--text-muted).
+.rs-sec .rs-summary {
+	margin-block: 0;
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// 02 Technical Skills. A two column grid from md, 16px between the cards.
+.wp-block-group.rs-domains {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.rs-domains {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// p-4 on #171719 with a hairline.
+.wp-block-group.rs-domain {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// font-display font-bold text-sm, which is Syne at 700, 14px, line height
+// calc(1.25 / 0.875).
+.rs-domain .rs-domain__label {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.875rem;
+	font-weight: 700;
+	line-height: 1.4286;
+	color: var(--wp--preset--color--text);
+}
+
+// font-mono-tech text-xs leading-relaxed, which is 12px on 1.625. The skills
+// are listed as names only. No percentages, no levels, no bars.
+.rs-domain .rs-domain__skills {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// 03 Professional Experience. Entries 32px apart, 12px between the parts of one
+// entry.
+.wp-block-group.rs-entry__head {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.rs-entry__head {
+		flex-direction: row;
+		align-items: baseline;
+		justify-content: space-between;
+	}
+}
+
+// text-xl font-display font-bold, which is 20px on calc(1.75 / 1.25), 1.4.
+.rs-entry__role {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.4;
+	color: var(--wp--preset--color--text);
+}
+
+// The period and the engagement type, mono 12px in amber. font-mono-tech
+// text-xs with no leading utility, which is 12px on 1.3333.
+.rs-entry .rs-entry__period {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+// text-sm leading-relaxed, which is 14px on 1.625. This is the one text-sm on
+// this page that carries leading-relaxed, and at 1.4286 the summary prints a
+// 20px line where the design prints 22.75.
+.rs-entry .rs-entry__summary {
+	margin-block: 0;
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// The responsibility list. space-y-2 pt-1, each item a text-sm line marked by a
+// 6px amber square sitting 8px from the top of its line. The square is drawn
+// here rather than shipped as a span in the content file, because Core would
+// rewrap that span on the first edit of the list in the editor.
+.rs-entry .rs-resp {
+	padding-block-start: 0.25rem;
+	margin-block: 0;
+	padding-inline-start: 0;
+	list-style: none;
+}
+
+.rs-entry .rs-resp > li {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.625rem;
+	margin-block: 0;
+	font-size: 0.875rem;
+	line-height: 1.4286;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.rs-entry .rs-resp > li::before {
+	content: "";
+	flex-shrink: 0;
+	width: 0.375rem;
+	height: 0.375rem;
+	margin-block-start: 0.5rem;
+	background-color: var(--wp--preset--color--accent);
+}
+
+.rs-entry .rs-resp > li + li {
+	margin-block-start: 0.5rem;
+}
+
+// The technology strip. font-mono-tech text-xs pt-1, in the faint voice.
+// text-xs is 12px on 1.3333.
+.rs-entry .rs-tech {
+	margin-block: 0;
+	padding-block-start: 0.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+// 04 Selected Development Work.
+//
+// The independent project card steps down to #0A0A0B on a #343434 border so it
+// reads as separate from the #111113 card it sits in, and carries p-5.
+.wp-block-group.rs-rk {
+	padding: 1.25rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.wp-block-group.rs-rk__meta,
+.wp-block-group.rs-rk__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+// font-mono-tech text-xs with no leading utility, which is 12px on 1.3333.
+.rs-rk__meta .rs-rk__meta-line {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+// text-lg font-display font-bold, which is 18px on calc(1.75 / 1.125), 1.5556.
+.rs-rk__name {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.125rem;
+	font-weight: 700;
+	line-height: 1.5556;
+	color: var(--wp--preset--color--text);
+}
+
+// font-mono-tech text-xs with no leading utility, so 12px on 1.3333.
+.rs-rk__head .rs-rk__link {
+	flex-shrink: 0;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	font-variant-numeric: tabular-nums;
+}
+
+.rs-rk .rs-rk__overview {
+	margin-block: 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.rs-rk__link a {
+	text-decoration: none;
+}
+
+.rs-rk__link a:hover,
+.rs-rk__link a:focus {
+	text-decoration: underline;
+}
+
+// THE PERSONAL PROJECTS WRAPPER. The owner's own resume prints two personal
+// projects, RankKernel and a personal portfolio website, and this page now
+// carries both. They are siblings inside .rs-ppers rather than two blocks in
+// the page body, because they are one list: RankKernel steps down to #0A0A0B
+// against the #111113 card to read as separate, and the portfolio card does
+// the same. The wrapper is a grid rather than a stack so they sit side by side
+// from md, where two short cards have room for it, and one above the other
+// below that.
+.wp-block-group.rs-ppers {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.rs-ppers {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// A grid wrapper states the gap on itself and carries 0 in $rs-gaps, so the
+// flow gap loop at the foot of this file does not put a second gap on its
+// children.
+
+// THE LINK ROW inside a personal project head. RankKernel carries two links,
+// the site's own architecture page and the public repository, so the head can
+// hold more than one and the two need a gap of their own to sit apart. 12px
+// is the design's small gap.
+.wp-block-group.rs-rk__links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.75rem;
+}
+
+// THE STACK LINE. font-mono-tech text-xs pt-1, the same voice and measure as
+// the technology strip on a role entry, because it states the same kind of
+// thing: the technologies an entry was built on.
+.rs-rk .rs-rk__stack {
+	margin-block: 0;
+	padding-block-start: 0.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+// THE POINTS LIST on a personal project. It is the same amber square marker
+// and the same 14px measure the responsibility list on a role entry uses, so
+// one list on this page does not look like a different list from the other.
+.rs-rk .rs-rk__points {
+	padding-block-start: 0.25rem;
+	margin-block: 0;
+	padding-inline-start: 0;
+	list-style: none;
+}
+
+.rs-rk .rs-rk__points > li {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.625rem;
+	margin-block: 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.rs-rk .rs-rk__points > li::before {
+	content: "";
+	flex-shrink: 0;
+	width: 0.375rem;
+	height: 0.375rem;
+	margin-block-start: 0.5rem;
+	background-color: var(--wp--preset--color--accent);
+}
+
+.rs-rk .rs-rk__points > li + li {
+	margin-block-start: 0.5rem;
+}
+
+// The anonymisation note the design prints above the professional project grid.
+// text-xs with no leading utility, so 12px on 1.3333.
+.rs-work-b .rs-conf {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+.wp-block-group.rs-projects {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.rs-projects {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// p-4 on #171719 with a hairline, the body and the foot 12px apart.
+.wp-block-group.rs-project {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 1rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// 11px mono in amber, the design's index voice. text-[11px] states a size and
+// nothing else, so the line is the inherited 1.5 and measures 16.5.
+.rs-project__body .rs-project__kicker {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.6875rem;
+	line-height: 1.5;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.rs-project__title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text);
+}
+
+.rs-project__body .rs-project__desc {
+	margin-block: 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.wp-block-group.rs-project__foot {
+	padding-block-start: 0.5rem;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// text-[11px] with no leading utility, so the inherited 1.5, which is 16.5.
+.rs-project__foot .rs-project__tech {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.6875rem;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+// 05 Education. flex-col sm:flex-row sm:items-baseline justify-between gap-1.
+.wp-block-group.rs-edu {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.rs-edu {
+		flex-direction: row;
+		align-items: baseline;
+		justify-content: space-between;
+	}
+}
+
+.rs-edu__degree {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.125rem;
+	font-weight: 700;
+	line-height: 1.5556;
+	color: var(--wp--preset--color--text);
+}
+
+.rs-edu__main .rs-edu__institution {
+	margin-block: 0;
+	font-size: 0.875rem;
+	line-height: 1.4286;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// font-mono-tech text-xs with no leading utility, so 12px on 1.3333.
+.rs-edu .rs-edu__period {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+// 06 and 07. A twelve column pair, 32px between them, 06 at seven tracks and 07
+// at five, each on p-8 of #111113 with a hairline.
+.wp-block-group.rs-closing {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+}
+
+@include from( $bp-lg ) {
+
+	.wp-block-group.rs-closing {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.wp-block-group.rs-focus {
+		grid-column: span 7;
+	}
+
+	.wp-block-group.rs-contact {
+		grid-column: span 5;
+	}
+}
+
+.wp-block-group.rs-panel {
+	padding: 2rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.wp-block-group.rs-contact {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+// text-2xl font-display font-bold, which is 24px on calc(2 / 1.5), 1.3333.
+.rs-panel__title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text);
+}
+
+.rs-contact__top .rs-panel__lede {
+	margin-block: 0;
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.wp-block-group.rs-tiles {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.rs-tiles {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// p-4 on #171719 with a hairline.
+.wp-block-group.rs-tile {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// font-mono-tech text-xs with no leading utility, so 12px on 1.3333.
+.rs-tile .rs-tile__kicker {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.rs-tile .rs-tile__text {
+	margin-block: 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// A recruiter channel row: p-4 on #171719 with a hairline that goes amber on
+// hover, and the label in mono 14px.
+.rs-contact__links .rs-contact__link {
+	padding: 1rem;
+	margin-block: 0;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.rs-contact__link a {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.875rem;
+	line-height: 1.4286;
+	text-decoration: none;
+}
+
+.rs-contact__link:hover,
+.rs-contact__link:focus-within {
+	border-color: var(--wp--preset--color--accent);
+}
+
+// The flow gap loop, which must stay last.
+//
+// The element rules above set margin-block on their own elements, at the same
+// specificity as this loop, so this loop has to be emitted after them to win. If
+// it were emitted before, every element rule below would cancel the space-y gap
+// on the element it belongs to and the document would lose its rhythm one
+// declaration at a time, which is exactly what it did when this loop sat above
+// them. WordPress prints its own flow gap for any group with a layout, so the
+// zero here is required, not optional.
+@each $name, $gap in $rs-gaps {
+
+	.wp-block-group.#{$name} > * {
+		margin-block: 0;
+	}
+
+	.wp-block-group.#{$name} > * + * {
+		margin-block-start: $gap;
+	}
+}
+
+/* stylelint-enable selector-class-pattern */

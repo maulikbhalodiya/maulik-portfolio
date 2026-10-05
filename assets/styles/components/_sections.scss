@@ -1,0 +1,3319 @@
+@use '../abstracts' as *;
+
+/* The double underscore in these class names is a BEM element marker. The class
+   strings are fixed by content/pages/home.html and by patterns/home-*.php, none
+   of which this stylesheet can change. */
+
+/* stylelint-disable selector-class-pattern */
+
+// Homepage sections 02 to 08.
+//
+// The hero, the header and the footer are not styled here and nothing here may
+// reach them. Every rule in this file is prefixed either with .hz-section, the
+// class the seven homepage section groups carry, or with the individual section
+// class (hz-capabilities, hz-stack, hz-work, hz-experience, hz-approach,
+// hz-about, hz-hiring). The hero group carries hero-section and no hz class, so
+// there is no selector in this file that can match it.
+//
+// WHY THE VALUES ARE IN THIS FILE AND NOT IN THEME.JSON. The design states them
+// per section. py-20 md:py-28, the 32px column gap, the seven split, the panel
+// padding, the 20px mono metadata, the 1px hairlines: all of it is section
+// scoped, so restating it once per section is what makes the stylesheet match
+// the design rather than approximate it.
+//
+// THE SURFACE OF EACH SECTION IS NOT DECIDED HERE. It is decided by which block
+// style variation the section group wears in content/pages/home.html. A flat
+// section wears no variation at all and inherits the root base colour, a textured
+// section wears is-style-surface-dark-grid, and the closing band wears the black
+// backgroundColor attribute. The variations themselves are untouched.
+//
+// ZERO BORDER RADIUS, ZERO BOX SHADOW. The design has neither and this theme
+// bans both. Nothing in this file sets either property, including at zero.
+//
+// LINE HEIGHT IS NOT ONE RULE, IT IS THE DESIGN'S OWN UTILITY. The design is
+// Tailwind and it sets no global line height, so every line box comes from
+// whichever text size utility the markup carries, and a handful of elements
+// carry an explicit leading on top of that:
+//
+//   text-xs        12px on 16px, 1.3333
+//   text-sm        14px on 20px, 1.4286
+//   text-base      16px on 24px, 1.5
+//   text-xl        20px on 28px, 1.4
+//   text-[11px]    11px on 16.5px, 1.5 (an arbitrary size carries no line
+//                  height of its own, so it inherits the 1.5 the design's
+//                  preflight sets on the root)
+//
+// leading-relaxed is 1.625, and where HomePage.tsx or the component it renders
+// writes leading-relaxed on an element, 1.625 is the value here. Those elements
+// are named in the comment on each rule below. Reading 1.625 as a general
+// convention for small text makes 137 rendered line boxes wrong.
+//
+
+// Section frame.
+//
+// The design gives sections 02, 03, 05, 06 and 07 a 1px #262626 rule under them
+// and gives the closing band none. Padding comes from is-style-section, which is
+// 80px and 112px, which is py-20 md:py-28.
+.hz-section {
+	border-bottom: 1px solid var(--wp--preset--color--line);
+	background-color: var(--wp--preset--color--base);
+}
+
+// The closing band. py-24 md:py-32, so 96px then 128px, and no rule under it.
+.wp-block-group.section-cta.hz-hiring {
+	border-bottom: 0;
+	padding-block: 6rem;
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.section-cta.hz-hiring {
+		padding-block: 8rem;
+	}
+}
+
+// Shared section header, used by 02, 03, 05 and 06.
+//
+// grid-cols-12 gap-8 items-end border-b pb-8, with the heading cell at
+// lg:col-span-7 and the lede cell at lg:col-span-5. At 1440 the container is
+// 1360px wide, eleven gaps of 32px leave 992px for twelve tracks, so a track is
+// 82.66px, col-span-7 is 578.66px and col-span-5 is 413.33px. The design states
+// those two spans and this file states the same two spans.
+.hz-section__head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	align-items: end;
+	padding-bottom: 2rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-lg ) {
+
+	.hz-section__head {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.hz-section__head-main {
+		grid-column: span 7;
+	}
+
+	.hz-section__head-lede {
+		grid-column: span 5;
+	}
+}
+
+.hz-section .hz-section__head-main > * {
+	margin-block: 0;
+}
+
+// The ancestor is written as is-style-section hz-section, and deliberately. The
+// shared heading rule below carries margin-block: 0 and is two class selectors,
+// the same as this one, so with a single ancestor here the two tie on
+// specificity and the rule that comes later in the file wins, which is the
+// heading. The heading is the second child of this stack, so it matched both and
+// the 12px the design's space-y-3 states between the eyebrow and the heading was
+// being deleted by the shared heading voice rather than set here.
+//
+// Measured before this at 768, the head column in section 03 read 63.98 where
+// the reference measures 76: a 16px eyebrow line, no gap, then a 48px heading.
+// The same 12px was missing from section 04's band A head, and the same defect
+// is the reason both read short.
+//
+// Two class ancestors raise this to three class selectors, which is the same
+// way .is-style-section .hz-section .hz-body-copy below raises itself for the
+// same reason. The two classes are the two the SECTION element itself carries,
+// written once each, because head-main is a direct child of the section and
+// there is no descendant path on which one of them could also be an ancestor.
+// Writing one twice does not raise the count: the selector then asks for a
+// nested .hz-section .hz-section, which matches nothing.
+.wp-block-group.is-style-section .hz-section__head-main > * + * {
+	margin-block-start: 0.75rem;
+}
+
+// The eyebrow. A plain mono 12px amber line. The 8px square that opens the
+// hero eyebrow is a hero device, not a section device, so no section carries
+// one. margin-block: 0 keeps the block gap from adding to the 12px that the
+// space-y-3 above the heading states.
+//
+// The design writes text-xs on every section eyebrow and no leading on any of
+// them, so the line is 16px.
+.hz-section .hz-eyebrow {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+// The section heading. text-3xl sm:text-4xl md:text-5xl is 30px, 36px and 48px,
+// font-display font-bold is Syne at 700, tracking-tight is -0.025em, and
+// text-5xl carries line-height 1. The theme h2 preset is a fluid clamp whose
+// floor is 36px, so the 30px step has to be stated here.
+.hz-section .hz-section__title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.875rem;
+	font-weight: 700;
+	line-height: 1.2;
+	letter-spacing: -0.025em;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-section .hz-section__title {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.hz-section .hz-section__title {
+		font-size: 3rem;
+		line-height: 1;
+	}
+}
+
+// The lede. text-base at 16px in the secondary colour at leading-relaxed, which
+// is 1.625. The theme sets 18px from 640px for section paragraphs, so the 16px
+// the design states has to win here.
+.is-style-section .hz-section__head-lede,
+.is-style-section .hz-section__lede {
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// Section 03 states text-sm sm:text-base on its head lede and text-base on every
+// other section's, so 14px below $bp-sm where the rule above is 16px. Measured
+// on the live site at 390 that cost the section 12.98px across three extra
+// wrapped lines, and the delta at 768 was +0.02 because the design is already
+// on text-base there.
+//
+// Scoped to .hz-stack, section 03's own class, rather than restating the shared
+// value. Both selectors are two class selectors, so source order is what carries
+// this one, and it is later in the file. .hz-stack and .hz-section are both on
+// the section element and hz-section__head-lede is its descendant, so the chain
+// resolves; the two class selector is not the ancestor trap.
+.hz-stack .hz-section__head-lede {
+	font-size: 0.875rem;
+	line-height: 1.625;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-stack .hz-section__head-lede {
+		font-size: 1rem;
+	}
+}
+
+// The interval between section 03's head and its body. The design states
+// space-y-12 on this section's container, which is 48px, where every other
+// section states space-y-14. The shared hz-stack-8 is a 2rem gap and Core's block
+// gap adds 24px under the group inside it, so the measured interval was 56.01
+// against the design's 48.00 at both 390 and 768. Trimming the gap to 1.5rem
+// lands on 48.
+.hz-stack .hz-stack-8 {
+	gap: 1.5rem;
+}
+
+.hz-section .hz-section__head-lede,
+.hz-section .hz-section__lede {
+	max-width: none;
+	margin-block: 0;
+}
+
+// Shared surfaces and metadata.
+//
+// #111113 is the design's panel ground, #171719 is the design's raised ground
+// inside a panel, and #262626 is the hairline. Both appear as the surface style
+// variations and as inline borders.
+.hz-panel {
+	padding: 2rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.hz-panel {
+		padding: 2.5rem;
+	}
+}
+
+.hz-panel-breakdown {
+	padding: 1.5rem;
+}
+
+@include from( $bp-md ) {
+
+	.hz-panel-breakdown {
+		padding: 2rem;
+	}
+}
+
+.hz-panel-rail {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 2rem;
+}
+
+// The approach panel states its blocks with space-y-8, so the 2rem gap above is
+// the whole spacing. The flow spacing Core puts on the children of a group would
+// add another 24px under every block, which is a third of the panel's excess.
+// The stage rows and the panel foot are the same case: the design spaces them
+// with the gap alone.
+.hz-approach .hz-panel-rail > *,
+.hz-approach__stages > *,
+.hz-approach__foot > * {
+	margin-block-start: 0;
+}
+
+// Twelve column body, collapsing to one column below 1024px.
+.hz-body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	align-items: stretch;
+}
+
+@include from( $bp-lg ) {
+
+	.hz-body {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.hz-body__lead {
+		grid-column: span 5;
+	}
+
+	.hz-body__main {
+		grid-column: span 7;
+	}
+
+	// The stage selector carries the same five column span the design gives the
+	// left column of the twelve column body, so the rows read as the p-5
+	// buttons they are instead of wrapping inside a single narrow track.
+	.hz-approach__stages {
+		grid-column: span 5;
+	}
+}
+
+// A bordered row split into two by a hairline, with the metadata left and the
+// muted note right.
+.hz-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding-bottom: 1.25rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-row__title {
+	margin-block: 0.25rem 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-weight: 700;
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .hz-row__title {
+	font-size: 1.5rem;
+	line-height: 1.3333;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-row__title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+// The design does not give every panel header the same label to heading gap,
+// so this does not restate the rule above for all of them.
+//
+// Section 03's domain header is mt-1 on the heading, 4px, and the shared rule
+// already measures 4px there against the design's 4px. Section 06's stage header
+// is space-y-2, which is 8px, and it measured 4px, so the panel header read
+// looser than the design states and the label sat close to the heading above
+// it. Scoping the restatement to .hz-approach leaves section 02 and section 03
+// on the value they already match.
+.hz-approach .hz-row__title {
+	margin-block-start: 0.5rem;
+}
+
+// Section 06's panel heading is text-3xl in the design, which is 30px on a 36px
+// line at every width, and the media query above already lands 30px from
+// $bp-sm. Below $bp-sm the shared rule dropped it to 24px on a 32px line, so the
+// five lines of the heading measured 159.92 against the design's 180.00 and
+// cost section 06 twenty pixels at mobile.
+//
+// Stated here rather than on its own rule so it lands in the same selector the
+// gap above uses. That selector is two classes, the same specificity as the
+// shared rule it has to beat, so source order is what carries it, and this rule
+// is later in the file. Scoped to .hz-approach because section 03 states its
+// panel heading as text-2xl, 24px, at mobile and already measures against that.
+// Both sections' headings carry hz-row__title, so the shared rule cannot take
+// section 06's value. Note that .is-style-section and .hz-approach sit on the
+// same element, so a selector chaining the two matches nothing.
+.hz-approach .hz-row__title {
+	font-size: 1.875rem;
+	line-height: 1.2;
+}
+
+// Mono 12px amber, the design's label voice. The design states every one of these
+// as text-xs and none of them carries a leading, so the line is 16px.
+.hz-section .hz-label {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+// Mono 12px muted, the design's secondary metadata voice. Same text-xs line.
+.hz-section .hz-label-faint {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+.hz-section .hz-label-faint-strong {
+	font-weight: 600;
+}
+
+// Mono 12px secondary text, used for a technology strip. Same text-xs line.
+.hz-section .hz-meta {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+	font-variant-numeric: tabular-nums;
+}
+
+.hz-section .hz-body-copy {
+	margin-block: 0;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.is-style-section .hz-section .hz-body-copy {
+	font-size: 1rem;
+	line-height: 1.625;
+}
+
+.hz-section .hz-body-copy-medium {
+	font-weight: 500;
+}
+
+// A stack whose children are 8px apart, which is space-y-2.
+.hz-section .hz-stack-2 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-2 > * + * {
+	margin-block-start: 0.5rem;
+}
+
+// A stack whose children are 12px apart, which is space-y-3.
+.hz-section .hz-stack-3 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-3 > * + * {
+	margin-block-start: 0.75rem;
+}
+
+// A stack whose children are 16px apart, which is space-y-4.
+.hz-section .hz-stack-4 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-4 > * + * {
+	margin-block-start: 1rem;
+}
+
+// A stack whose children are 24px apart, which is space-y-6.
+.hz-section .hz-stack-6 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-6 > * + * {
+	margin-block-start: 1.5rem;
+}
+
+.hz-stack-4 > .hz-indent-top-2,
+.hz-stack-6 > .hz-indent-top-2 {
+	margin-block-start: 0.5rem;
+}
+
+.hz-stack-4 > .hz-indent-top-4,
+.hz-stack-6 > .hz-indent-top-4 {
+	margin-block-start: 1rem;
+}
+
+.hz-stack-4 > .hz-indent-top-5,
+.hz-stack-6 > .hz-indent-top-5 {
+	margin-block-start: 1.25rem;
+}
+
+// A stack whose children are 32px apart, which is space-y-8.
+.hz-section .hz-stack-8 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-8 > * + * {
+	margin-block-start: 2rem;
+}
+
+// A stack whose children are 48px apart, which is space-y-12.
+.hz-section .hz-stack-12 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-12 > * + * {
+	margin-block-start: 3rem;
+}
+
+// A stack whose children are 56px apart, which is space-y-14.
+//
+// Band A's outer wrapper is this one. The design states it as space-y-14, and
+// the one gap it produces is between the section head and the RankKernel wrapper
+// below it, measured 56px at 1440, 1920, 768 and 390. The band wore hz-stack-12
+// while the RankKernel head was a direct child of the band, which put a 48px gap
+// there instead, 8px short at every width.
+.hz-section .hz-stack-14 > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-stack-14 > * + * {
+	margin-block-start: 3.5rem;
+}
+
+// Actions.
+//
+// The design states two button sizes: px-6 py-3.5, which is 24px and 14px, and
+// px-5 py-3, which is 20px and 12px. The theme button preset is the first of
+// those two with a 14px type size, so both are restated per class.
+//
+// The 12px labels the section actions use are text-xs in the design with no
+// leading, so the line inside the button is 16px.
+.hz-section .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.hz-section .hz-btn-lg .wp-block-button__link {
+	padding: 0.875rem 1.5rem;
+}
+
+.hz-section .hz-btn-amber .wp-block-button__link {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--black);
+}
+
+.hz-section .hz-btn-amber .wp-block-button__link:hover,
+.hz-section .hz-btn-amber .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--accent-hover);
+	color: var(--wp--preset--color--black);
+}
+
+.hz-section .hz-btn-dark .wp-block-button__link {
+	background-color: var(--wp--preset--color--surface-2);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.hz-section .hz-btn-dark .wp-block-button__link:hover,
+.hz-section .hz-btn-dark .wp-block-button__link:focus {
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--accent);
+}
+
+.hz-section .hz-btn-outline .wp-block-button__link {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.hz-section .hz-btn-outline .wp-block-button__link:hover,
+.hz-section .hz-btn-outline .wp-block-button__link:focus {
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--accent);
+}
+
+.hz-section .hz-btn-nudge .wp-block-button__link {
+	padding: 0.5rem 0.875rem;
+}
+
+// The 14px arrow on the Selected Development Work GitHub action.
+//
+// WHY THIS STATES A SIZE. components/_icon.scss owns icon sizing and has three
+// values: 1rem, 0.875rem and 0.75rem. It says in writing that the 0.875rem one
+// belongs to the RankKernel back link alone and is stated where it is used, so
+// this file states it here rather than editing that file's contract.
+//
+// HomePage.tsx:414 is the only place in the design that draws a button arrow at
+// w-3.5 h-3.5, which is 14px. Measured on the served design at 1440 the two
+// actions are 193.61px and 188.81px wide, and 142.81 plus one 8px gap plus the
+// 14px arrow is 164.81, which is the second of those two only once the design's
+// own leading GitHub glyph is accounted for. The 16px default in _icon.scss
+// would make it 166.81 and miss.
+//
+// The selector is scoped under .hz-section and names the class, so it outranks
+// both .hz-icon and the a svg floor regardless of which partial is emitted
+// first. _index.scss forwards sections before icon, so a bare class here would
+// lose the tie and silently render at 16px.
+.hz-section .hz-work__cta-arrow {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+// The design puts two glyphs on the section 04 repository button: a 16px
+// GitHub mark before the label and the 14px arrow after it. The mark is amber
+// there and the arrow is not, so the colour rides on the mark alone.
+.hz-section .hz-work__cta-mark {
+	width: 1rem;
+	height: 1rem;
+	color: var(--wp--preset--color--accent);
+}
+
+// The closing band puts two of its three actions beside the resume button as
+// bare anchors rather than as button blocks, so the same sizes and grounds are
+// restated for an anchor carrying the button classes.
+.hz-section a.hz-link.hz-btn-lg {
+	padding: 0.875rem 1.5rem;
+}
+
+.hz-section a.hz-link.hz-btn-dark,
+.hz-section a.hz-link.hz-btn-outline {
+	background-color: var(--wp--preset--color--surface-2);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.hz-section a.hz-link.hz-btn-dark:hover,
+.hz-section a.hz-link.hz-btn-dark:focus,
+.hz-section a.hz-link.hz-btn-outline:hover,
+.hz-section a.hz-link.hz-btn-outline:focus {
+	color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// A bare text link in the design's link voice: mono 12px at 600 in amber. The
+// design writes text-xs on it, so the line is 16px.
+.hz-section a.hz-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	text-decoration: none;
+
+	// whitespace-nowrap and shrink-0, which is what the design states on this
+	// link. Without them "View Case Study" is a two line, 32px box on the
+	// narrowest card footer at 1440, where the design renders it as one 16px
+	// line, and flex-shrink lets the arrow inside it be squeezed. Both are
+	// properties of the control rather than of any one place it appears, so
+	// they are stated here once rather than per section.
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.hz-section a.hz-link:hover,
+.hz-section a.hz-link:focus {
+	color: var(--wp--preset--color--accent-hover);
+}
+
+// 02 What I build.
+//
+// Left is the five capability selector cards on #111113, split by 1px #262626
+// hairlines, each p-6. Right is the detail panel on #111113 with p-8 md:p-10.
+.hz-capabilities__list {
+	display: flex;
+	flex-direction: column;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// The selector card is a real button, because the design makes the whole card
+// the control.
+//
+// The user agent button chrome is removed here rather than by a global reset,
+// so a button outside these three sections keeps the treatment the design gives
+// it: the design gives the hero its own buttons and they must keep theirs.
+//
+// font, line-height and text-align are restated because a button inherits none
+// of them. Without font the card would render in the user agent font at
+// 13.333px, and without text-align it would centre, which is the opposite of
+// the design's text-left.
+//
+// The shape comes from base/_reset.scss, which already zeroes the radius on
+// every element, so nothing here has to say it again.
+.hz-capability {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+	width: 100%;
+	padding: 1.5rem;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+	text-align: left;
+	background-color: var(--wp--preset--color--surface);
+	border: 0;
+	border-left: 2px solid transparent;
+	color: var(--wp--preset--color--text);
+	cursor: pointer;
+	transition: background-color 0.15s ease, border-left-color 0.15s ease;
+}
+
+.hz-capability + .hz-capability {
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-capability:hover {
+	background-color: var(--wp--preset--color--surface-2);
+}
+
+// The active card. aria-selected drives this rather than a class the script has
+// to add, so the selected state is stated once in the markup and cannot drift
+// from what a screen reader is told.
+//
+// aria-selected, and not aria-pressed, because the five cards are a tablist.
+// The markup emits role="tab" with aria-selected on each and the script only
+// ever writes aria-pressed when the group it was handed is not a tablist, so a
+// rule keyed on aria-pressed matched nothing: measured live, the count was 0 and
+// the selected card carried a transparent left border. aria-pressed is still
+// correct for section 06's stage rows, which are buttons and not tabs, and that
+// selector is unchanged below.
+//
+// The design gives the active card a background, a 2px amber left border, an
+// amber label and an amber ACTIVE state label, so the selection is carried by
+// four signals and not by colour alone.
+.hz-capability[aria-selected="true"] {
+	background-color: var(--wp--preset--color--surface-2);
+	border-left-color: var(--wp--preset--color--accent);
+}
+
+// The number line above the title. It is one class rather than the hz-label and
+// hz-label-faint pair the static markup used, because aria-pressed decides the
+// colour now and a per card class would have to be swapped by the script for no
+// gain. The design states it as text-xs, so the line is 16px.
+.hz-capability__number {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+.hz-capability[aria-selected="true"] .hz-capability__number,
+.hz-capability[aria-selected="true"] .hz-capability__state {
+	color: var(--wp--preset--color--accent);
+}
+
+// The ACTIVE and INSPECT state label. This is the non colour signal that the
+// card is selected, and it is text, so it survives a monochrome rendering and a
+// screen reader alike. The design states it as text-xs, so the line is 16px.
+//
+// The weight is 400 and not 600. The design writes font-mono-tech text-xs on
+// this span with no font weight class on it, and the default is 400, so the 600
+// that was here was a delta of 200 on a 12px mono run. That was measured on the
+// live site against the design at 1440 and the two weights do not agree.
+.hz-capability__state {
+	flex-shrink: 0;
+	margin-block-start: 0.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+// The capability card title. The design writes text-xl font-display font-bold
+// with no tracking utility, so the heading carries no tracking of its own. The
+// theme's h3 preset supplies -0.025em, which is what was measured live at -0.5px
+// against the design's normal. Normal is stated here rather than by removing a
+// class, because the -0.025em comes from theme.json and not from this file.
+.hz-capability__title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.4;
+	letter-spacing: normal;
+	color: var(--wp--preset--color--text);
+}
+
+// The card summary is one of the three elements the design writes
+// leading-relaxed on at 12px, so 1.625 is correct here and must not be read
+// down from the text-xs default.
+.is-style-section .hz-capability__summary {
+	margin-block: 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// The design stacks these three lines with space-y-1.5, which is 6 pixels, and
+// writes each of them as a block. The number and the summary were inline here,
+// so each one sat in an anonymous line box strutted by the body's own 24 pixel
+// line height rather than by its own. That is where the extra 5 pixels per row
+// came from: the row measured a 100 pixel body against the design's 95, and it
+// was not a margin, because all three carried margin-block: 0 already. Stating
+// them as blocks with the design's 6 pixels between them reproduces 16 + 6 + 28
+// + 6 + 39, which is 95.
+.hz-section .hz-capability__body > * {
+	display: block;
+	margin-block: 0;
+}
+
+.hz-section .hz-capability__body > *:not(:last-child) {
+	margin-block-end: 0.375rem;
+}
+
+.hz-section .hz-capabilities__detail-head > * {
+	margin-block: 0;
+}
+
+// The design stacks the label and the title inside one flex child and hangs
+// "Architecture Focus" off the right of the row as a second child. The saved
+// markup put the label and the title in the row directly, so they became flex
+// items in their own right: they laid out on one baseline at 1440, the title
+// read 990.77 against the design's 661, and the row measured 57 against the
+// design's 77. Restating the row as two children is the whole of the fix.
+//
+// The inner wrapper carries no box of its own. It only has to stop the label
+// and the title being flex items, which means resetting the block gap Core puts
+// on the children of a group, the same two-class move used for .hz-grid-2.
+.hz-section .hz-capabilities__detail-head-main > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-capabilities__detail-head-main > * + * {
+	margin-block-start: 0.25rem;
+}
+
+// The case study link on the panel footer. It carries the shared hz-link voice
+// already, which is the design's own voice for this element, so only the icon
+// box is stated here: the design draws a 16px ArrowUpRight, and the markup's
+// width and height attributes would say so anyway.
+//
+// flex-shrink: 0 is kept, and the design's own behaviour at 390 is not copied.
+// The label is one nowrap run of 360.02px inside a 276px content box, so the
+// anchor is stretched to 276 and the row overflows by the icon as well as by the
+// text. The design's arrow, which carries no shrink rule, collapses to zero
+// width under those conditions and its document measures scrollWidth 417 against
+// clientWidth 390; pinning the arrow at 16px measures 439. The 27px of overflow
+// the label itself causes is inherent to A2 at 390 and is the design's behaviour
+// too. The 22px difference is one visible 16px arrow against a collapsed one,
+// and a collapsed arrow is a defect, not a reference.
+.hz-section a.hz-capabilities__detail-cta svg {
+	flex-shrink: 0;
+	width: 1rem;
+	height: 1rem;
+}
+
+// "Architecture Focus", the design's right hand note on the detail header. Mono
+// 12px at 400 in the faint colour, with no leading, so the line is 16px.
+.is-style-section .hz-capabilities__detail-focus {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+.hz-capabilities__detail-title {
+	margin-block-start: 0.25rem;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.3333;
+	letter-spacing: normal;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-capabilities__detail-title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+.hz-grid-2 {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0.75rem;
+}
+
+// The tiles are placed by the grid and the grid's gap-3 is the whole of the
+// space between them. The group carries is-layout-flow, so Core was adding
+// 24px of margin-block-start to every tile after the first, which is what made
+// the rows 119.5 tall against the design's 95.5 and carried the mobile residual
+// in the detail panel. Two classes outrank the Core rule at
+// :root :where(.is-layout-flow) > *, which is one.
+.hz-section .hz-grid-2 > * {
+	margin-block-start: 0;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-grid-2 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// A mechanism tile: p-4 on #171719 with a 1px hairline and an 11px index.
+.hz-tile {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-section .hz-tile > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-tile > * + * {
+	margin-block-start: 0.375rem;
+}
+
+// The 11px tile index. text-[11px] is an arbitrary size, so the design gives it
+// no line height of its own and it inherits the 1.5 the root carries: 16.5px.
+.is-style-section .hz-tile__index {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.6875rem;
+	line-height: 1.5;
+	color: var(--wp--preset--color--accent);
+}
+
+// The tile body copy is text-xs leading-relaxed in the design, so 1.625.
+.is-style-section .hz-tile__text {
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text);
+}
+
+.hz-rule-top {
+	padding-top: 1.5rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// The design states it as pt-6 border-t flex flex-col sm:flex-row
+// sm:items-center justify-between gap-4.
+//
+// align-items is not stated here, and that is deliberate. The design states no
+// align-items either, so its column layout stretches the children to the 276px
+// content box and the nowrap case study text overflows that box: its anchor
+// measures 276 wide at 390 with a 360.02px label inside it, and the design's own
+// document scrollWidth is 417 against a clientWidth of 390. Stating
+// align-items: flex-start here instead gave the anchor its full 382.02px content
+// width and pushed the document scrollWidth to 439, which is 22px worse than the
+// design on a page that had no overflow at all before this rule.
+.hz-capabilities__detail-foot {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-capabilities__detail-foot {
+		flex-direction: row;
+		align-items: center;
+	}
+}
+
+// The mechanism list. The design states this block as space-y-3 pt-2, so the
+// stack is hz-stack-3 for its 12px gap and the 8px of padding above the label is
+// stated here. The saved markup had hz-stack-2 with no padding, which measured
+// 12px short of the design at 390: 8 of padding and 4 of gap.
+.hz-capabilities__mechanisms {
+	padding-top: 0.5rem;
+}
+
+// The group is a flow group, so Core would put 24px under every child of it.
+.hz-section .hz-capabilities__detail-foot > * {
+	margin-block-start: 0;
+}
+
+// The footer is itself a child of the panel, and the panel is a flow group, so
+// Core's block gap put 24px between it and the stack above it, on top of the
+// panel's own 2rem. The technology run it replaced was a paragraph carrying
+// hz-rule-top, which reset its own margins, so the interval was 32px before and
+// is 32px again. Measured at 390 it was 56 against the design's 32.
+.hz-section .hz-capabilities__detail-foot {
+	margin-block-start: 0;
+}
+
+// 03 Technical skills.
+//
+// Two values are section scoped rather than shared, because the design gives
+// this section its own and no other section has them.
+//
+// The head lede is text-sm sm:text-base here and text-base in every other
+// section. The shared rule is 1rem at every width, which measured 16px over a
+// 26px line at 390 where the design measures 14px over 22.75, and the three
+// extra lines of wrapping cost the section 12.98px. From $bp-sm the design is
+// back on text-base, so the shared value is restored there.
+//
+// The section body sits space-y-12 under the head, which is 48px, where every
+// other section uses space-y-14. The shared hz-stack-8 is a 32px gap and Core
+// adds 24px of block gap to the group under it, which is 56px. Trimming the gap
+// to 24px puts the measured interval on 48.
+.hz-stack .hz-section__head-lede {
+	font-size: 0.875rem;
+	line-height: 1.625;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-stack .hz-section__head-lede {
+		font-size: 1rem;
+	}
+}
+
+.hz-stack .hz-stack-8 {
+	gap: 1.5rem;
+}
+
+// Left is the node map panel, right is the breakdown panel. The node map is an
+// SVG at aspect-[5/4], which is aspect-ratio 5 / 4, plus a row of seven tabs.
+
+// The left column is a card in its own right, and the design draws it as one:
+// bg-[#111113] border border-[#262626] p-6 flex flex-col justify-between. The
+// saved markup gave hz-body__lead no surface at all, so the map ran to the full
+// 548px width of the column and to the very edge of the section, against the
+// design's 498px inset by its own 24px padding on a bordered card. Adding the
+// surface is therefore also the whole of the node map's geometry fix: the SVG
+// takes its width from the card's content box and its height from aspect-ratio
+// 5 / 4, so it lands on the design's 498 by 402.22 without the SVG element
+// itself changing.
+.hz-stack__card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// The group is a flow group, so Core would put 24px between its three children.
+.hz-section .hz-stack__card > * {
+	margin-block-start: 0;
+}
+
+// flex-wrap: wrap stays. The design states this row as flex items-center
+// justify-between with no wrap, so at narrow widths its two labels share one
+// line and each wraps inside itself, which measures 49 at 390. Forcing that
+// shape here was measured and is worse: the labels are mono runs that do not
+// wrap to the same degree, the row read 33.97 against the design's 49, and
+// section 03 went from -8.18 to -16.18 at 390. Two stacked lines is the closer
+// of the two and it is what stays.
+.hz-stack__map-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding-bottom: 1rem;
+	margin-block-end: 1rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// The design wraps the map in a relative w-full aspect-[5/4] box and lets the
+// SVG's own ratio win inside it, so the measured ratio is 520/420, 1.2381, and
+// not 1.25. At 498 wide that is 402.22 tall against the design's 402.22, where
+// aspect-ratio 5/4 gives 398.4. Stating the ratio the design actually renders
+// is the whole of the geometry fix; the box it sits in is hz-stack__card above.
+.hz-stack__map,
+.hz-section .hz-stack__svg {
+	display: block;
+	width: 100%;
+	aspect-ratio: 520 / 420;
+	margin-block: auto;
+}
+
+// The count note on the right of a domain panel header. The design writes
+// font-mono-tech text-xs text-[#77746C] with no leading, so the line is 16px.
+//
+// It sits in the same flex row as the label and the title. The design states
+// that row items-center and .hz-row carries align-items: baseline, which on a
+// row this short lands on the same pixel, so nothing here restates it.
+//
+// margin-block: 0 is load bearing and not tidiness. The row is a flow group, so
+// Core's :root :where(.is-layout-flow) > * puts 24px of block gap on every child
+// after the first, and this is the second child. Measured with the note present
+// and no reset, the row read 100.98 against the design's 73 and the section read
+// 24px over. The note's own class is a two class selector, which is what lets it
+// win here.
+.is-style-section .hz-stack__verified {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+// Text inside the node map. The design states Syne at 13px for the centre node,
+// IBM Plex Mono at 11px for a domain label and 9px for its count.
+.hz-section .hz-svg-label,
+.hz-section .hz-svg-count,
+.hz-section .hz-svg-name {
+	font-family: var(--wp--preset--font-family--mono);
+}
+
+.hz-section .hz-svg-label {
+	font-size: 0.6875rem;
+	font-weight: 600;
+}
+
+// The edge from the centre to the selected node. The design gives the selected
+// edge an amber stroke at two pixels and the rest #343434 at one, and the
+// script writes both as attributes because that is where the markup keeps them.
+// This rule states the selected stroke once so the value has one home rather
+// than appearing only in the script, and it is the amber the rest of the file
+// calls the accent.
+.hz-section .hz-svg-edge--selected {
+	stroke: var(--wp--preset--color--accent);
+	stroke-width: 2;
+}
+
+// The node map is a second control for the same state as the row of tabs, so
+// the script marks a selected node with this class. The design's node
+// treatment is a solid amber block with near-black ink, which is the same
+// inversion the selected stage row in 06 uses.
+//
+// BOTH STATES ARE STATED HERE, AND THAT IS THE POINT.
+//
+// The unselected treatment used to be left to the markup's own fill and stroke
+// attributes, so the selected rule alone decided how a node looked. That works
+// only for a node whose saved markup is already unselected, which is true of
+// six of the seven domains and false of the seventh: WordPress is the node the
+// markup selects, so its rect ships with fill and stroke of amber. Removing the
+// selected class therefore returned it to the amber it had been painted with,
+// and it stayed yellow forever while the newly selected node also turned
+// yellow. Two yellow nodes, and a yellow that never moved. Both states are now
+// stated, so which node is yellow is decided by the class alone and never by an
+// attribute the editor's markup happens to carry.
+//
+// The rules are keyed on hz-svg-node, which only the script adds, so a page
+// with no JavaScript still falls back to the markup's own colours and still
+// shows the same single selected node the markup names. The centre node carries
+// neither class and keeps its own values for the same reason.
+//
+// fill and stroke are properties here, not attributes, because a CSS
+// declaration beats an SVG presentation attribute. The unselected rules come
+// first and the selected rules second: the label and count selectors tie on
+// specificity, so source order is what lets the selected pair win.
+.hz-section .hz-svg-node {
+	cursor: pointer;
+}
+
+.hz-section .hz-svg-node rect {
+	fill: var(--wp--preset--color--surface-2);
+	stroke: var(--wp--preset--color--line-strong);
+}
+
+.hz-section .hz-svg-node .hz-svg-label {
+	fill: var(--wp--preset--color--text);
+}
+
+.hz-section .hz-svg-node .hz-svg-count {
+	fill: var(--wp--preset--color--text-faint);
+}
+
+.hz-section .hz-svg-node--selected rect {
+	fill: var(--wp--preset--color--accent);
+	stroke: var(--wp--preset--color--accent);
+}
+
+.hz-section .hz-svg-node--selected .hz-svg-label {
+	fill: var(--wp--preset--color--black);
+}
+
+.hz-section .hz-svg-node--selected .hz-svg-count {
+	fill: var(--wp--preset--color--base);
+}
+
+.hz-section .hz-svg-count {
+	font-size: 0.5625rem;
+}
+
+.hz-section .hz-svg-name {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+}
+
+.hz-stack__tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.375rem;
+	padding-top: 1rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// The domain tab is a real button carrying role="tab", not an anchor. It is 30
+// pixels tall at 12px with 6px 12px padding, which is what the reference
+// measures, and the reference sets a 0.15s colour transition on it.
+//
+// font and line-height are restated because a button inherits neither the
+// family nor the size, and the user agent gives it a border and a background,
+// both of which the design states here. The shape is already handled by
+// base/_reset.scss, which zeroes the radius on every element.
+//
+// The design states the tab as px-3 py-1.5 text-xs with no leading, which is
+// what makes it 30 pixels tall: a 16px line inside 6px of padding either side.
+.hz-tab {
+	display: inline-block;
+	padding: 0.375rem 0.75rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	white-space: nowrap;
+	color: var(--wp--preset--color--text-muted);
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+	cursor: pointer;
+	transition: color 0.15s cubic-bezier( 0.4, 0, 0.2, 1 ), background-color 0.15s cubic-bezier( 0.4, 0, 0.2, 1 ), border-color 0.15s cubic-bezier( 0.4, 0, 0.2, 1 );
+}
+
+.hz-tab:hover,
+.hz-tab:focus {
+	color: var(--wp--preset--color--text);
+	border-color: var(--wp--preset--color--text-faint);
+}
+
+// The active tab. aria-selected drives this rather than a class, so the visual
+// state and the state announced to a screen reader cannot disagree.
+//
+// The design gives the active tab an amber ground, black ink and an amber
+// border, so the selection is carried by three signals and not by colour alone.
+// The weight change from 400 to 600 is a fourth.
+.hz-tab[aria-selected="true"] {
+	font-weight: 600;
+	color: var(--wp--preset--color--black);
+	background-color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+.hz-tab[aria-selected="true"]:hover,
+.hz-tab[aria-selected="true"]:focus {
+	color: var(--wp--preset--color--black);
+	border-color: var(--wp--preset--color--accent);
+}
+
+// The tablist and the panels it drives.
+//
+// THIS IS THE HEIGHT MECHANISM, and it is the only rule that has to hold. All
+// seven domain panels live in the DOM so the script can reveal them, and the six
+// that are not selected collapse to display none.
+//
+// A display none box contributes no height at all, so the panel column is
+// exactly as tall as the selected panel alone. That is what stops sections 03
+// and 06 from growing by six panels worth of skill cards and stage copy, and
+// the page height budget depends on it.
+//
+// Nothing else hides a panel: no max-height, no visibility, no absolute
+// positioning and no zero-height clip, because every one of those still
+// contributes a box and would silently reintroduce the height.
+.hz-switch-panel--idle {
+	display: none;
+}
+
+// The panel host is a plain grid item and the panels are its children, where
+// before this change the panel was itself the grid item. A grid item stretches
+// to the row height, and a plain block child of it does not, so without these
+// two rules the selected panel would sit at its content height and the
+// space-between distribution inside it, which the design relies on to push the
+// proof footer and the technologies strip to the bottom, would have nothing to
+// distribute.
+//
+// The panels host is therefore a column flexbox and the one visible panel takes
+// the remaining height. display: none panels are not flex items at all, so this
+// costs nothing for the six collapsed ones.
+.hz-switch-panels {
+	display: flex;
+	flex-direction: column;
+
+	// The detail column has to be the same height as the tab column beside it.
+	//
+	// The mechanism for that is the grid, not a min height. .hz-body is
+	// grid-template-columns of twelve with align-items: stretch, exactly as the
+	// design does it, so both columns are already the same height as the row and
+	// no min-height is needed anywhere. What stopped the equality was this one
+	// element carrying 24px of margin-block-start, so the grid stretched it to
+	// fill the row minus that margin and it settled 24px shorter than the tabs.
+	// Measured at 1440 before this: tabs 746, detail 722.
+	//
+	// The margin is not ours. WordPress core emits, in the served global styles:
+	//
+	//   :root :where(.is-layout-constrained) > * {
+	//       margin-block-start: var(--wp--preset--spacing--50);
+	//   }
+	//
+	// which is 24px, the theme's Standard spacing size. The panels host is a
+	// constrained group block, so it matched and picked the gap up, and the same
+	// rule is the one restated at the block class for is-style-section, which is
+	// why it is restated here too. margin-block rather than margin-top, because
+	// the axis being zeroed is the block axis and this element has no inline
+	// margin to disturb.
+	margin-block: 0;
+}
+
+// The visible panel has to fill its host exactly, which is what makes the detail
+// column the same height as the tab column beside it on every tab.
+//
+// The panel is a flow child of the panels host, and the host is a constrained
+// group, so Core emits in the served global styles:
+//
+//   :root :where(.is-layout-flow) > * {
+//       margin-block-start: var(--wp--preset--spacing--50);
+//   }
+//
+// which is 24px. Core resets it on the first child only, so panel one measured
+// 0px and panels two through seven measured 24px. In a column flexbox the margin
+// is outside the flex item, so flex: 1 1 auto grew the panel into what was left
+// of the host and it settled 24px short: at 1440 the host measured 720.92 on
+// every tab and the panel measured 720.92 on tab one and 696.92 on tabs two
+// through five. That is the detail container changing height when the tab
+// changes, and it is the whole of it.
+//
+// The design has no equivalent of the wrapper and therefore no equivalent of the
+// margin: there the detail column is itself the grid item. The mechanism the
+// design relies on is the stretch, so the fix is to let the stretch reach the
+// panel by removing the margin, not to state a height.
+.hz-switch-panel {
+	flex: 1 1 auto;
+	margin-block: 0;
+}
+
+// A domain heading inside the breakdown panel. md:text-3xl is 30px.
+.is-style-section .hz-domain__title {
+	font-size: 1.5rem;
+	line-height: 1.3333;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .hz-domain__title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+// The 41 skill entries, two columns, 16px apart.
+.hz-skill-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+	padding-top: 0.5rem;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-skill-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.hz-skill {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// The grid is a two column grid with a 16px gap, which is the whole spacing. The
+// flow spacing Core puts on the children of a group would push every card in a
+// row down by 24px and make each row 24px taller than the design's.
+.hz-skill-grid > * {
+	margin-block-start: 0;
+}
+
+.hz-skill:hover {
+	border-color: var(--wp--preset--color--line-strong);
+}
+
+.hz-skill__head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.is-style-section .hz-skill__name {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text);
+}
+
+// The skill context line is text-xs leading-relaxed in the design, so 1.625 is
+// correct here, like hz-capability__summary and hz-tile__text.
+.is-style-section .hz-skill__context {
+	margin-block: 0.5rem 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-stack__proof {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-top: 1.25rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// 04 Selected work.
+//
+// Band A is flat #0A0A0B, band B is the 48px dark grid.
+// The design gives section 04 no padding on the outer group and 80px then 112px
+// on each band instead, so the padding moves down one level. The outer group
+// still wears is-style-section for the rhythm vocabulary, and its padding is
+// restated to zero here rather than removed from the variation.
+.wp-block-group.hz-work.is-style-section {
+	padding-block: 0;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-work > .hz-work__band-a,
+.hz-work > .hz-work__band-b {
+	padding-block: 5rem;
+
+	// Both bands are full bleed surfaces in the design, and both were confined
+	// to the section's content box, so the band A rule under the section stopped
+	// short of each edge and the band B grid texture stopped with it. Measured
+	// before this: 40 and 1400 at 1440, 280 and 1640 at 1920, 24 and 366 at 390,
+	// against the design's 0 and the window at all three.
+	//
+	// The escape is the negative of the inset the parent section is padded by,
+	// read from --hz-section-inset, which the full bleed rule in _rhythm.scss
+	// publishes. The band therefore hands back exactly the padding it is nested
+	// inside at every viewport, without restating the gutter arithmetic here.
+	//
+	// !important is load bearing for the same reason it is on that rule: the
+	// section is is-layout-constrained, so core prints
+	//   .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+	//       margin-left: auto !important; margin-right: auto !important;
+	//   }
+	// and a plain declaration here resolves those to 0 against the over wide
+	// box, which is to say not at all.
+	margin-inline: calc( -1 * var( --hz-section-inset, 0px ) ) !important;
+
+	// width and max-width are the other two halves. Core caps every child of a
+	// constrained group at the content size,
+	//   .is-layout-constrained > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+	//       max-width: var(--wp--style--global--content-size);
+	//   }
+	// so without max-width: none the escape moves the box to the left edge and
+	// leaves it 1440 wide, which measured as 0 to 1440 at 1920 with the right
+	// half of the band unpainted. width: 100vw is the same value the section
+	// rule uses; the two are equal because the band's containing block is the
+	// section's content box, which is what the inset was derived from.
+	//
+	// padding-inline hands the content back, and reads the same published inset,
+	// so the band restores the measure rather than inventing one. The band's own
+	// padding-inline was 0 before this, which is why its children sat on the
+	// content edge and read textL 40; after, they read 40 again.
+	width: 100vw;
+	max-width: none;
+	padding-inline: var( --hz-section-inset, 0px );
+
+	// BAND B CARRIED 56px OF MARGIN THAT THE DESIGN DOES NOT HAVE.
+	//
+	// margin-block, not margin-block-start, because the axis being zeroed is the
+	// block axis. Band B is the second child of a block that core styles as a
+	// constrained layout:
+	//
+	//   :root :where(.wp-block-group.is-style-section--6...) > * {
+	//       margin-block: 3.5rem 0px;
+	//   }
+	//
+	// which is 56px, and that is exactly what measured on the band. The design
+	// puts no gap between its two band wrappers: measured on the reference at
+	// 1440, band A runs 3118 to 4448.72 and band B starts at 4448.72, so the
+	// two boxes touch and the whole 56px is a Core flow margin, exactly like the
+	// two that already had to be zeroed on the card footer's children below.
+	//
+	// The two class selector beats that one selector rule, which is why it is
+	// stated here on the band itself rather than on a child.
+	margin-block: 0;
+}
+
+@include from( $bp-md ) {
+
+	.hz-work > .hz-work__band-a,
+	.hz-work > .hz-work__band-b {
+		padding-block: 7rem;
+	}
+}
+
+// Band A sits on the flat base ground with a rule under it. Band B wears the
+// 48px dark grid variation and carries no rule.
+.hz-work__band-a {
+	background-color: var(--wp--preset--color--base);
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-work__band-b {
+	border-bottom: 0;
+}
+
+.hz-work__rk-head {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
+// The Core flow margin on the two children of this group block, which is the
+// same cancellation .hz-work__b-head states for the band B head.
+//
+// The design gives this row gap-6, 24px, and one gap. The buttons block also
+// arrived carrying core's 24px margin-block-start, and in the stacked layout
+// below lg the margin and the flex gap are the same 24px twice over: measured
+// before this at 768 the row read 295.97 where the design reads 272, and the 24
+// is the whole of it. At lg the row is a flex row, so the margin aligned beside
+// the column instead of under it and changed nothing there.
+.hz-work__rk-head > * {
+	margin-block: 0;
+}
+
+// The two RankKernel calls to action sit gap-3 apart in the design, which is
+// 12px, and the buttons block arrived with Core's own gap of 24px. The row is
+// right aligned by space-between, so a 12px wider row is a 12px wider section:
+// measured at 1440 the row read 406.42 wide where the design reads 394.42, and
+// its left edge sat at 993.58 against the design's 1005.58.
+.hz-work__rk-head .wp-block-buttons {
+	gap: 0.75rem;
+}
+
+@include from( $bp-lg ) {
+
+	.hz-work__rk-head {
+		flex-direction: row;
+		align-items: flex-end;
+		justify-content: space-between;
+	}
+}
+
+.is-style-section .hz-work__rk-name {
+	font-size: 1.875rem;
+	line-height: 1.2;
+	letter-spacing: -0.025em;
+	font-weight: 800;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-work__rk-name {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .hz-work__rk-name {
+		font-size: 3rem;
+		line-height: 1;
+	}
+}
+
+// The design steps this subtitle as text-lg sm:text-xl, which is 18px on a 28px
+// line below 640px and 20px on a 28px line from it. The rule carried no size of
+// its own below $bp-sm and read 16px on a 26px line, against the design's 18px on
+// 28: measured at 390 the line read 52 where the design reads 56.
+.is-style-section .hz-work__rk-subtitle {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.125rem;
+	font-weight: 600;
+	line-height: 1.5556;
+	color: var(--wp--preset--color--accent);
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-work__rk-subtitle {
+		font-size: 1.25rem;
+		line-height: 1.4;
+	}
+}
+
+// margin-block-END, not margin-block. The paragraph is the last child of the
+// RankKernel column, which is hz-stack-3, so its 12px space-y-3 gap arrives as
+// margin-block-start from the stack. margin-block: 0 here was two selectors
+// against the stack's two and came later in the file, so it deleted that gap as
+// well as the Core flow margin it was written to cancel. Measured before this at
+// 1440, the RankKernel head read 193.98 where the design reads 206, and the 12
+// is the whole of the difference.
+//
+// The design states this paragraph as text-sm sm:text-base, so 14px below 640px
+// and 16px from it. The shared body copy voice is 16px at every width, so the
+// mobile step has to be stated here: measured at 390 the paragraph read 156
+// where the design reads 113.75.
+.hz-section .hz-work__rk-overview {
+	max-width: 48rem;
+	margin-block-end: 0;
+	font-size: 0.875rem;
+	color: var(--wp--preset--color--text-muted);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-section .hz-work__rk-overview {
+		font-size: 1rem;
+	}
+}
+
+.hz-work__rk-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+	flex-shrink: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Band A, the RankKernel architecture card.
+//
+// WHAT THIS IS. HomePage.tsx line 420 renders RankKernelArchitecture with
+// compact={true} as the last child of the band A space-y-8 wrapper, and
+// RankKernelArchitecture.tsx line 78 opens that component's own card. The card is
+// therefore the third child of the wrapper, not a sibling of the RankKernel head,
+// which is why hz-work__rk-wrap exists: the design's outer wrapper is
+// space-y-8, so the head and the card are 32px apart inside it, and the card's
+// own two children are 32px apart inside the card.
+//
+// The card's measured height at 1440 is 708.19 and its two children measure 61
+// and 549.19, which is 61 plus 32 plus 549.19 plus the 32px of padding top and
+// bottom and the 1px border on each side: 708.19 exactly.
+//
+// The head row is 61px because the design gives it pb-6, 24px, over a 1px rule,
+// and its tallest child is the 36px label column: 24 plus 1 plus 36 is 61.
+//
+// The status filter is a real tablist in the design, with role="tab" on all four
+// buttons and aria-selected carrying the state, so that is what the markup says.
+// The design's three unselected state tabs each carry a 14px status mark and the
+// selected one carries none, which is the design's own rule and the reason the
+// selected tab is not identified by colour alone.
+//
+// THE CARD IS INERT ON THIS PAGE. Nothing in this theme's JavaScript drives this
+// filter or the subsystem nodes, and the markup is honest about that: the pills
+// are rendered with the state the design renders on first paint, which is All
+// States selected and Modules as the active subsystem. The nine SVG subsystem
+// groups therefore carry no role="button" and no tabindex, because a focusable
+// control that does nothing is worse than a static diagram, and the whole figure
+// already carries one aria-label that names every node it draws.
+.hz-work__arch {
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.hz-work__arch {
+		padding: 2rem;
+	}
+}
+
+.hz-work__arch-head {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding-bottom: 1.5rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-lg ) {
+
+	.hz-work__arch-head {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+// The Core flow margin on the two children of this group block.
+.hz-work__arch-head > * {
+	margin-block: 0;
+}
+
+// The Core flow margin on the children of the grid and of the panel, and on the
+// two inside the panel head. These are the same cancellation the card body and
+// the work grid already carry: core puts 24px of margin-block-start on every
+// child of a laid out group, and inside a grid row that margin is added to the
+// row's cross size, which is how the design's 549.19 row measured 570.38.
+.hz-work__arch-main > *,
+.hz-work__arch-panel > *,
+.hz-work__arch-panel-head > *,
+.hz-work__arch-figure > *,
+.hz-work__arch-connected > * {
+	margin-block: 0;
+}
+
+// The label column. RankKernelArchitecture.tsx line 81 gives it space-y-1, so
+// the lede is 4px under the label. The lede is text-xs with no leading class,
+// which is the 12px step's own 1.3333, and it is the design's only non mono
+// 12px line in this card.
+.hz-work__arch-id > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-work__arch-id > * + * {
+	margin-block-start: 0.25rem;
+}
+
+// margin-block-END, not margin-block. This is the second child of a stack, and
+// the 4px gap above it arrives as margin-block-start from the rule for the stack
+// itself. margin-block: 0 here tied on specificity and came later, so it deleted
+// that gap as well as the Core flow margin: measured before this, the label
+// column read 31.97 where the design reads 36.
+.hz-section .hz-work__arch-lede {
+	margin-block-end: 0;
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-work__arch-filters {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+// px-3 py-1.5 is 12px and 6px, text-xs is 12px on a 16px line, and gap-1.5
+// between the mark and the label is 6px. The design measures all four pills at
+// 30px tall at 1440, which is 16 plus 12 plus the 1px border on each side.
+.hz-work__arch-filter {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+	margin: 0;
+	padding: 0.375rem 0.75rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--text-muted);
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+		background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+		border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hz-work__arch-filter:hover {
+	border-color: var(--wp--preset--color--text-faint);
+}
+
+// The applied filter. Keyed on aria-pressed and not on aria-selected, because
+// these four buttons are a group of filters and not a tablist: there is no
+// tabpanel anywhere near them, one before this change or now, so aria-selected
+// stated a selection with nothing to select. The markup ships the first button
+// with aria-pressed true and the script writes the attribute on every click, so
+// the visible state and the state a screen reader is told are the same
+// declaration. is-on is joined here because the markup and the script both carry
+// it and a page with no script still has to show which filter is applied.
+.hz-work__arch-filter.is-on,
+.hz-work__arch-filter[aria-pressed="true"] {
+	background-color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--black);
+	font-weight: 600;
+}
+
+// The status mark, at the design's own size. _icon.scss states 1rem and 0.75rem
+// as the only two icon sizes in the theme and holds a button svg at 1rem, so
+// this rule has to outrank `button svg` on its own, which a single class does
+// not: that selector is two element selectors and this is one class. The two
+// class selector below is what wins, and the size it states, 0.875rem, is 14px,
+// read from the design, where all three marks measure 14 by 14.
+.hz-work__arch-filter-mark {
+	display: block;
+	width: 0.875rem;
+	height: 0.875rem;
+	flex-shrink: 0;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.hz-work__arch-filter-mark.is-implemented {
+	color: var(--wp--preset--color--accent);
+}
+
+.hz-work__arch-filter-mark.is-progress {
+	color: var(--wp--preset--color--text);
+}
+
+.hz-work__arch-filter-mark.is-planned {
+	color: var(--wp--preset--color--text-faint);
+}
+
+// A subsystem the applied filter excludes, and an edge with a filtered out
+// endpoint. The script puts is-arch-hidden and is-arch-edge-off on and takes
+// them off; nothing here reads the status attribute, so the state lives in one
+// place, which is the class.
+//
+// DIM, NOT HIDE, AND THE NUMBERS ARE THE DESIGN'S. Measured on the running
+// reference after clicking IMPLEMENTED: the six excluded subsystem groups read
+// computed opacity 0.3 and display inline, and six of the nine primary edges
+// read computed opacity 0.25 on their wrapping g. The reference dims in
+// RankKernelArchitecture.tsx at the two places that matter, 0.3 for a subsystem
+// and 0.25 for a core edge, and it never sets display on either, so a filter
+// leaves the graph in place and readable. Hiding would also break the pairing
+// the script reads, because it resolves an edge's two endpoints by coordinate
+// and a line with no node under its endpoint resolves to nothing at all.
+//
+// transition is not stated: opacity on an svg group is not what the reference
+// animates, it swaps the value, so adding one here would be a behaviour the
+// reference does not have.
+.hz-work__arch-svg-node.is-arch-hidden {
+	opacity: 0.3;
+}
+
+.hz-work__arch-edge.is-arch-edge-off {
+	opacity: 0.25;
+}
+
+// The two column preview. grid-cols-1 xl:grid-cols-12 with gap-8, so it is one
+// column below 1280 and twelve at and above it. items-start, so the shorter
+// panel does not stretch and the figure keeps its own aspect ratio height. At
+// 1440 the design measures 741.5 and 520.5 for the two columns and 549.19 for
+// the row, and the row takes the figure, which is the taller of the two.
+.hz-work__arch-main {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	align-items: start;
+}
+
+@include from( $bp-xl ) {
+
+	.hz-work__arch-main {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.hz-work__arch-figure {
+		grid-column: span 7;
+	}
+
+	.hz-work__arch-panel {
+		grid-column: span 5;
+	}
+}
+
+.hz-work__arch-figure {
+	min-width: 0;
+	padding: 1rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// The frame. aspect-[16/10] on a full width box, which is what puts the figure
+// at 442.19 tall inside a 707.5 wide frame at 1440. The SVG stretches to fill
+// it rather than sitting in it at its own ratio, which is w-full h-full in the
+// design and the reason the viewBox still governs the artwork.
+.hz-work__arch-frame {
+	aspect-ratio: 16 / 10;
+	min-width: 0;
+}
+
+.hz-work__arch-svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+// The type inside the diagram. The design states the centre node at 15px display
+// bold and 9.5px mono, and a subsystem node at 12px display bold and 9px mono,
+// and it sets every fill as an attribute on the element itself, so no rule here
+// states one: a CSS declaration would beat the attribute and the design's own
+// per node colouring would go with it.
+//
+// The selected subsystem is the one exception, and it is stated here rather than
+// left to the markup for one reason only. Selection is a pair, the amber body
+// and the near-black ink that only reads on amber, and the owner read the two
+// halves drifting apart: a node left on a dark body with the selected ink on it
+// is unreadable, and an amber body without the ink is a yellow hole. Stating
+// the pair in one place is what stops them separating, and it is the same reason
+// the selected node in section 03 states both halves here rather than inheriting
+// either from the markup.
+//
+// Status is deliberately NOT restated here. The three status treatments are
+// correct in the markup, they differ from each other, and restating them would
+// replace the design's per node attribute with a second copy of it that could
+// drift. Only the selected pair is a class, because only the selected pair is a
+// single thing that must not come apart.
+.hz-work__arch-svg-node.is-active .hz-work__arch-svg-box {
+	fill: var(--wp--preset--color--accent);
+	stroke: var(--wp--preset--color--accent);
+	stroke-width: 2;
+}
+
+.hz-work__arch-svg-node.is-active .hz-work__arch-svg-name,
+.hz-work__arch-svg-node.is-active .hz-work__arch-svg-badge {
+	fill: var(--wp--preset--color--black);
+}
+
+.hz-work__arch-svg-core {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.hz-work__arch-svg-core-sub {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 9.5px;
+}
+
+.hz-work__arch-svg-name {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 12px;
+	font-weight: 700;
+}
+
+.hz-work__arch-svg-badge {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 9px;
+}
+
+// The legend under the figure: three border samples with their labels, spread
+// across the width, wrapping below 768. pt-3 and mt-3 are 12px each, which is
+// what separates it from the frame.
+.hz-work__arch-legend {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-block-start: 0.75rem;
+	padding-top: 0.75rem;
+	border-top: 1px solid var(--wp--preset--color--line);
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-work__arch-legend > * {
+	margin-block: 0;
+}
+
+.hz-work__arch-legend-item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.hz-work__arch-legend-item > * {
+	margin-block: 0;
+}
+
+// w-3 h-3 is a 12px square, and the three samples differ only in their border:
+// 2px solid amber, 2px dashed cream, 1px dotted muted. The planned sample is the
+// one that gets a surface rather than surface-2 behind it, which is the
+// design's own choice, read from its bg class at line 324.
+// box-sizing: border-box because w-3 h-3 in the design is a 12px square
+// INCLUDING its border. Tailwind sets border-box on its preflight, so the
+// sample is 12 by 12 with a 2px border and an 8px interior. Without it the
+// border adds to the box and the sample measures 16, which is 4px wider than the
+// design on two samples and 2px on the third, and the legend row measured 255
+// where the design measures 251.
+.hz-work__arch-key {
+	display: block;
+	box-sizing: border-box;
+	width: 0.75rem;
+	height: 0.75rem;
+	flex-shrink: 0;
+	background-color: var(--wp--preset--color--surface-2);
+}
+
+.hz-work__arch-key.is-implemented {
+	border: 2px solid var(--wp--preset--color--accent);
+}
+
+.hz-work__arch-key.is-progress {
+	border: 2px dashed var(--wp--preset--color--text);
+}
+
+.hz-work__arch-key.is-planned {
+	background-color: var(--wp--preset--color--surface);
+	border: 1px dotted var(--wp--preset--color--text-faint);
+}
+
+.hz-section .hz-work__arch-key-text {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// The subsystem panel. bg-[#171719] is surface-2, p-6 is 24px, and space-y-6 is
+// 24px between its five children. It measures 532.5 at 1440 against the row's
+// 549.19, so it is the figure that sets the row, and items-start is what keeps
+// it from stretching to match.
+.hz-work__arch-panel {
+	min-width: 0;
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-work__arch-panel-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-work__arch-panel-head > * {
+	margin-block: 0;
+}
+
+// text-2xl is 24px on 1.3333, which is 32px, and mt-1 is 4px under the eyebrow.
+.hz-work__arch-id > .hz-work__arch-name {
+	margin-block-start: 0.25rem;
+}
+
+.is-style-section .hz-work__arch-name {
+	margin-block-end: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	line-height: 1.3333;
+	font-weight: 700;
+	color: var(--wp--preset--color--text);
+}
+
+// The status chip in the panel head. px-2.5 py-1 is 10px and 4px, gap-1.5 is 6px,
+// and it sits on base inside the surface-2 panel with a line-strong hairline.
+.hz-work__arch-status {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	flex-shrink: 0;
+	margin-block: 0;
+	padding: 0.25rem 0.625rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line-strong);
+	color: var(--wp--preset--color--text);
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	white-space: nowrap;
+}
+
+// margin-block-END on both, for the same reason as the lede above: these are
+// second children of hz-stack-2 groups and their 8px gap is the stack's to give.
+// Measured before this, the two read 61.48 and 54.98 where the design reads 69.5
+// and 63, and the 8 is the whole of the difference in each.
+.hz-section .hz-work__arch-summary {
+	margin-block-end: 0;
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text);
+}
+
+.hz-section .hz-work__arch-scope {
+	margin-block-end: 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// The integration points list. space-y-1.5 is 6px, so the gap is a margin on
+// each item rather than a flex gap, and the 6px square is w-1.5 h-1.5.
+//
+// FOUR DECLARATIONS THAT EXIST ONLY TO MATCH THE DESIGN'S OWN LIST.
+//
+// padding-inline-start: 0 and list-style: none, because the design's ul is
+// space-y-1.5 with no marker and no indent, while a core list block arrives with
+// a 40px indent and a disc. The indent was measured at 40px on every item, which
+// is 40px of the panel's 470.5 that the design does not spend.
+//
+// line-height on the ITEM rather than on the list, and it is stated at 1.3333
+// against the prose 1.625 in base/_typography.scss, which is `.is-style-section
+// li`. That rule is one class and one element and beats anything inherited from
+// the list, so a list level line-height is not a declaration that can take
+// effect. The item is where it has to be written. Without it the items read 26
+// tall where the design reads 16.
+.hz-work__arch-points {
+	margin-block: 0;
+	padding-inline-start: 0;
+	list-style: none;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-work__arch-point {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-block: 0;
+}
+
+// BOTH the size and the leading are on a TWO class selector, and both have to
+// be. base/_typography.scss owns section prose and states
+// `.is-style-section li { font-size: 1rem; line-height: 1.625 }`, one class and
+// one element, so a single class rule for the item loses to it on specificity
+// however late it comes in the cascade. That is not an inherited property here:
+// the rule names the li itself, so nothing on the list reaches it.
+//
+// Measured with one class, the items computed to 16px on a 21.33px line and read
+// 21.33 tall where the design reads 16, and the list read 75.98 where the design
+// reads 60, which is most of the panel's overshoot. The design states text-xs
+// with no leading class on these items, which is the 12px step and its own 1.3333.
+.hz-section .hz-work__arch-point {
+	font-size: 0.75rem;
+	line-height: 1.3333;
+}
+
+.hz-work__arch-point + .hz-work__arch-point {
+	margin-block-start: 0.375rem;
+}
+
+.hz-work__arch-dot {
+	display: block;
+	width: 0.375rem;
+	height: 0.375rem;
+	flex-shrink: 0;
+	background-color: var(--wp--preset--color--accent);
+}
+
+// The connected subsystem chips. pt-4 is 16px over a 1px rule, and each chip is
+// px-2.5 py-1 on base with a line hairline, which measures 26px tall at 1440.
+.hz-work__arch-connected {
+	padding-top: 1rem;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-work__arch-links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-block: 0;
+}
+
+.hz-work__arch-link {
+	display: inline-flex;
+	align-items: center;
+	margin: 0;
+	padding: 0.25rem 0.625rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--text-muted);
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+		border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hz-work__arch-link:hover {
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--accent);
+}
+
+.hz-work__b-head {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding-bottom: 2rem;
+	margin-block-end: 0;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// The band's own gap is gap-6 in the design, 24px, and it is the whole spacing
+// between the intro column and the archive link. The 24px above the link is not
+// ours: it is the Core flow margin on the children of a constrained group, the
+// same rule the card footer below has to cancel. At lg the row is
+// align-items flex-end so the margin changed nothing, but below lg the column
+// stacked it and added a second 24px under the link.
+.hz-work__b-head > * {
+	margin-block: 0;
+}
+
+@include from( $bp-lg ) {
+
+	.hz-work__b-head {
+		flex-direction: row;
+		align-items: flex-end;
+		justify-content: space-between;
+	}
+}
+
+.is-style-section .hz-work__b-title {
+	font-size: 1.875rem;
+	line-height: 1.2;
+	letter-spacing: -0.025em;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-work__b-title {
+		font-size: 2.25rem;
+		line-height: 1.1111;
+	}
+}
+
+.hz-work__b-intro {
+	max-width: 48rem;
+}
+
+// The project archive link is a button block in the design, not a bare text
+// link, and the saved markup gave it the bare link classes only. The design
+// states it as px-5 py-3 bg-[#111113] text-[#FFFDF4] border border-[#343434]
+// hover:border-[#FACC15] font-mono-tech text-xs font-semibold inline-flex
+// items-center gap-2 whitespace-nowrap.
+//
+// Measured before this at 390 and 768 the anchor was a 16px line with no
+// padding, no border and no ground, against the design's 42px, which is -26px on
+// the section. At 1440 it measured 261.61 wide where the design measures
+// 303.61, and the 42px difference is exactly the padding and the border, since
+// the text and the 16px arrow were already identical.
+//
+// The arrow takes the design's amber, which the design puts on the icon alone,
+// so the surrounding text stays #FFFDF4.
+.hz-work__archive-link {
+	align-self: flex-start;
+	flex-shrink: 0;
+	padding: 0.75rem 1.25rem;
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.hz-work__archive-link:hover,
+.hz-work__archive-link:focus {
+	color: var(--wp--preset--color--text);
+	border-color: var(--wp--preset--color--accent);
+}
+
+.hz-work__archive-link svg {
+	flex-shrink: 0;
+	width: 1rem;
+	height: 1rem;
+	color: var(--wp--preset--color--accent);
+}
+
+@include from( $bp-lg ) {
+
+	.hz-work__archive-link {
+		align-self: flex-end;
+	}
+}
+
+.hz-work__grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+}
+
+@include from( $bp-lg ) {
+
+	.hz-work__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// The grid is a two column grid with a 32px gap, which is the whole spacing.
+// The flow spacing Core puts on the children of a group would push every card
+// after the first down by 24px and make two of the three rows 24px taller than
+// the design's, which is 48px of the band. It is the same cancellation
+// .hz-skill-grid and .hz-snap-grid already carry, and it needs the card class
+// as well as the grid class so that two class selectors outrank the one
+// selector Core uses.
+.hz-work__grid > .hz-card {
+	margin-block: 0;
+}
+
+.hz-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-card:hover {
+	border-color: var(--wp--preset--color--accent);
+}
+
+.hz-card__body {
+	padding: 1.5rem;
+}
+
+@include from( $bp-md ) {
+
+	.hz-card__body {
+		padding: 2rem;
+	}
+}
+
+.hz-section .hz-card__body > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-card__body > * + * {
+	margin-block-start: 1.25rem;
+}
+
+// The title and the description are 8px apart in the design, which is the
+// space-y-2 on the wrapper ProjectCard.tsx:54 puts round that pair, and the
+// shared rule above gives the same stack 20px. Measured at 1440 the pair read
+// 20px where the reference reads 8px, which is 12px on every card.
+//
+// The three class selector is needed because the rule above is two class
+// selectors and they set the same property on the same element.
+.hz-section .hz-card__title + .hz-card__desc {
+	margin-block-start: 0.5rem;
+}
+
+.hz-card__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+// The card index and its label are one flex child in the design, not three
+// items in the meta row: a font-mono-tech text-xs flex items-center gap-2 run
+// holding <span>01</span><span aria-hidden>·</span><span>Professional
+// Project</span>, all three in the text colour. The saved markup ran them
+// together as one #D8D5CA string, which measured 180.02 wide against the
+// design's 181.63.
+//
+// The lead wrapper is what makes the row two children again. Left as three
+// children, justify-content: space-between spread them across the whole 598px
+// row, and Core's block gap put 24px under every child after the first, which
+// cost the section 24px on its own.
+//
+// The separator carries the accent in the design. It is aria-hidden, so the
+// visible dot stays decoration and the index is still the first thing read.
+.hz-card__meta-lead {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.is-style-section .hz-card__index,
+.is-style-section .hz-card__kind,
+.is-style-section .hz-card__index-sep {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3333;
+}
+
+.is-style-section .hz-card__index,
+.is-style-section .hz-card__kind {
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .hz-card__index-sep {
+	color: var(--wp--preset--color--accent);
+}
+
+.is-style-section .hz-card__title {
+	font-size: 1.25rem;
+	line-height: 1.4;
+	letter-spacing: -0.025em;
+}
+
+@include from( $bp-md ) {
+
+	.is-style-section .hz-card__title {
+		font-size: 1.5rem;
+		line-height: 1.3333;
+	}
+}
+
+// text-sm leading-relaxed in the design's ProjectCard, so 1.625.
+.is-style-section .hz-card__desc {
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-card__scheme {
+	padding: 1rem;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.hz-card:hover .hz-card__scheme {
+	border-color: var(--wp--preset--color--line-strong);
+}
+
+.hz-card__scheme-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-block-end: 0.625rem;
+}
+
+// The scheme is p-4 with a caption row and a node strip inside it, 10px apart,
+// which is the mb-2.5 ProjectCard.tsx:76 writes on the caption row. Neither
+// child had a block margin in the design, so both are zeroed here against the
+// Core flow margin, and the 10px is restated on the caption row because the
+// zero above is the more specific of the two.
+//
+// Measured at 1440 before this: the caption row measured 40.5 where the
+// reference measures 16.5, because the second caption span took the 24px flow
+// margin, and the node strip took another 24px where the design gives it 10,
+// so the block measured 136.47 where the reference measures 98.5.
+.hz-section .hz-card__scheme > *,
+.hz-section .hz-card__scheme-head > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-card__scheme > .hz-card__scheme-head {
+	margin-block-end: 0.625rem;
+}
+
+// The pipeline caption above the node strip. text-[11px] in the design's
+// ProjectCard, an arbitrary size with no line height of its own, so it inherits
+// the root 1.5 and the line is 16.5px.
+.is-style-section .hz-card__scheme-label {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.6875rem;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text-faint);
+}
+
+.hz-card__nodes {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.375rem;
+}
+
+// The node strip is a flex-wrap row of text-xs in the design, so every node and
+// every separator sits on a 16px line.
+.is-style-section .hz-card__node {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text);
+}
+
+.is-style-section .hz-card__node-sep {
+	padding-inline: 0.25rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+}
+
+// The footer's own gap is gap-4 in the design, 16px, and it is the whole
+// spacing between the technology list and the link. The 24px above the link is
+// not ours: WordPress core emits, in the served global styles,
+//
+//   .is-layout-flow > * { margin-top: var(--wp--style--block-gap); }
+//
+// and --wp--style--block-gap is 1.5rem on this page. The footer is a group block
+// carrying is-layout-flow, so every child matched and picked the gap up, which
+// made the flex line 24px taller than its content and added 24px to the foot.
+//
+// Measured before this rule at 1440: foot 73 where the design measures 49, and
+// at 375: foot 173 where the design measures 101. With the margin gone the
+// first card reads 49 and the rest 49, and 101 and 101 at 375, which is the
+// design's own set of numbers.
+//
+// margin-block rather than margin-top, because the axis being zeroed is the
+// block axis and neither child carries an inline margin to disturb.
+.hz-card__foot > * {
+	margin-block: 0;
+}
+
+// The foot itself, one level up. It is the last child of a flow group, so the
+// same Core rule puts 24px above it, and the design has the foot butted straight
+// against the body with only its own border-t between them. Measured at 1440
+// this was the last 24px of the card, on all five cards.
+.hz-card > .hz-card__foot {
+	margin-block: 0;
+}
+
+.hz-card__foot {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1rem 1.5rem;
+	background-color: var(--wp--preset--color--surface-2);
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-card__foot {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		padding-inline: 1.5rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.hz-card__foot {
+		padding-inline: 2rem;
+	}
+}
+
+.hz-card__tech {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.25rem 0.5rem;
+}
+
+// The same core flow margin as the footer's own children, one level down.
+//
+// .hz-card__tech is a group block, so it carries is-layout-flow, and the core
+// rule ":root :where(.is-layout-flow) > *" puts 24px of margin-block-start on
+// every span inside it: the technology names and the separators alike. Inside a
+// flex row that margin does not push anything down visually, because every span
+// is on the same line, but it does add 24px to the cross size of the line. That
+// is the whole reason the list measured 40px where the design measures 16px and
+// the footer measured 73px where the design measures 49px, after the footer's
+// own children had already been zeroed above.
+//
+// Measured at 1440 with this rule and the footer rule together: footer 69, 69,
+// 49, 49, 49 against the design's 69, 69, 49, 49, 49. At 375: 121, 101, 101,
+// 101, 101 against the design's 121, 101, 101, 101, 101.
+.hz-card__tech > * {
+	margin-block: 0;
+}
+
+.hz-work__conf {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1.25rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-work__conf {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+// The confidentiality note is text-xs leading-relaxed in the design, so 1.625.
+.hz-section .hz-work__conf p {
+	max-width: 56rem;
+	margin-block: 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// The same Core flow margin as the note beside it, on the link. The strip is a
+// gap-4 flex row, so the 24px is a second gap that the design does not have.
+.hz-work__conf > * {
+	margin-block: 0;
+}
+
+// 05 Experience.
+//
+// A 2px #262626 rail at pl-6 sm:pl-10, with a 16px square node on the rail and a
+// card on #111113 at p-6 sm:p-8 md:p-10.
+.hz-timeline {
+	position: relative;
+	padding-left: 1.5rem;
+	margin-block: 0;
+	border-left: 2px solid var(--wp--preset--color--line);
+}
+
+.hz-section .hz-timeline > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-timeline > * + * {
+	margin-block-start: 3rem;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-timeline {
+		padding-left: 2.5rem;
+	}
+}
+
+.hz-role {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 1.5rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// The card is a flex column and the design spaces its blocks 24px apart, which
+// the gap above already does. Core's flow rule was also handing the first block
+// a 24px margin-block-start on top of that, because the group carries
+// is-layout-flow, so the card opened 24px lower than the design's 41px
+// (1px border plus 40px padding). The margin is what was wrong here, not the gap:
+// the node marker is absolutely positioned, so it is not a flex item and the gap
+// never applied to it. Two classes outrank the Core rule at
+// :root :where(.is-layout-flow) > *, which is one.
+.hz-section .hz-role > * {
+	margin-block-start: 0;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-role {
+		padding: 2rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.hz-role {
+		padding: 2.5rem;
+	}
+}
+
+.hz-role__node {
+	position: absolute;
+	top: 2rem;
+	left: -2.0625rem;
+	width: 1rem;
+	height: 1rem;
+	background-color: var(--wp--preset--color--base);
+	border: 2px solid var(--wp--preset--color--accent);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-role__node {
+		left: -3.0625rem;
+	}
+}
+
+.hz-role__node-current {
+	background-color: var(--wp--preset--color--accent);
+}
+
+// The role header stacks the label above the title at every width.
+//
+// HomePage.tsx line 523 puts the label and the title in one wrapper div inside
+// a row that carries the card number, so the pair is always a column and the
+// title is always under the label. This markup has no number cell, so the head
+// is the column itself: display block, label then title, same left edge, full
+// width. It was flex with flex-direction row from md, which put the 30px title
+// on the baseline of the 12px label and so printed the title first and 14px
+// higher than the label above it.
+//
+// The two rules below also carry a second class, for the reason
+// _page-resume.scss sets out: the WordPress layout layer sets
+// `:root :where(.is-layout-flow) > *` to a block gap of 24px, which is one
+// selector and outranks nothing, and it was landing on both children of this
+// group as a 24px margin. Left alone that margin is what the old row baseline
+// aligned to, so clearing it is part of the same fix rather than a separate
+// one.
+// The role header is a two child flex row in the design, not a block:
+// flex flex-col md:flex-row md:items-baseline justify-between gap-2. The label
+// and the title share the first child so they stack, and the timeline index
+// hangs off the right as the second.
+//
+// It was a block, so the index had nowhere to sit and the header could not put
+// the two ends of the row apart. Both changes are the markup's, not this rule's:
+// the index is a span in the saved content and this rule only has to give it a
+// row to sit in.
+.hz-role__head {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding-bottom: 1.25rem;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.hz-role__head {
+		flex-direction: row;
+		align-items: baseline;
+	}
+}
+
+.hz-section .hz-role__head > * {
+	margin-block: 0;
+}
+
+// mt-1 on the design's title, so 4px under the label. The label and the title
+// are inside the first child now, so the reset and the gap move with them: the
+// wrapper is a group and Core would otherwise put 24px under both of them.
+.hz-section .hz-role__head-main > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-role__head-main > * + * {
+	margin-block-start: 0.25rem;
+}
+
+// The timeline index. font-mono-tech text-xs font-semibold text-[#77746C],
+// right aligned on the header row. It is right aligned by the row's own
+// justify-content and by items-baseline, not by a text-align on itself.
+.is-style-section .hz-role__index {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+// text-xs on the label, which is 12px on a 16px line, so the title sits 20px
+// under the label. That is what the shared label voice above now states, so
+// nothing has to be restated here.
+
+// The design writes text-2xl sm:text-3xl font-display font-bold on this heading
+// with no tracking utility, so it carries no tracking of its own. The theme's h3
+// preset supplies -0.025em, which measured -0.75px against the design's normal
+// at 1440. Normal is stated here rather than by removing a class, because the
+// -0.025em comes from theme.json and not from this file.
+.is-style-section .hz-role__title {
+	font-size: 1.5rem;
+	line-height: 1.3333;
+	letter-spacing: normal;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-role__title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+// Responsibilities, two columns, 12px apart, each marked by a 6px amber square
+// sitting 8px from the top of its tile.
+.hz-resp-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 0.75rem;
+
+	/*
+	 * The UA list indent, cancelled.
+	 *
+	 * WHY THIS IS HERE AND NOT ON THE ITEM. Measured on the live site at 390, the
+	 * list box sat at left 75 and the tiles at left 115, so the tiles were 40px
+	 * right of the label above them and of the hz-role__tech paragraph below
+	 * them, which both start at 75. The 40px is not on the tile: li.hz-resp
+	 * carries padding 1rem and gap 0.625rem, and those match HomePage.tsx:555
+	 * exactly. It is on the ul, from the browser default padding inline start of
+	 * 40px, which nothing in the theme cancels because the only list rules in the
+	 * project are scoped to other lists.
+	 *
+	 * The design has no ul here at all. HomePage.tsx:551 is a div carrying
+	 * grid grid cols 1 md grid cols 2 gap 3, so its grid has padding 0px, measured
+	 * 0px at 390, 768 and 1440. With this one declaration the tiles start at the
+	 * same left edge as the label and the paragraph at all three widths.
+	 *
+	 * Written as the logical property so the cancellation travels with writing
+	 * mode. There is still one declared padding value here, the 1rem on the
+	 * tile, and it is the design's p-4.
+	 */
+	padding-inline-start: 0;
+}
+
+@include from( $bp-md ) {
+
+	.hz-resp-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// The responsibility tiles are text-sm leading-relaxed in the design, which is
+// why this one is 1.625 while hz-question above is not.
+.is-style-section li.hz-resp {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.625rem;
+	padding: 1rem;
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+	list-style: none;
+}
+
+.is-style-section li.hz-resp::before {
+	content: "";
+	flex-shrink: 0;
+	width: 0.375rem;
+	height: 0.375rem;
+	margin-block-start: 0.5rem;
+	background-color: var(--wp--preset--color--accent);
+}
+
+.hz-role__tech {
+	padding-top: 1rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// 06 Engineering approach.
+//
+// Left is the five stage selector rows, right is the deep dive panel.
+.hz-approach__stages {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+}
+
+// A stage row. The design states it as a p-5 bordered flex row with the stage
+// number, the stage name in uppercase Syne and a one line headline stacked on
+// the left, and the SELECTED or VIEW state on the right.
+//
+// The row is the button. In the reference it measures 110 pixels tall at 548
+// wide, so the button chrome is removed here rather than reset globally: font,
+// line-height and text-align are restated because a button inherits none of
+// them. The shape is already handled by base/_reset.scss, which zeroes the
+// radius on every element, so nothing here has to say it again.
+.hz-stage {
+	display: flex;
+	flex: 1 1 auto;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1.25rem;
+	margin-block: 0;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+	text-align: left;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--text);
+	cursor: pointer;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.hz-stage__body {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.hz-stage:hover {
+	border-color: var(--wp--preset--color--text-faint);
+}
+
+// The selected stage. aria-pressed drives it, so the visual state and the state
+// announced to a screen reader cannot disagree. The design gives the selected
+// row an amber ground, black ink and an amber border, and the SELECTED or VIEW
+// text label is the non colour signal.
+.hz-stage[aria-pressed="true"],
+.hz-stage[aria-pressed="true"]:hover {
+	background-color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--black);
+}
+
+// text-xl in the design, which is 20px on a 28px line.
+.hz-stage__name {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.4;
+	letter-spacing: 0.025em;
+	text-transform: uppercase;
+}
+
+// The design states the stage number, the headline and the state label at
+// text-xs, so a 16px line box in each case. The shared label rule would set the
+// first and the third to 19.5px and make every row taller than the design's p-5
+// button.
+.hz-stage__number {
+	line-height: 1.3333;
+}
+
+.hz-stage__headline {
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.hz-stage__state {
+	flex-shrink: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+}
+
+// The design states the selected row as text-on-amber at 90 percent opacity for
+// the headline, which is the only place a partial colour appears in this file.
+//
+// The stage number and the headline carry an explicit #0A0A0B in the design. The
+// SELECTED or VIEW label does not: it inherits the button ink, which is #000000
+// on the amber block. Restating #0A0A0B there left the label eleven values off
+// the design's black on the block that carries the least contrast slack.
+.hz-stage[aria-pressed="true"] .hz-stage__number {
+	color: var(--wp--preset--color--base);
+}
+
+.hz-stage[aria-pressed="true"] .hz-stage__state {
+	color: var(--wp--preset--color--black);
+}
+
+.hz-stage[aria-pressed="true"] .hz-stage__headline {
+	color: var(--wp--preset--color--base);
+	opacity: 0.9;
+}
+
+// The connector between two stage rows.
+.hz-arrow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-block: 0.5rem;
+	color: var(--wp--preset--color--accent);
+}
+
+.hz-arrow svg {
+	display: block;
+	width: 1rem;
+	height: 1rem;
+}
+
+// The stage row strip. The rows are buttons now rather than paragraphs holding
+// an anchor, so the strip is a column flexbox of its own children: five rows and
+// the four chevrons between them, in the order the design states.
+//
+// This rule replaces the flow spacing the previous markup relied on. A button
+// has no Core flow margin to cancel, and the chevrons carry their own padding,
+// so the only spacing between two rows is the chevron between them.
+.hz-stage-list {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+}
+
+// The icon in an action that is an anchor rather than a button block, in 06 and
+// 08. An SVG with a viewBox and no width or height is sized by its flex line, so
+// without an explicit box it takes the height of the line it lands on.
+.hz-section a.hz-approach__next svg,
+.hz-section a.hz-link.hz-btn-lg svg {
+	flex-shrink: 0;
+	width: 1rem;
+	height: 1rem;
+}
+
+// Next Stage is a button that selects, not a link that navigates. The design
+// states it as a p-3.5 py-2 button on the raised surface with an amber border,
+// ink and a 1px hairline, and this restates that plus the button resets.
+//
+// font and line-height are restated because a button inherits neither, and the
+// shape comes from base/_reset.scss. The design draws no arrow on this control,
+// so there is no icon box to size here. The label is text-xs, so 16px.
+// The weight is 400 and not 600. The design writes font-mono-tech text-xs on
+// this control with no weight class, so the default is 400. The 600 that was
+// here measured 600 against the design's 400, a delta of 200.
+.hz-approach__next {
+	flex-shrink: 0;
+	padding: 0.5rem 0.875rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line-strong);
+	cursor: pointer;
+	transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.hz-approach__next:hover {
+	border-color: var(--wp--preset--color--accent);
+}
+
+// The site header is a fixed 64 pixel band at z 40, so anything scrolled to the
+// top of the viewport by a scroll into view sits underneath it and cannot be
+// clicked or focused. This was measured on the Next Stage button: scrolled to
+// the top edge, elementFromPoint at its centre returned the header rather than
+// the button. Scroll margin moves the scroll target down by the height of the
+// band, so the control lands clear of it instead, for a click and for the
+// scroll a focused control triggers. 5rem is the clearance _page-projects.scss
+// already states for the same header. It changes no box and no height.
+.hz-section .hz-switch-panel {
+	scroll-margin-block: 5rem;
+}
+
+.hz-section .hz-approach__next {
+	scroll-margin-block-start: 5rem;
+}
+
+// An architectural question tile: p-4 on #171719 marked by an 8px amber square.
+// The design states the question text as text-sm with no leading, so the line is
+// 20px. The responsibility tiles below it are the ones written
+// leading-relaxed.
+.is-style-section li.hz-question {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	padding: 1rem;
+	font-size: 0.875rem;
+	line-height: 1.4286;
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+	list-style: none;
+}
+
+.is-style-section li.hz-question::before {
+	content: "";
+	flex-shrink: 0;
+	width: 0.5rem;
+	height: 0.5rem;
+	margin-block-start: 0.375rem;
+	background-color: var(--wp--preset--color--accent);
+}
+
+.is-style-section .hz-questions {
+	margin-block: 0;
+	padding-inline-start: 0;
+}
+
+// The gap between the Key Architectural Questions Evaluated label and the list
+// under it, in the stage panel of section 06.
+//
+// The design states the whole block as space-y-3, 12px. The shared .hz-stack-3
+// rule already says 12px, but this list is a wp:list, and WordPress core emits
+// margin-top on the children of a group, so the list resolved its own margin
+// from the core rule rather than from the stack and the label sat flush against
+// the first question with a measured gap of 0. The design's own block reads 12px
+// between the label and the list.
+//
+// margin-block-start rather than margin-block, because the top gap is the one
+// being restated and the zero below is what the core rule already gives.
+.hz-approach .hz-stack-3 > .hz-questions {
+	margin-block-start: 0.75rem;
+}
+
+.is-style-section .hz-questions > li + li {
+	margin-block-start: 0.625rem;
+}
+
+.hz-approach__foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-top: 1.25rem;
+	margin-block: 0;
+	border-top: 1px solid var(--wp--preset--color--line);
+}
+
+// 07 About.
+//
+// gap-12 on the body, not gap-8. The design states gap-12 on this section only.
+.hz-about__body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 3rem;
+	align-items: start;
+}
+
+// The two columns are placed by the grid, not by margins, and the grid's own
+// gap-12 is the whole of the space between them. The body carries
+// is-layout-flow, so Core was adding 24px of margin-block-start to the second
+// column on top of that gap: at 1440 it pushed the main column down and made
+// the body's box 477.97 against the design's 454, and at 390 it turned the
+// stacked row gap into 72 against the design's 48. Two classes outrank the Core
+// rule at :root :where(.is-layout-flow) > *, which is one.
+.hz-section .hz-about__body > * {
+	margin-block-start: 0;
+}
+
+@include from( $bp-lg ) {
+
+	.hz-about__body {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.hz-about__lead {
+		grid-column: span 5;
+	}
+
+	.hz-about__main {
+		grid-column: span 7;
+	}
+}
+
+// text-xs in the design, so a 16px line.
+.hz-section .hz-about__identity {
+	padding-top: 0.5rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// The design's About lead column is a space-y-4 stack, so every child after the
+// first sits 16 pixels lower. The margin-block above takes that paragraph's own
+// block margins to zero, which is what the 8 pixels of padding replace, but it
+// also cancels the stack gap the design states there. This paragraph measured 0
+// pixels below the heading against the design's 16, which cost section 07
+// sixteen pixels.
+//
+// Restating the gap against the block that owns it, matching the restatement
+// below for .hz-about__main, keeps the padding and the stack. Specificity is
+// three classes, which outranks both the zero above and the Core flow rule at
+// :root :where(.is-layout-flow) > *, and hz-about__identity appears once in the
+// file, so no other stack is touched.
+.hz-section .hz-about__lead .hz-about__identity {
+	margin-block-start: 1rem;
+}
+
+.hz-about__cta {
+	padding-top: 1rem;
+}
+
+// The design's main column is a space-y-6 stack, so its three paragraphs sit
+// 24 pixels apart. They measured 0 apart here, which cost 48 pixels of the
+// section, because .hz-section .hz-body-copy zeroes the block margins on every
+// body paragraph in the file and this column is the one place that relied on
+// them.
+//
+// The rule restates the stack against the block that owns it rather than
+// loosening the body-copy rule, so no other section's paragraphs pick up a gap
+// they do not have. Specificity is two classes, which outranks the Core flow
+// rule at :root :where(.is-layout-flow) > *, so the snapshot grid below keeps
+// the same 24 pixels it already measured and the cards inside it stay equal.
+.hz-section .hz-about__main > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-about__main > * + * {
+	margin-block-start: 1.5rem;
+}
+
+.hz-snap-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+	padding-top: 1rem;
+}
+
+@include from( $bp-sm ) {
+
+	.hz-snap-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.hz-snap {
+	padding: 1.25rem;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+// The grid is the height mechanism, so the cards are equal because the row
+// stretches them and not because any card states a height of its own. That
+// needs the grid gap off the cards themselves.
+//
+// The WordPress layout layer sets `:root :where(.is-layout-flow) > *` to a 24px
+// block gap, and each card is a direct child of a flow group, so the second
+// card carried a 24px margin. In a stretched grid item a top margin shortens
+// the box and pushes it to the bottom of its own row, which is what made the
+// two cards 137 and 113 tall and bottom aligned instead of 106 and 106. The
+// selector carries two classes so it outranks that one selector rule, the same
+// way the paragraph rules in _page-resume.scss and _page-projects.scss restate
+// their size against the block that owns them. A third card is covered by the
+// same rule because it is a child of the same grid.
+.hz-snap-grid > .hz-snap {
+	margin-block: 0;
+}
+
+.hz-section .hz-snap > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-snap > * + * {
+	margin-block-start: 0.25rem;
+}
+
+.is-style-section .hz-snap__value {
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text);
+}
+
+// text-xs on the label and on the meta line, which is 12px on a 16px line. The
+// label inherits that from the shared label voice, and the meta line states it
+// here. At 1.625 each of the two lines was 3.5px tall, which is the 7px the
+// cards measured over the design's 106.
+
+.is-style-section .hz-snap__meta {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// 08 Hiring call to action.
+//
+// The band is pure black with no texture, and the content sits on a #0A0A0B card
+// at p-8 sm:p-12 md:p-16, capped at max-w-3xl.
+.hz-hiring__card {
+	position: relative;
+	padding: 2rem;
+	overflow: hidden;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.hz-hiring__card {
+		padding: 3rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.hz-hiring__card {
+		padding: 4rem;
+	}
+}
+
+.hz-hiring__inner {
+	max-width: 48rem;
+}
+
+.hz-section .hz-hiring__inner > * {
+	margin-block: 0;
+}
+
+.hz-section .hz-hiring__inner > * + * {
+	margin-block-start: 1.5rem;
+}
+
+// text-base sm:text-lg leading-relaxed, so the leading is 1.625 at both steps
+// and only the size changes.
+.is-style-section .hz-hiring__lede {
+	font-size: 1rem;
+	line-height: 1.625;
+}
+
+@include from( $bp-sm ) {
+
+	.is-style-section .hz-hiring__lede {
+		font-size: 1.125rem;
+		line-height: 1.625;
+	}
+}
+
+.hz-hiring__actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+	padding-top: 1rem;
+}
+
+// The actions are a flex row with a 1rem gap, so the flow spacing Core puts on
+// the children of a group would add a second 24px under every action.
+.hz-hiring__actions > * {
+	margin-block-start: 0;
+}
+
+// THE ACTION LABELS STEP TO 14px AT 640px, AND THEY WERE 12px AT EVERY WIDTH.
+//
+// The design writes text-xs sm:text-sm on all three controls, which is 12px
+// below the sm breakpoint and 14px from it. Measured at 1440 the design's
+// controls compute to 14px on a 20px line, and ours to 12px on a 16px line.
+// Every other number in this section already matched, so the 4 pixels of line
+// box are the whole of the height difference: the amber control measured 48 in
+// the design against 44 here, the two bordered controls 50 against 46, and the
+// section as a whole 753 against 748.98. At 390 the design is 12px and so is
+// this, and the section measured 914 against 913.95, which is why the step is
+// stated from sm rather than written flat at 14px.
+//
+// line-height is 20px and not a ratio, because text-sm is a Tailwind size whose
+// line height is its own and the shared label rule states 1.3333 for the 12px
+// step. Unitless 1.4286 is the same value and is what the lint rule wants.
+@include from( $bp-sm ) {
+
+	.hz-section .hz-hiring__actions .wp-block-button__link,
+	.hz-section .hz-hiring__actions a.hz-link {
+		font-size: 0.875rem;
+		line-height: 1.4286;
+	}
+}

@@ -83,6 +83,7 @@ These live in the parent directory and are reference material, not checklists.
 |---|---|
 | Document | Contents |
 |---|---|
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | **Start here for structure.** Editor first architecture: which layer owns what, and the `is-style-*` vocabulary |
 | [`PLAN.md`](PLAN.md) | Reasoning. What we are building and why |
 | [`GIT-WORKFLOW.md`](GIT-WORKFLOW.md) | Issue first, GH-* branches, review then approval. **Read this before contributing** |
 | `ROADMAP.md` | Build order, condensed |

@@ -7,3 +7,14 @@
 // Generated breakpoints and layout widths are forwarded from
 // abstracts/_index.scss, which pulls in generated/_theme-json-tokens.scss.
 @use '../generated/theme-json-tokens' as tokens;
+
+// Motion timing. Compile-time only, and deliberately not read from theme.json.
+// WordPress emits settings.color, settings.typography, settings.spacing and
+// settings.layout as --wp--preset--* custom properties, but it does not emit
+// settings.custom.* as anything at all, so the motion block in theme.json
+// settings.custom.motion cannot be referenced from a stylesheet. Keeping the
+// numbers here is the only way a component can share them, and it is stated
+// plainly rather than left to look like an oversight. The values are the
+// design's transition-colors duration-200 and its standard easing curve.
+$motion-duration: 200ms;
+$motion-ease: cubic-bezier(0.4, 0, 0.2, 1);

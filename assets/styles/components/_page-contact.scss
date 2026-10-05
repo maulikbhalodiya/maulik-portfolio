@@ -1,0 +1,890 @@
+// Contact page.
+//
+// THE WHOLE PAGE IS DARK. The design uses no light surface on any of its six
+// routes, so nothing here is a paper ground: every colour below is one of the
+// dark tokens or one of the design's own hairlines and accents. The two bands
+// are the design's two bands, at src/pages/ContactPage.tsx line 48 and
+// src/components/InnerPageHero.tsx line 44, and nothing else.
+//
+//   hero   bg-dark-grid, py-16 md:py-24, border-b #262626
+//   body   bg-[#0A0A0B] flat, py-16 md:py-24, border-b #262626
+//
+// The hero is the shared inner page hero (src/components/InnerPageHero.tsx).
+// Its left column is lg:col-span-9 because ContactPage passes no rightPanel,
+// and its stack is space-y-5, with space-y-3 inside the title pair, pt-2 on
+// the metadata row and pt-3 on the action row.
+//
+// The body section is grid-cols-12 gap-12 items-start with lg:col-span-6 on
+// each column. The left column is the destination list. The right column is the
+// signal routing panel, which the design builds as an interactive SVG. There is
+// no SVG block in this theme's vocabulary, so the same node geometry is laid
+// out as a nine cell grid: four channel nodes, four wires and the origin node,
+// with the design's own fills and strokes taken from
+// src/components/ContactSignalNetwork.tsx.
+//
+// ZERO BORDER RADIUS, ZERO BOX SHADOW. The design has neither and this theme
+// bans both. Nothing in this file sets either property, including at zero.
+//
+// SPACING SOURCE. Tailwind v4 spacing is 0.25rem per step, so py-16 is 64px
+// and md:py-24 is 96px, gap-12 is 48px, gap-6 is 24px, gap-4 is 16px,
+// space-y-2 is 8px, space-y-1.5 is 6px and p-6 is 24px.
+//
+// LINE HEIGHT SOURCE. node_modules/tailwindcss/theme.css states the line height
+// beside every text step, and each one is restated below as the design's own
+// ratio: text-xs is 12px on 16px, text-sm is 14px on 20px, text-lg is 18px on
+// 28px, text-xl is 20px on 28px, text-2xl is 24px on 32px and text-3xl is 30px
+// on 36px.
+
+@use '../abstracts' as *;
+
+/* stylelint-disable selector-class-pattern --
+   The double underscore in wp-block-button__link is a BEM element marker. The
+   class string is emitted by core/button and is fixed by
+   content/pages/contact.html, which this stylesheet cannot change. */
+
+// ---------------------------------------------------------------------------
+// Section frames and the two rhythms.
+//
+// The design gives the inner hero and the inner body section the same vertical
+// rhythm, py-16 stepping to md:py-24, which is 64px then 96px. components/
+// _rhythm.scss supplies 80px then 112px for a standard homepage section and
+// 64px then 96px for the hero, so the hero needs nothing from this file and the
+// body section does. Both are stated here so the page's own rhythm is readable
+// in one place and neither depends on which rule in _rhythm.scss printed last.
+.wp-block-group.is-style-section.contact-destinations {
+	padding-block: 4rem;
+	background-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--text);
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.is-style-section.contact-destinations {
+		padding-block: 6rem;
+	}
+}
+
+.wp-block-group.is-style-section.contact-hero {
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.wp-block-group.contact-destinations > .contact-destinations-grid {
+	margin-block-start: 0;
+}
+
+// ---------------------------------------------------------------------------
+// The inner page hero stack.
+//
+// Core puts the theme block gap on every child of a constrained group, which
+// would replace the design's own stack, so each child states the gap the
+// design asks for and the first one states nothing.
+//
+// THE ORDER OF THIS FILE MATTERS AND THE REASON IS SPECIFICITY. This rule is
+// two classes plus the child, so 0,2,0. The four element rules further down
+// carry the same two classes and then the element's own class, so they tie with
+// it at 0,3,0 and win by being later in the file. When they carried
+// `margin-block: 0` rather than `margin-block-end: 0`, every one of them
+// deleted the gap this rule had just set and the hero measured 470px against
+// the design's 542px: exactly the 12px of the title pair plus three 20px stack
+// gaps, 72px in total. The rule the title pair needs is stated here at 0,3,0 as
+// well, so the same order dependency is now visible in one place.
+.wp-block-group.contact-hero > * {
+	margin-block-start: 1.25rem;
+}
+
+.wp-block-group.contact-hero > :first-child {
+	margin-block-start: 0;
+}
+
+// The h1. text-4xl sm:text-5xl md:text-6xl is 36px, 48px and 60px, which is a
+// step and not the ramp in the theme's hero preset, and leading-[1.08] is the
+// design's own value for this hero. The preset's trailing margin is removed so
+// the gaps below are the only spacing here.
+.wp-block-group.contact-hero h1 {
+	margin-block-end: 0;
+	font-size: 2.25rem;
+	font-weight: 800;
+	line-height: 1.08;
+	letter-spacing: -0.025em;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.contact-hero h1 {
+		font-size: 3rem;
+	}
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.contact-hero h1 {
+		font-size: 3.75rem;
+	}
+}
+
+// The title pair is space-y-3, which is 12px, so this one child sits closer to
+// the h1 than the rest of the column does. This selector carries the same two
+// classes as the rule below it and comes first, so the value below has to leave
+// margin-block-start alone. See the note on the rule below.
+.wp-block-group.contact-hero > .contact-hero-subtitle {
+	margin-block-start: 0.75rem;
+}
+
+// The subtitle. text-xl sm:text-2xl font-display font-semibold in amber.
+//
+// Only the trailing margin is zeroed here. This rule and the `> *` stack rule
+// above it both carry two classes plus the child, so they tie at 0,3,0 against
+// 0,2,0 and this one is later in the file, which means a `margin-block: 0` here
+// silently deleted every gap in the hero and left the section 72px short. That
+// is the same trap content/pages/projects.html hit, and it is the same fix.
+.wp-block-group.contact-hero .contact-hero-subtitle {
+	margin-block-end: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 600;
+	line-height: 1.4;
+	color: var(--wp--preset--color--accent);
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.contact-hero .contact-hero-subtitle {
+		font-size: 1.5rem;
+		line-height: 1.3333;
+	}
+}
+
+// The description. text-base sm:text-lg leading-relaxed in the secondary text
+// colour, capped at max-w-3xl, which is 48rem. Trailing margin only, for the
+// reason given on the subtitle rule above.
+.wp-block-group.contact-hero .contact-hero-lede {
+	margin-block-end: 0;
+	max-width: 48rem;
+	font-size: 1rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.contact-hero .contact-hero-lede {
+		font-size: 1.125rem;
+	}
+}
+
+// The metadata row. pt-2, a flex row with a 10px column gap and a 4px row gap.
+// The items are the secondary text colour and the middot between them is the
+// muted one, which is what the design separates them with. The padding is the
+// design's own pt-2 and it stacks on top of the stack gap above this child, so
+// the two together are the design's space-y-5 then pt-2.
+.wp-block-group.contact-hero > .contact-hero-meta {
+	padding-block-start: 0.5rem;
+}
+
+.wp-block-group.contact-hero .contact-hero-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.25rem 0.625rem;
+	margin-block-end: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+.wp-block-group.contact-hero .contact-hero-meta-item {
+	color: var(--wp--preset--color--text-muted);
+}
+
+.wp-block-group.contact-hero .contact-hero-meta-sep {
+	color: var(--wp--preset--color--text-faint);
+}
+
+// The action row. pt-3, a wrapping flex row 16px apart, items on the centre
+// line.
+.wp-block-group.contact-hero > .contact-hero-actions {
+	padding-block-start: 0.75rem;
+}
+
+.wp-block-group.contact-hero .contact-hero-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+	margin-block-end: 0;
+}
+
+.wp-block-group.contact-hero .contact-hero-actions > *,
+.contact-card-actions > *,
+.contact-routing-action .wp-block-button {
+	margin-block-start: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Buttons.
+//
+// The design states the hero pair as font-mono-tech text-xs sm:text-sm
+// font-semibold at px-6 py-3.5, which is 24px inline and 14px block, primary
+// on amber over black and secondary on the panel ground behind a #343434
+// hairline that goes amber on hover. The routing panel's own action is the
+// smaller of the design's two button sizes, px-4 py-2.5 with text-xs.
+//
+// The theme's button preset already states the amber pair, but it is 14px at
+// every width and the design steps 12px to 14px, and it has no panel ground
+// button, so both are restated on a selector that carries the button class.
+.wp-block-button.contact-btn .wp-block-button__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.875rem 1.5rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1.3333;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-button.contact-btn .wp-block-button__link {
+		font-size: 0.875rem;
+		line-height: 1.4286;
+	}
+}
+
+.wp-block-button.contact-btn-amber .wp-block-button__link {
+	background-color: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--black);
+	border: 0;
+}
+
+.wp-block-button.contact-btn-amber .wp-block-button__link:hover,
+.wp-block-button.contact-btn-amber .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--accent-hover);
+	color: var(--wp--preset--color--black);
+}
+
+.wp-block-button.contact-btn-dark .wp-block-button__link {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--text);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.wp-block-button.contact-btn-dark .wp-block-button__link:hover,
+.wp-block-button.contact-btn-dark .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+.wp-block-button.contact-btn-small .wp-block-button__link {
+	padding: 0.625rem 1rem;
+	font-size: 0.75rem;
+	line-height: 1.3333;
+}
+
+// ---------------------------------------------------------------------------
+// The body section grid. grid-cols-12 gap-12 items-start, one column below
+// 1024px and two halves above it.
+.wp-block-group.contact-destinations-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 3rem;
+	align-items: start;
+	padding-block: 0;
+	margin-block: 0;
+}
+
+.wp-block-group.contact-destinations-grid > * {
+	margin-block-start: 0;
+	min-width: 0;
+}
+
+@include from( $bp-lg ) {
+
+	.wp-block-group.contact-destinations-grid {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+
+	.wp-block-group.contact-destinations-grid > .contact-destinations-lead {
+		grid-column: span 6;
+	}
+
+	.wp-block-group.contact-destinations-grid > .contact-routing {
+		grid-column: span 6;
+	}
+}
+
+// The left column is space-y-6.
+.wp-block-group.contact-destinations-lead {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding-block: 0;
+	margin-block: 0;
+}
+
+.wp-block-group.contact-destinations-lead > * {
+	margin-block-start: 0;
+}
+
+// The section head is space-y-2 with a hairline under it and 16px of padding
+// between the last line and that hairline.
+.wp-block-group.contact-destinations-head {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0 0 1rem;
+	margin-block: 0;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.wp-block-group.contact-destinations-head > * {
+	margin-block-start: 0;
+}
+
+.wp-block-group.contact-destinations .contact-destinations-label {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+// The body heading is text-2xl sm:text-3xl font-display font-bold, which is
+// 24px and then 30px. The theme's h2 step reaches 48px from 768px, which the
+// design never does on this page, so the two steps are stated here.
+.wp-block-group.contact-destinations h2 {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.contact-destinations h2 {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+// The head paragraph is text-sm in the secondary text colour, which is 14px on
+// 20px.
+.wp-block-group.contact-destinations .contact-destinations-intro {
+	margin-block: 0;
+	font-size: 0.875rem;
+	line-height: 1.4286;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// ---------------------------------------------------------------------------
+// The destination grid. grid-cols-1 sm:grid-cols-2 gap-4.
+.wp-block-group.contact-destinations-cards {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: 1rem;
+	padding-block: 0;
+	margin-block: 0;
+}
+
+.wp-block-group.contact-destinations-cards > * {
+	margin-block-start: 0;
+	min-width: 0;
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.contact-destinations-cards {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+// A destination card. p-6 on the panel ground behind a #262626 hairline, and a
+// 24px gap between the label row and the title pair.
+.wp-block-group.contact-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 1.5rem;
+	padding: 1.5rem;
+	margin-block: 0;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--text);
+}
+
+.wp-block-group.contact-card > * {
+	margin-block-start: 0;
+}
+
+// The primary card is the design's own active route treatment: the signal panel
+// fills and strokes its active node with amber, so the primary destination
+// takes the amber hairline rather than the muted one.
+.wp-block-group.contact-card.contact-card-primary {
+	border-color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.contact-card .contact-card-label {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.wp-block-group.contact-card .contact-card-title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.4;
+	color: var(--wp--preset--color--text);
+}
+
+.wp-block-group.contact-card .contact-card-meta {
+	margin-block: 0.375rem 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.wp-block-group.contact-card .contact-card-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-block: 0;
+}
+
+// A destination the reader can follow is the whole card, so the card itself is
+// the link. The design draws it as one anchor with the label, the title and the
+// value stacked inside it, and the button preset's mono 14px is undone here so
+// the three voices below are the design's own.
+.wp-block-button.contact-card {
+	display: flex;
+	margin-block: 0;
+	min-width: 0;
+}
+
+.wp-block-button.contact-card .wp-block-button__link {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: space-between;
+	gap: 1.5rem;
+	padding: 1.5rem;
+	text-align: left;
+	text-decoration: none;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--text);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+}
+
+.wp-block-button.contact-card .wp-block-button__link:hover,
+.wp-block-button.contact-card .wp-block-button__link:focus {
+	background-color: var(--wp--preset--color--surface);
+	border-color: var(--wp--preset--color--accent);
+}
+
+.wp-block-button.contact-card .contact-card-label {
+	display: block;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+	font-variant-numeric: tabular-nums;
+}
+
+.wp-block-button.contact-card .contact-card-title {
+	display: block;
+	margin-block-start: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.4;
+	color: var(--wp--preset--color--text);
+}
+
+.wp-block-button.contact-card .contact-card-meta {
+	display: block;
+	margin-block-start: 0.375rem;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.wp-block-button.contact-card .wp-block-button__link:hover .contact-card-title,
+.wp-block-button.contact-card .wp-block-button__link:focus .contact-card-title {
+	color: var(--wp--preset--color--accent);
+}
+
+// ---------------------------------------------------------------------------
+// The signal routing panel, which the design draws as p-6 md:p-8 on the panel
+// ground behind a #262626 hairline, with a 24px stack inside it.
+.wp-block-group.contact-routing {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	padding: 1.5rem;
+	margin-block: 0;
+	background-color: var(--wp--preset--color--surface);
+	border: 1px solid var(--wp--preset--color--line);
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.contact-routing {
+		padding: 2rem;
+	}
+}
+
+.wp-block-group.contact-routing > * {
+	margin-block-start: 0;
+}
+
+// The panel head. A flex row with a 16px hairline under it: the panel's own
+// title in amber, the active node in the muted colour.
+.wp-block-group.contact-routing-head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0 0 1rem;
+	margin-block: 0;
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+.wp-block-group.contact-routing-head > * {
+	margin-block-start: 0;
+}
+
+.wp-block-group.contact-routing .contact-routing-title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.contact-routing .contact-routing-state {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+	font-variant-numeric: tabular-nums;
+}
+
+// The map. The design's SVG is a 500 by 340 view box at p-4 on the base ground
+// behind a hairline, so the box keeps that ratio and the nine cells keep the
+// design's own order: two channel nodes either side of a wire, the origin
+// node in the middle row, then the active route and the resume.
+.wp-block-group.contact-routing-map {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-rows: repeat(3, minmax(0, 1fr));
+	aspect-ratio: 500 / 340;
+	padding: 1rem;
+	margin-block: 0;
+	background-color: var(--wp--preset--color--base);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+.wp-block-group.contact-routing-map > * {
+	margin-block-start: 0;
+}
+
+// A channel node. The design's node rectangle is 128 by 48 on #171719 behind a
+// #343434 stroke, with a Syne 12px name over a mono 9px state.
+.wp-block-group.contact-node {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.25rem;
+	padding: 0.5rem;
+	margin-block: 0;
+	text-align: center;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.wp-block-group.contact-node > * {
+	margin-block-start: 0;
+}
+
+.wp-block-group.contact-node .contact-node-name {
+	display: block;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text);
+}
+
+.wp-block-group.contact-node .contact-node-state {
+	display: block;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.5625rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// The origin node is the one rectangle in the design's map that is on the base
+// ground with a 2px amber stroke.
+.wp-block-group.contact-node.contact-node-origin {
+	background-color: var(--wp--preset--color--base);
+	border: 2px solid var(--wp--preset--color--accent);
+}
+
+.wp-block-group.contact-node.contact-node-origin .contact-node-name {
+	font-size: 0.875rem;
+	line-height: 1.2857;
+}
+
+.wp-block-group.contact-node.contact-node-origin .contact-node-state {
+	color: var(--wp--preset--color--accent);
+}
+
+// The active route. The design fills it with amber, so its name goes black and
+// its state goes to the base ground.
+.wp-block-group.contact-node.contact-node-active {
+	background-color: var(--wp--preset--color--accent);
+	border-color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.contact-node.contact-node-active .contact-node-name {
+	color: var(--wp--preset--color--black);
+}
+
+.wp-block-group.contact-node.contact-node-active .contact-node-state {
+	color: var(--wp--preset--color--base);
+}
+
+// The wires. Each is a one pixel #343434 rule, which is the stroke the design
+// gives an unselected signal line.
+.wp-block-group.contact-wire {
+	align-self: center;
+	justify-self: stretch;
+	width: 100%;
+	height: 1px;
+	background-color: var(--wp--preset--color--line-strong);
+}
+
+.wp-block-group.contact-wire.contact-wire-vertical {
+	align-self: stretch;
+	justify-self: center;
+	width: 1px;
+	height: 100%;
+}
+
+// The selected channel panel. p-5 on the raised ground behind a hairline, a
+// column below 640px and a row from 640px, 16px apart.
+.wp-block-group.contact-routing-action {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1.25rem;
+	margin-block: 0;
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-sm ) {
+
+	.wp-block-group.contact-routing-action {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
+
+.wp-block-group.contact-routing-action > * {
+	margin-block-start: 0;
+}
+
+.wp-block-group.contact-routing .contact-routing-action-label {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.contact-routing .contact-routing-action-text {
+	max-width: 28rem;
+	margin-block: 0;
+	font-size: 0.75rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+// ---------------------------------------------------------------------------
+// The contact form section.
+//
+// THE DESIGN HAS NO FORM. The prototype's contact page is a hero, four channel
+// cards and an interactive signal panel, and a grep across
+// design-reference/src finds no form, no input, no select and no textarea
+// anywhere in the codebase. There is therefore no input styling to copy, and
+// this file does not invent a new visual language for controls. It reuses the
+// two treatments that already exist on this page instead:
+//
+//   control   the contact node, which is the design's own raised rectangle on
+//             the base ground behind a #343434 stroke, so a field is #171719
+//             with a #343434 hairline and the text colour as its ink
+//   submit    contact-btn contact-btn-amber, which is the design's primary
+//             button and is applied by patterns/contact-form.php to the same
+//             core/button shape the rest of the page uses, so no button CSS
+//             is restated here
+//
+// ZERO BORDER RADIUS, ZERO BOX SHADOW, and no light surface. Nothing below
+// sets either property.
+//
+// FOCUS IS NOT RESTATED. base/_focus.scss already owns the outline, and it
+// applies to every focusable element including these controls, so this file
+// deliberately says nothing about focus. Hover moves the hairline to amber,
+// which matches contact-card, but it is decoration and never the only signal.
+.wp-block-group.is-style-section.contact-form-section {
+	padding-block: 4rem;
+	background-color: var(--wp--preset--color--base);
+	color: var(--wp--preset--color--text);
+	border-bottom: 1px solid var(--wp--preset--color--line);
+}
+
+@include from( $bp-md ) {
+
+	.wp-block-group.is-style-section.contact-form-section {
+		padding-block: 6rem;
+	}
+}
+
+// The section holds one column: the title, the honesty note, the required
+// legend and the form, 24px apart, capped at the design's 768px measure so the
+// form does not run the full width of a 1440px band.
+.contact-form-section .contact-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	max-width: 48rem;
+	margin-block: 0;
+}
+
+.contact-form-section .contact-form-title {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--display);
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text);
+}
+
+@include from( $bp-sm ) {
+
+	.contact-form-section .contact-form-title {
+		font-size: 1.875rem;
+		line-height: 1.2;
+	}
+}
+
+// The note is the honest one. It says in the interface, not only in a commit,
+// that nothing processes a submission. It is text, so it is never colour alone.
+.contact-form-section .contact-form-note {
+	margin-block: 0;
+	max-width: 42rem;
+	font-size: 0.875rem;
+	line-height: 1.625;
+	color: var(--wp--preset--color--text-muted);
+}
+
+.contact-form-section .contact-form-required-note {
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: 0.75rem;
+	line-height: 1.3333;
+	color: var(--wp--preset--color--text-faint);
+}
+
+// The form is a column of fields, 24px apart.
+.contact-form-section .contact-form-fields {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 1.5rem;
+	margin-block: 0;
+}
+
+// A field is label, control, 8px apart. It is a paragraph because a label and
+// its control are both phrasing content, and its margin is zeroed so the gap
+// below is the only spacing here.
+.contact-form-section .contact-form-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	width: 100%;
+	margin-block: 0;
+}
+
+.contact-form-section .contact-form-label {
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.4286;
+	color: var(--wp--preset--color--text);
+}
+
+// The required indicator is an asterisk, so the contract is carried by a glyph
+// and not by colour. The legend above the form says what it means, and every
+// control also carries the required attribute, so the same fact is available
+// three ways: visually, in the legend, and from the accessibility tree.
+.contact-form-section .contact-form-required {
+	font-family: var(--wp--preset--font-family--mono);
+	color: var(--wp--preset--color--accent);
+}
+
+// The control. The design's own raised rectangle, as the contact node states
+// it: the raised surface on the base ground behind the emphasis hairline. The
+// native select arrow and the native textarea resize handle are both left
+// alone, because replacing them means drawing an indicator the design never
+// drew.
+.contact-form-section .contact-form-control {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 0.75rem 1rem;
+	margin-block: 0;
+	font-family: var(--wp--preset--font-family--body);
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	color: var(--wp--preset--color--text);
+	background-color: var(--wp--preset--color--surface-2);
+	border: 1px solid var(--wp--preset--color--line-strong);
+}
+
+.contact-form-section .contact-form-control:hover {
+	border-color: var(--wp--preset--color--accent);
+}
+
+.contact-form-section .contact-form-textarea {
+	resize: vertical;
+}
+
+/* stylelint-enable selector-class-pattern */

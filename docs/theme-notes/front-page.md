@@ -102,3 +102,35 @@ the inner text of one original comment, in the order it appeared in the file.
 			There is no mail link and no published address. Contact runs through
 			the contact page.
 ```
+
+---
+
+## Correction note, 2026-10-01
+
+The archived text above is verbatim and is not rewritten. Two of its claims are now
+out of date, and both are recorded here rather than edited into the archive.
+
+**1. "custom blocks are forbidden in a theme" was too broad.** The real rule is that a
+block which reads a data model belongs in a plugin. A presentational block, such as a
+card, a badge or a flow, belongs in the theme. The note above reached the right
+conclusion for the wrong stated reason: the surfaces here use `core/group` plus a block
+style variation because that is what the editor can change without a custom block, not
+because a custom block would have been forbidden. See `docs/ARCHITECTURE.md` and
+`docs/RESEARCH-01-WPORG.md`.
+
+**2. "The translatable versions of these strings live in patterns/" is no longer
+complete.** The technical claim in that paragraph is still correct and still matters: a
+template is parsed, not executed, so it cannot call `esc_html__()` and its literal text
+is not translatable. What has changed is that there are now three translatable homes,
+not one. `patterns/*.php` and the `post_content` of a page both run PHP, and the page
+body now lives in `post_content`. So the sentence above should be read as "the
+translatable versions of these strings live in `patterns/` or in `post_content`, never in
+a template".
+
+**3. This note already argued for editor owned content.** Line 67 above reasons about
+untranslatable placeholder strings, and the original file carried the whole page
+composition inside the template. Under the editor first architecture this page's
+composition lives in `content/pages/home.html`, which is loaded into `post_content`.
+The `is-style-*` vocabulary replaces the bare `surface-*` names in the example above,
+because the bare slugs are what WordPress emits when a variation from `styles/` is
+applied.

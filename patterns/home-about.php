@@ -3,103 +3,112 @@
  * Title: Home About Section
  * Slug: maulik-portfolio/home-about
  * Categories: maulik-portfolio-home
- * Description: Homepage section 07, the engineering profile, on the warm editorial surface.
+ * Description: Homepage section 07, the identity column and the two snapshot cards, on the flat base surface.
  * Inserter: yes
  *
- * Section 07 of 08. The light editorial surface, which is the rhythm's one break in
- * the dark run and the reason the run reads as a rhythm at all.
+ * Section 07 of 08. Flat #0A0A0B with a 1px #262626 rule under it, which is what
+ * the design states. It previously wore the 48px dark grid variation, which put a
+ * texture on a section the design leaves flat.
  *
- * THE LIGHT SURFACE CHANGES ONE RULE. Amber on a light ground fails contrast
- * badly, roughly 1.5:1 on #F8F7F0. So nothing on this section is amber text. The
- * eyebrow square keeps its amber because it is a filled block, not text, and the
- * text here is near-black. If an accent coloured string is ever added to this
- * section it has to use the darkened accent preset, not the amber one.
+ * THE SHAPE CHANGED. The previous version was a single flat column of four
+ * paragraphs, an identity line nowhere and no cards. The design has a two column
+ * body: the eyebrow, the h2, a mono identity line and one button on the left at
+ * five of twelve columns, and exactly three paragraphs plus two snapshot cards on
+ * the right at seven.
  *
- * B.Tech in Computer Engineering, Ganpat University, 2021 to 2025. Those are the
- * verified education dates. The knowsAbout list is the ten entries from the
- * design's structured data, unchanged.
+ * THREE PARAGRAPHS, NOT FOUR. The fourth paragraph said the full profile is on
+ * the about page, and the left column now carries a button that says exactly
+ * that, so the sentence is gone rather than restated.
+ *
+ * THE B.TECH LINE MOVED INTO A CARD, IT WAS NOT DELETED. Ganpat University,
+ * 2021 to 2025, is now the value line of the Education snapshot card rather than
+ * prose, which is where the design puts it.
+ *
+ * THE LIGHT SURFACES ARE GONE FROM THE HOMEPAGE BODY. Amber on a light ground
+ * fails contrast badly, so nothing amber is text on a light section. Restoring
+ * the flat dark ground removes the question rather than answering it.
  *
  * @package Maulik_Portfolio
  */
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * The ten verified areas of knowledge from the design's structured data.
- */
-$maulik_portfolio_knows_about = array(
-	__( 'WordPress Engineering', 'maulik-portfolio' ),
-	__( 'PHP Development', 'maulik-portfolio' ),
-	__( 'Custom WordPress Plugin Development', 'maulik-portfolio' ),
-	__( 'REST API Integration', 'maulik-portfolio' ),
-	__( 'Payment Integration', 'maulik-portfolio' ),
-	__( 'WordPress Security', 'maulik-portfolio' ),
-	__( 'Gutenberg Block Development', 'maulik-portfolio' ),
-	__( 'WooCommerce', 'maulik-portfolio' ),
-	__( 'MySQL', 'maulik-portfolio' ),
-	__( 'HMAC SHA 256', 'maulik-portfolio' ),
-);
-
 ?>
-<!-- wp:group {"tagName":"section","className":"section section-about has-paper-background-color has-background","anchor":"about","ariaLabelledby":"heading-about","backgroundColor":"paper","layout":{"type":"constrained"}} -->
-<section class="wp-block-group section section-about has-paper-background-color has-background" id="about" aria-labelledby="heading-about">
-	<!-- wp:paragraph {"className":"eyebrow","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-	<p class="eyebrow"><span class="w-2 h-2 bg-accent" aria-hidden="true"></span> <span class="eyebrow-text"><?php echo esc_html__( '07 · Engineering Profile', 'maulik-portfolio' ); ?></span></p>
-	<!-- /wp:paragraph -->
-
-	<!-- wp:heading {"level":2,"anchor":"heading-about"} -->
-	<h2 class="wp-block-heading" id="heading-about"><?php echo esc_html__( 'About Me', 'maulik-portfolio' ); ?></h2>
-	<!-- /wp:heading -->
-
-	<!-- wp:paragraph {"className":"section-lede"} -->
-	<p class="section-lede"><?php echo esc_html__( 'WordPress Developer at Qrolic Technologies. I write plugins, backend systems and integrations, and I care about the parts that are hard to check.', 'maulik-portfolio' ); ?></p>
-	<!-- /wp:paragraph -->
-
-	<!-- wp:group {"tagName":"div","className":"about-grid","layout":{"type":"constrained"}} -->
-	<div class="wp-block-group about-grid">
-		<!-- wp:group {"tagName":"div","className":"about-block","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group about-block">
-			<!-- wp:heading {"level":3,"className":"about-block__title"} -->
-			<h3 class="wp-block-heading about-block__title"><?php echo esc_html__( 'Background', 'maulik-portfolio' ); ?></h3>
-			<!-- /wp:heading -->
-
-			<!-- wp:paragraph -->
-			<p><?php echo esc_html__( 'B.Tech in Computer Engineering at Ganpat University, 2021 to 2025.', 'maulik-portfolio' ); ?></p>
-			<!-- /wp:paragraph -->
+<!-- wp:group {"anchor":"about","ariaLabelledby":"heading-about","backgroundColor":"base","layout":{"type":"constrained"}} -->
+<section class="wp-block-group is-style-section hz-section hz-about has-base-background-color has-background" id="about" aria-labelledby="heading-about">
+	<!-- wp:group {"className":"hz-about__body","layout":{"type":"default"}} -->
+	<div class="wp-block-group hz-about__body">
+		<!-- wp:group {"className":"hz-about__lead","layout":{"type":"default"}} -->
+		<div class="wp-block-group hz-about__lead">
+			<!-- wp:group {"className":"hz-stack-4","layout":{"type":"default"}} -->
+			<div class="wp-block-group hz-stack-4">
+				<!-- wp:paragraph {"className":"hz-eyebrow"} -->
+				<p class="hz-eyebrow"><?php echo esc_html__( '07 · Engineering Profile', 'maulik-portfolio' ); ?></p>
+				<!-- /wp:paragraph -->
+				<!-- wp:heading {"level":2,"anchor":"heading-about","className":"hz-section__title"} -->
+				<h2 class="wp-block-heading hz-section__title" id="heading-about"><?php echo esc_html__( 'About Me', 'maulik-portfolio' ); ?></h2>
+				<!-- /wp:heading -->
+				<!-- wp:paragraph {"className":"hz-about__identity"} -->
+				<p class="hz-about__identity"><?php echo esc_html__( 'WordPress Developer | PHP Engineer | Custom Plugin Developer', 'maulik-portfolio' ); ?></p>
+				<!-- /wp:paragraph -->
+				<!-- wp:group {"className":"hz-about__cta","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-about__cta">
+					<!-- wp:buttons {"className":"hz-actions","layout":{"type":"flex","flexWrap":"wrap"}} -->
+					<div class="wp-block-buttons hz-actions">
+						<!-- wp:button {"className":"hz-btn-outline"} -->
+						<div class="wp-block-button hz-btn-outline">
+							<a class="wp-block-button__link wp-element-button" href="<?php echo esc_url( get_home_url( null, '/about/' ) ); ?>"><?php echo esc_html__( 'Read Full About and Experience Page', 'maulik-portfolio' ); ?></a>
+						</div>
+						<!-- /wp:button -->
+					</div>
+					<!-- /wp:buttons -->
+				</div>
+				<!-- /wp:group -->
+			</div>
+			<!-- /wp:group -->
 		</div>
 		<!-- /wp:group -->
-
-		<!-- wp:group {"tagName":"div","className":"about-block","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group about-block">
-			<!-- wp:heading {"level":3,"className":"about-block__title"} -->
-			<h3 class="wp-block-heading about-block__title"><?php echo esc_html__( 'Works with', 'maulik-portfolio' ); ?></h3>
-			<!-- /wp:heading -->
-
-			<!-- wp:list {"className":"about-block__list"} -->
-			<ul class="wp-block-list about-block__list">
-				<?php foreach ( $maulik_portfolio_knows_about as $maulik_portfolio_knows_about_item ) : ?>
-					<!-- wp:list-item -->
-					<li><?php echo esc_html( $maulik_portfolio_knows_about_item ); ?></li>
-					<!-- /wp:list-item -->
-				<?php endforeach; ?>
-			</ul>
-			<!-- /wp:list -->
-		</div>
-		<!-- /wp:group -->
-
-		<!-- wp:group {"tagName":"div","className":"about-block","layout":{"type":"constrained"}} -->
-		<div class="wp-block-group about-block">
-			<!-- wp:heading {"level":3,"className":"about-block__title"} -->
-			<h3 class="wp-block-heading about-block__title"><?php echo esc_html__( 'Independent work', 'maulik-portfolio' ); ?></h3>
-			<!-- /wp:heading -->
-
-			<!-- wp:paragraph -->
-			<p><?php echo esc_html__( 'RankKernel is my own open source project. It is not client work and it is not affiliated with my employer.', 'maulik-portfolio' ); ?></p>
+		<!-- wp:group {"className":"hz-about__main","layout":{"type":"default"}} -->
+		<div class="wp-block-group hz-about__main">
+			<!-- wp:paragraph {"className":"hz-body-copy"} -->
+			<p class="hz-body-copy"><?php echo esc_html__( 'I am a WordPress and PHP developer focused on building custom backend functionality rather than only visual website templates. My daily engineering work centers on custom WordPress plugins, REST APIs, database operations, third party integrations, payment workflows and application security.', 'maulik-portfolio' ); ?></p>
 			<!-- /wp:paragraph -->
-
-			<!-- wp:paragraph {"className":"about-block__link","typography":{"fontFamily":"var:preset|font-family|mono"}} -->
-			<p class="about-block__link"><a href="<?php echo esc_url( get_home_url( null, '/rankkernel/' ) ); ?>"><?php echo esc_html__( 'About RankKernel', 'maulik-portfolio' ); ?></a></p>
+			<!-- wp:paragraph {"className":"hz-body-copy"} -->
+			<p class="hz-body-copy"><?php echo esc_html__( 'In my professional role as a WordPress Developer at Qrolic Technologies, I architect and maintain production systems involving cross domain payment communication with HMAC SHA 256 signing, PHP Sodium field encryption, asynchronous document OCR pipelines and role based application workflows.', 'maulik-portfolio' ); ?></p>
 			<!-- /wp:paragraph -->
+			<!-- wp:paragraph {"className":"hz-body-copy"} -->
+			<p class="hz-body-copy"><?php echo esc_html__( 'Alongside my professional role, I am independently building RankKernel, an open source SEO and schema engine for WordPress designed around modular PHP architecture and clean WordPress core integration.', 'maulik-portfolio' ); ?></p>
+			<!-- /wp:paragraph -->
+			<!-- wp:group {"className":"hz-snap-grid","layout":{"type":"default"}} -->
+			<div class="wp-block-group hz-snap-grid">
+				<!-- wp:group {"className":"hz-snap","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-snap">
+					<!-- wp:paragraph {"className":"hz-label"} -->
+					<p class="hz-label"><?php echo esc_html__( 'Education', 'maulik-portfolio' ); ?></p>
+					<!-- /wp:paragraph -->
+					<!-- wp:paragraph {"className":"hz-snap__value"} -->
+					<p class="hz-snap__value"><?php echo esc_html__( 'B.Tech in Computer Engineering', 'maulik-portfolio' ); ?></p>
+					<!-- /wp:paragraph -->
+					<!-- wp:paragraph {"className":"hz-snap__meta"} -->
+					<p class="hz-snap__meta"><?php echo esc_html__( 'Ganpat University · 2021 to 2025', 'maulik-portfolio' ); ?></p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
+				<!-- wp:group {"className":"hz-snap","layout":{"type":"default"}} -->
+				<div class="wp-block-group hz-snap">
+					<!-- wp:paragraph {"className":"hz-label"} -->
+					<p class="hz-label"><?php echo esc_html__( 'Independent Open Source', 'maulik-portfolio' ); ?></p>
+					<!-- /wp:paragraph -->
+					<!-- wp:paragraph {"className":"hz-snap__value"} -->
+					<p class="hz-snap__value"><?php echo esc_html__( 'RankKernel', 'maulik-portfolio' ); ?></p>
+					<!-- /wp:paragraph -->
+					<!-- wp:paragraph {"className":"hz-snap__meta"} -->
+					<p class="hz-snap__meta"><?php echo esc_html__( 'Personal Project · IN DEVELOPMENT', 'maulik-portfolio' ); ?></p>
+					<!-- /wp:paragraph -->
+				</div>
+				<!-- /wp:group -->
+			</div>
+			<!-- /wp:group -->
 		</div>
 		<!-- /wp:group -->
 	</div>
