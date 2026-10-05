@@ -45,6 +45,69 @@ die() { printf '\033[1;31mFAIL\033[0m %s\n' "$*" >&2; exit 1; }
 # callbacks such as __return_true are deliberately out of scope.
 #
 # Reads the working tree, so it runs before anything is copied to the live theme.
+#
+# GATE: the working tree must be clean.
+#
+# WHY THIS EXISTS. The deploy copies the working tree, not a commit. Deploying
+# with uncommitted changes present produces a live site that matches no commit,
+# which is indistinguishable from drift once the next person looks. It is also
+# the exact shape of the failure where a file was edited, deployed, and then
+# lost by a later checkout of the same branch.
+#
+gate_clean_tree() {
+	local dirty
+	dirty=$(git status --porcelain --untracked-files=no)
+	if [ -n "${dirty}" ]; then
+		while IFS= read -r line; do
+			[ -n "${line}" ] && die "uncommitted change, refusing to deploy: ${line}"
+		done <<< "${dirty}"
+	fi
+}
+
+#
+# GATE: refuse to overwrite live work that exists in no branch and no worktree.
+#
+# WHY THIS EXISTS. The copy below starts with rm -rf on the live theme. If live
+# holds a file that is in the working tree nowhere, in no branch, and in no agent
+# worktree, then that file is about to be destroyed with no way back. That is not
+# hypothetical: it is how an uncommitted redesign of the contact page was nearly
+# lost, and the only thing that caught it was a dry run.
+#
+# tools/inspect-drift.sh does the comparison. Exit 0 means live matches the tree.
+# Exit 1 means something diverges, which is reported but allowed, because a
+# rebuilt stylesheet legitimately differs. Exit 2 means the check itself could not
+# run, and that is fatal, because a gate that cannot see is not a gate.
+#
+gate_no_lost_live_work() {
+	local report status
+	report=$(bash "${REPO_DIR}/tools/inspect-drift.sh" --json 2>/dev/null)
+	status=$?
+	if [ "${status}" -eq 2 ]; then
+		die "inspect-drift.sh could not run (exit 2), refusing to deploy without the drift check"
+	fi
+	if [ "${status}" -eq 0 ]; then
+		log "drift check: live matches the working tree"
+		return 0
+	fi
+	local orphans
+	orphans=$(printf '%s' "${report}" | python3 -c '
+import json, sys
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    print("")
+    raise SystemExit(0)
+rows = [f for f in d.get("files", []) if f.get("live_only")]
+print("\n".join(f"{r["path"]}\t{r.get("in_any_branch","no")}" for r in rows))
+' 2>/dev/null)
+	if [ -n "${orphans}" ]; then
+		while IFS= read -r row; do
+			[ -n "${row}" ] && die "live holds work found in no branch, refusing to rm -rf it: ${row}"
+		done <<< "${orphans}"
+	fi
+	log "drift check: differences found, none of them live-only. continuing"
+}
+
 gate_dangling_callbacks() {
 	local report
 	command -v python3 >/dev/null 2>&1 || die "python3 is required for the dangling callback gate, refusing to deploy"
@@ -95,6 +158,49 @@ PY
 		die "dangling theme callback, refusing to deploy: ${line}. WordPress resolves this when the hook fires, so it fatals at runtime, not now."
 	done <<< "${report}"
 	return 0
+}
+
+#
+# GATE: refuse if the content migrator reports a conflict.
+#
+# WHY THIS EXISTS. Page content is served from wp_posts.post_content, not from
+# content/pages/*.html. The files are the source of truth in git; the database is
+# what a visitor actually sees. A conflict means the stored hash of the last
+# migration no longer matches the database, which means somebody edited the page
+# in the editor. Overwriting that from the files destroys an editor's work, and
+# doing it quietly is how a finished contact page was nearly lost.
+#
+# A conflict is fatal on purpose. The fix is to open that one page, decide which
+# side is right, and re-run the migrator with --slug on that page alone, not to
+# force all six at once.
+#
+gate_no_content_conflict() {
+	local report conflicts
+	report=$(wp --allow-root --path="${WP_PATH}" eval-file "${REPO_DIR}/tools/migrate-content.php" -- --path="${WP_PATH}" 2>&1) \
+		|| die "content migrator dry run failed, refusing to deploy without it"
+	conflicts=$(printf '%s' "${report}" | grep -c 'CONFLICT' || true)
+	if [ "${conflicts}" -ne 0 ]; then
+		printf '%s\n' "${report}" | grep -E 'CONFLICT|stored hash' | sed 's/^/    /'
+		die "${conflicts} content conflict(s). A page was edited in the editor since the last migration. Resolve it per page with --slug before deploying."
+	fi
+	log "content gate: no conflicts"
+}
+
+#
+# Push the canonical files into the database after they land on disk.
+#
+# WHY THIS IS NOT OPTIONAL. Without this step a deploy copies correct files and
+# the site keeps serving the previous database content, which reads as though the
+# deploy silently failed. It did not fail; it simply never wrote to the table the
+# front end reads. That cost hours once and was diagnosed only by comparing file
+# checksums against the database.
+#
+migrate_content() {
+	local report
+	report=$(MAULIK_PORTFOLIO_APPLY=1 wp --allow-root --path="${WP_PATH}" \
+		eval-file "${REPO_DIR}/tools/migrate-content.php" -- --path="${WP_PATH}" 2>&1) \
+		|| die "content migration failed after the files were copied"
+	printf '%s\n' "${report}" | grep -E 'WROTE|write,' | sed 's/^/    /'
 }
 
 verify() {
@@ -183,6 +289,10 @@ if [ "${1:-}" = "--verify" ]; then
 	exit 0
 fi
 
+# The working tree is checked before the CSS build on purpose. The build
+# regenerates assets/css/theme.css, so checking afterwards would always fail.
+gate_clean_tree
+
 log "building CSS"
 cd "${REPO_DIR}"
 npm run tokens >/dev/null
@@ -202,6 +312,10 @@ fi
 
 gate_dangling_callbacks
 
+gate_no_lost_live_work
+
+gate_no_content_conflict
+
 log "copying to ${THEME_DEST}"
 sudo rm -rf "${THEME_DEST}"
 sudo cp -r "${REPO_DIR}" "${THEME_DEST}"
@@ -211,6 +325,9 @@ sudo chown -R www-data:www-data "${THEME_DEST}"
 
 log "activating"
 wp --allow-root --path="${WP_PATH}" theme activate "${THEME_SLUG}" >/dev/null || die "activation failed"
+
+log "migrating content into the database"
+migrate_content
 
 # Core caches a theme's block patterns in a transient keyed by theme Version, and
 # only invalidates that cache when the Version changes or the site is in theme
