@@ -446,6 +446,10 @@ a,
   max-width: 100%;
 }
 
+.wp-block-group.hero__col--visual .wp-block-maulik-portfolio-hero-ecosystem .maulik-hero-tabs {
+  flex-wrap: wrap;
+}
+
 .wp-block-group.hero__col {
   margin-block: 0;
 }
@@ -1945,6 +1949,7 @@ a,
   line-height: 1.08;
   letter-spacing: -0.025em;
   color: var(--wp--preset--color--text);
+  overflow-wrap: break-word;
 }
 
 .pj-hero__desc {
@@ -4367,6 +4372,11 @@ html {
   height: 1rem;
 }
 
+@media (max-width: 639.98px) {
+  .hz-section a.hz-capabilities__detail-cta {
+    white-space: normal;
+  }
+}
 .is-style-section .hz-capabilities__detail-focus {
   font-family: var(--wp--preset--font-family--mono);
   font-size: 0.75rem;
@@ -7379,13 +7389,76 @@ nav.site-header__nav {
 }
 
 .wp-block-group.contact-hero > * {
-  margin-block-start: 1.25rem;
+  margin-inline: 0 !important;
+  max-width: none;
 }
 
-.wp-block-group.contact-hero > :first-child {
-  margin-block-start: 0;
+.wp-block-group.contact-destinations-grid > * {
+  margin-inline: 0 !important;
+  max-width: none;
 }
 
+.wp-block-group.contact-destinations-lead > * {
+  margin-inline: 0 !important;
+  max-width: none;
+}
+
+.wp-block-group.contact-destinations-head > * {
+  margin-inline: 0 !important;
+  max-width: none;
+}
+
+.wp-block-group.contact-destinations-cards > * {
+  margin-inline: 0 !important;
+  max-width: none;
+}
+
+.wp-block-group.contact-routing > * {
+  margin-inline: 0 !important;
+  max-width: none;
+}
+
+.wp-block-group.contact-routing-head > * {
+  margin-inline: 0 !important;
+  max-width: none;
+}
+
+.wp-block-group.contact-routing-map > * {
+  margin-inline: 0 !important;
+  max-width: none;
+}
+
+.wp-block-group.contact-routing-action > * {
+  margin-inline: 0 !important;
+  max-width: none;
+}
+
+.wp-block-group.contact-routing-action-body > * {
+  margin-inline: 0 !important;
+  max-width: none;
+}
+
+.wp-block-group.contact-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 2.5rem;
+  row-gap: 1.25rem;
+  align-items: end;
+}
+
+.wp-block-group.contact-hero > * {
+  grid-column: span 1;
+  margin-block: 0;
+}
+
+@media (min-width: 1024px) {
+  .wp-block-group.contact-hero {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .wp-block-group.contact-hero > * {
+    grid-column: span 9;
+  }
+}
 .wp-block-group.contact-hero h1 {
   margin-block-end: 0;
   font-size: 2.25rem;
@@ -7404,11 +7477,8 @@ nav.site-header__nav {
     font-size: 3.75rem;
   }
 }
-.wp-block-group.contact-hero > .contact-hero-subtitle {
-  margin-block-start: 0.75rem;
-}
-
 .wp-block-group.contact-hero .contact-hero-subtitle {
+  margin-block-start: -0.5rem;
   margin-block-end: 0;
   font-family: var(--wp--preset--font-family--display);
   font-size: 1.25rem;
@@ -7474,7 +7544,6 @@ nav.site-header__nav {
 }
 
 .wp-block-group.contact-hero .contact-hero-actions > *,
-.contact-card-actions > *,
 .contact-routing-action .wp-block-button {
   margin-block-start: 0;
 }
@@ -7527,6 +7596,16 @@ nav.site-header__nav {
   padding: 0.625rem 1rem;
   font-size: 0.75rem;
   line-height: 1.3333;
+}
+
+.wp-block-button.contact-btn .contact-btn-icon {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+}
+
+.wp-block-button.contact-btn .contact-btn-icon-amber {
+  color: var(--wp--preset--color--accent);
 }
 
 .wp-block-group.contact-destinations-grid {
@@ -7628,59 +7707,6 @@ nav.site-header__nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-.wp-block-group.contact-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  margin-block: 0;
-  background-color: var(--wp--preset--color--surface);
-  border: 1px solid var(--wp--preset--color--line);
-  color: var(--wp--preset--color--text);
-}
-
-.wp-block-group.contact-card > * {
-  margin-block-start: 0;
-}
-
-.wp-block-group.contact-card.contact-card-primary {
-  border-color: var(--wp--preset--color--accent);
-}
-
-.wp-block-group.contact-card .contact-card-label {
-  margin-block: 0;
-  font-family: var(--wp--preset--font-family--mono);
-  font-size: 0.75rem;
-  line-height: 1.3333;
-  color: var(--wp--preset--color--accent);
-  font-variant-numeric: tabular-nums;
-}
-
-.wp-block-group.contact-card .contact-card-title {
-  margin-block: 0;
-  font-family: var(--wp--preset--font-family--display);
-  font-size: 1.25rem;
-  font-weight: 700;
-  line-height: 1.4;
-  color: var(--wp--preset--color--text);
-}
-
-.wp-block-group.contact-card .contact-card-meta {
-  margin-block: 0.375rem 0;
-  font-family: var(--wp--preset--font-family--mono);
-  font-size: 0.75rem;
-  line-height: 1.3333;
-  color: var(--wp--preset--color--text-muted);
-}
-
-.wp-block-group.contact-card .contact-card-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-block: 0;
-}
-
 .wp-block-button.contact-card {
   display: flex;
   margin-block: 0;
@@ -7688,12 +7714,12 @@ nav.site-header__nav {
 }
 
 .wp-block-button.contact-card .wp-block-button__link {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   flex: 1 1 auto;
-  flex-direction: column;
-  align-items: stretch;
+  align-items: start;
   justify-content: space-between;
-  gap: 1.5rem;
+  row-gap: 1.5rem;
   padding: 1.5rem;
   text-align: left;
   text-decoration: none;
@@ -7712,8 +7738,16 @@ nav.site-header__nav {
   border-color: var(--wp--preset--color--accent);
 }
 
+.wp-block-button.contact-card .wp-block-button__link {
+  grid-template-rows: auto auto;
+}
+
 .wp-block-button.contact-card .contact-card-label {
   display: block;
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: start;
+  margin-block: 0;
   font-family: var(--wp--preset--font-family--mono);
   font-size: 0.75rem;
   line-height: 1.3333;
@@ -7721,9 +7755,30 @@ nav.site-header__nav {
   font-variant-numeric: tabular-nums;
 }
 
+.wp-block-button.contact-card .contact-card-icon {
+  flex: none;
+  grid-row: 1;
+  grid-column: 2;
+  justify-self: end;
+  width: 1rem;
+  height: 1rem;
+  color: var(--wp--preset--color--accent);
+}
+
+.wp-block-button.contact-card .contact-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  grid-row: 2;
+  grid-column: 1/-1;
+  margin-block: 0;
+}
+
 .wp-block-button.contact-card .contact-card-title {
-  display: block;
-  margin-block-start: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block: 0;
   font-family: var(--wp--preset--font-family--display);
   font-size: 1.25rem;
   font-weight: 700;
@@ -7731,9 +7786,15 @@ nav.site-header__nav {
   color: var(--wp--preset--color--text);
 }
 
+.wp-block-button.contact-card .contact-card-title-icon {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+}
+
 .wp-block-button.contact-card .contact-card-meta {
   display: block;
-  margin-block-start: 0.375rem;
+  margin-block: 0;
   font-family: var(--wp--preset--font-family--mono);
   font-size: 0.75rem;
   line-height: 1.3333;
@@ -7767,10 +7828,8 @@ nav.site-header__nav {
 
 .wp-block-group.contact-routing-head {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
   padding: 0 0 1rem;
   margin-block: 0;
   border-bottom: 1px solid var(--wp--preset--color--line);
@@ -7798,31 +7857,91 @@ nav.site-header__nav {
 }
 
 .wp-block-group.contact-routing-map {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-rows: repeat(3, minmax(0, 1fr));
-  aspect-ratio: 500/340;
   padding: 1rem;
   margin-block: 0;
   background-color: var(--wp--preset--color--base);
   border: 1px solid var(--wp--preset--color--line);
 }
 
-.wp-block-group.contact-routing-map > * {
-  margin-block-start: 0;
+.wp-block-group.contact-routing-map > .wp-block-group.contact-routing-canvas {
+  position: relative;
+  inline-size: min(100%, 31.25rem);
+  aspect-ratio: 500/340;
+  margin: 0 auto !important;
+  container-type: inline-size;
+}
+
+.wp-block-group.contact-wire {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 33.2866%;
+  height: 0.24cqw;
+  margin: 0;
+  background-color: var(--wp--preset--color--line-strong);
+  transform-origin: 0 50%;
+}
+
+.wp-block-group.contact-wire-email {
+  transform: rotate(-147.2678deg);
+}
+
+.wp-block-group.contact-wire.contact-wire-email {
+  height: 0.4cqw;
+  background-color: var(--wp--preset--color--accent);
+}
+
+.wp-block-group.contact-wire-linkedin {
+  transform: rotate(-32.7356deg);
+}
+
+.wp-block-group.contact-wire-github {
+  transform: rotate(147.2678deg);
+}
+
+.wp-block-group.contact-wire-resume {
+  transform: rotate(32.7356deg);
 }
 
 .wp-block-group.contact-node {
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
-  padding: 0.5rem;
-  margin-block: 0;
+  width: 25.6%;
+  height: 14.1176%;
+  margin: 0;
   text-align: center;
   background-color: var(--wp--preset--color--surface-2);
-  border: 1px solid var(--wp--preset--color--line-strong);
+  border: 0.3cqw solid var(--wp--preset--color--line-strong);
+}
+
+.wp-block-group.contact-node-email {
+  left: 9.2%;
+  top: 16.4706%;
+}
+
+.wp-block-group.contact-node-linkedin {
+  left: 65.2%;
+  top: 16.4706%;
+}
+
+.wp-block-group.contact-node-github {
+  left: 9.2%;
+  top: 69.4118%;
+}
+
+.wp-block-group.contact-node-resume {
+  left: 65.2%;
+  top: 69.4118%;
+}
+
+.wp-block-group.contact-node-origin {
+  left: 38.4%;
+  top: 42.3529%;
+  width: 23.2%;
+  height: 15.2941%;
 }
 
 .wp-block-group.contact-node > * {
@@ -7833,28 +7952,30 @@ nav.site-header__nav {
   display: block;
   margin-block: 0;
   font-family: var(--wp--preset--font-family--display);
-  font-size: 0.75rem;
+  font-size: 2.4cqw;
   font-weight: 700;
   line-height: 1.3333;
   color: var(--wp--preset--color--text);
+  white-space: nowrap;
 }
 
 .wp-block-group.contact-node .contact-node-state {
   display: block;
   margin-block: 0;
   font-family: var(--wp--preset--font-family--mono);
-  font-size: 0.5625rem;
+  font-size: 1.8cqw;
   line-height: 1.3333;
   color: var(--wp--preset--color--text-muted);
+  white-space: nowrap;
 }
 
 .wp-block-group.contact-node.contact-node-origin {
   background-color: var(--wp--preset--color--base);
-  border: 2px solid var(--wp--preset--color--accent);
+  border: 0.4cqw solid var(--wp--preset--color--accent);
 }
 
 .wp-block-group.contact-node.contact-node-origin .contact-node-name {
-  font-size: 0.875rem;
+  font-size: 2.8cqw;
   line-height: 1.2857;
 }
 
@@ -7875,21 +7996,6 @@ nav.site-header__nav {
   color: var(--wp--preset--color--base);
 }
 
-.wp-block-group.contact-wire {
-  align-self: center;
-  justify-self: stretch;
-  width: 100%;
-  height: 1px;
-  background-color: var(--wp--preset--color--line-strong);
-}
-
-.wp-block-group.contact-wire.contact-wire-vertical {
-  align-self: stretch;
-  justify-self: center;
-  width: 1px;
-  height: 100%;
-}
-
 .wp-block-group.contact-routing-action {
   display: flex;
   flex-direction: column;
@@ -7907,8 +8013,22 @@ nav.site-header__nav {
     justify-content: space-between;
   }
 }
+@media (max-width: 639.98px) {
+  .wp-block-group.contact-routing-action > .wp-block-buttons,
+  .wp-block-group.contact-routing-action .wp-block-button.contact-btn {
+    width: 100%;
+  }
+}
 .wp-block-group.contact-routing-action > * {
   margin-block-start: 0;
+}
+
+.wp-block-group.contact-routing-action-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-block: 0;
+  min-width: 0;
 }
 
 .wp-block-group.contact-routing .contact-routing-action-label {
