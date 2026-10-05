@@ -573,31 +573,48 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_register' ) ) {
 			)
 		);
 
+		/*
+		 * REGISTRATION TAKES A PATH, NOT A NAME AND AN ARRAY.
+		 *
+		 * register_block_type() reads every metadata key from block.json when it
+		 * is given a path, and delegates to
+		 * register_block_type_from_metadata(). The title, the category, the icon,
+		 * the keywords, the attributes, the supports and apiVersion all move to
+		 * blocks/hero-ecosystem/block.json with this change. Passing the same
+		 * metadata again as an argument array would be a second copy of the
+		 * schema, and a second copy is a second thing to forget when the block
+		 * changes. inc/portfolio-cpt.php already does this for the two portfolio
+		 * blocks.
+		 *
+		 * TWO KEYS STAY IN THE ARRAY BECAUSE THE BLOCK.JSON FILE CANNOT HOLD THEM.
+		 *
+		 * render_callback is a PHP callable, which has no JSON representation, and
+		 * view_script_handles names a handle this theme registers by hand in the
+		 * wp_register_script() call above rather than a file the metadata could
+		 * point at. Both are passed as $args, which core merges over the settings
+		 * it read from the file, so neither changes behaviour. The front end keeps
+		 * downloading the canvas only on the pages that render this block.
+		 *
+		 * NO wp:comment BLOCK IS INVOLVED ANYWHERE HERE. Serialising a dynamic
+		 * block into post content by hand requires embedding JSON in an HTML
+		 * comment, and the obvious way to escape that JSON is esc_attr(), which
+		 * emits &quot; for every double quote. WordPress does not decode those
+		 * entities before parsing the block comment, so the parser rejects the
+		 * block and it vanishes from the post with no error anywhere. A file
+		 * registered block has no comment to escape, so the failure cannot occur.
+		 *
+		 * THE BLOCK NAME DOES NOT CHANGE.
+		 *
+		 * MAULIK_PORTFOLIO_HERO_ECOSYSTEM_BLOCK and the "name" in block.json are
+		 * both maulik-portfolio/hero-ecosystem. Existing page content references
+		 * that name in its block comments, so a rename would orphan every existing
+		 * instance of this block rather than update it.
+		 */
+		$block_path = get_theme_file_path( 'blocks/hero-ecosystem' );
+
 		register_block_type(
-			MAULIK_PORTFOLIO_HERO_ECOSYSTEM_BLOCK,
+			$block_path,
 			array(
-				'api_version'         => '3',
-				'title'               => __( 'Hero Interactive Ecosystem', 'maulik-portfolio' ),
-				'category'            => 'design',
-				'icon'                => 'art',
-				'description'         => __( 'A two dimensional canvas rendering of the engineering ecosystem, with hover highlighting and click to select node navigation.', 'maulik-portfolio' ),
-				'keywords'            => array( 'hero', 'canvas', 'ecosystem', 'skills' ),
-				'textdomain'          => 'maulik-portfolio',
-				'attributes'          => array(
-					'selectedNode' => array(
-						'type'    => 'string',
-						'default' => 'wordpress',
-					),
-				),
-				'supports'            => array(
-					'html'      => false,
-					'align'     => array( 'wide', 'full' ),
-					'spacing'   => array(
-						'margin'  => true,
-						'padding' => false,
-					),
-					'className' => true,
-				),
 				'view_script_handles' => array( MAULIK_PORTFOLIO_HERO_ECOSYSTEM_HANDLE ),
 				'render_callback'     => 'maulik_portfolio_hero_ecosystem_render',
 			)

@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "maulik-portfolio/project-filters",
+	"version": "0.1.0",
+	"title": "Project Filters",
+	"category": "design",
+	"icon": "filter",
+	"description": "A tablist of archive filters that narrows the case study grid to one classification or technical domain at a time.",
+	"keywords": [ "filter", "tablist", "projects", "archive" ],
+	"textdomain": "maulik-portfolio",
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"className": true
+	},
+	"editorScript": [ "file:./edit.js", "file:./index.js" ]
+}
