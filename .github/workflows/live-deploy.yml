@@ -1,14 +1,23 @@
 name: Live Deploy
 
-# Auto-deploys the block theme to the live server after a merge to main.
+# Deploys the block theme to the live server. Manual dispatch only.
 #
 # This runs AFTER CI has already passed on the pull request, so the full CI
 # suite (phpcs, phpstan, stylelint, eslint, composer validate) is deliberately
 # not repeated here. tools/deploy-theme.sh is the local equivalent of this
 # workflow and is the reference for the gate order.
+# AUTO-DEPLOY IS DISABLED. This workflow used to trigger on every push to main,
+# which meant that merging any pull request silently replaced the live site with
+# whatever main happened to contain. At the time this was changed, main did not
+# carry the theme at all, so a merge could have deployed an incomplete tree over a
+# working site. It also made concurrent work unsafe, because a second merge could
+# land while a deploy from the first was still running.
+#
+# Deploys are now manual only. tools/deploy-theme.sh is the local equivalent and
+# is the reference for the gate order. Nothing reaches the live host without a
+# deliberate dispatch of this workflow, or a local run of that script.
 on:
-  push:
-    branches: [ main ]
+  # push:  removed. Do not restore it without reading the reason above.
   # Manual trigger. Three consecutive deploys failed on runner side problems
   # that could only be observed inside the Actions runtime, and every fix cost a
   # full open, review and merge cycle before it could be tested. This turns that
