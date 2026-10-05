@@ -15,8 +15,10 @@ the inner text of one original comment, in the order it appeared in the file.
 ## Comment 1 of 3 (originally at templates/page-contact.html line 1)
 
 ```text
-	CONDITION: a page using the "contact" custom template. Registered in
-	theme.json customTemplates under the name "contact". Served at /contact/.
+	CONDITION: any published page. There is no custom template: theme.json
+	has no customTemplates key and templates/ registers no page-specific
+	template. The page is served by templates/page.html, which renders
+	wp:post-content for whatever slug this page has. Served at /contact/.
 
 	THERE IS NO EMAIL ADDRESS ON THIS SITE. No mail link, no plaintext
 	address, no obfuscated address, in this template, in any pattern, or

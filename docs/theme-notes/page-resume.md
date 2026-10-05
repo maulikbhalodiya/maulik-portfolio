@@ -15,8 +15,10 @@ the inner text of one original comment, in the order it appeared in the file.
 ## Comment 1 of 3 (originally at templates/page-resume.html line 1)
 
 ```text
-	CONDITION: a page using the "resume" custom template. Registered in
-	theme.json customTemplates under the name "resume". Served at /resume/.
+	CONDITION: any published page. There is no custom template: theme.json
+	has no customTemplates key and templates/ registers no page-specific
+	template. The page is served by templates/page.html, which renders
+	wp:post-content for whatever slug this page has. Served at /resume/.
 
 	PRINT IS A PRIMARY USE CASE FOR THIS PAGE, not an afterthought. The header
 	and footer already carry no-print, and the hero carries it below, so the

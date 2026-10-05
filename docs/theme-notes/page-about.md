@@ -15,9 +15,10 @@ the inner text of one original comment, in the order it appeared in the file.
 ## Comment 1 of 2 (originally at templates/page-about.html line 1)
 
 ```text
-	CONDITION: a page using the "about" custom template. Registered in
-	theme.json customTemplates under the name "about", so an editor picks it
-	from the Page attributes panel. Served at /about/.
+	CONDITION: any published page. There is no custom template: theme.json
+	has no customTemplates key and templates/ registers no page-specific
+	template. The page is served by templates/page.html, which renders
+	wp:post-content for whatever slug this page has. Served at /about/.
 
 	STRUCTURE IS GROUP BLOCKS WITH STYLE VARIATIONS, exactly as on the
 	homepage. Each section is a core/group whose className carries the surface

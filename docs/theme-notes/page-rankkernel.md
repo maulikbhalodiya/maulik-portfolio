@@ -15,9 +15,10 @@ the inner text of one original comment, in the order it appeared in the file.
 ## Comment 1 of 4 (originally at templates/page-rankkernel.html line 1)
 
 ```text
-	CONDITION: a page using the "rankkernel" custom template. Registered in
-	theme.json customTemplates under the name "rankkernel". Served at
-	/rankkernel/.
+	CONDITION: any published page. There is no custom template: theme.json
+	has no customTemplates key and templates/ registers no page-specific
+	template. The page is served by templates/page.html, which renders
+	wp:post-content for whatever slug this page has. Served at /rankkernel/.
 
 	THIS PAGE SHIPS. RankKernel is the site's own open source SEO and schema
 	engine and it is the strongest story the portfolio has.
