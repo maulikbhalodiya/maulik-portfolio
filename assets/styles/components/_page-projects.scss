@@ -110,12 +110,46 @@
 // text-4xl sm:text-5xl md:text-6xl font-display font-extrabold tracking-tight
 // with leading-[1.08]. The theme h1 preset already lands on 60px at 1440, so the
 // weight, the tracking and the leading are what this rule adds.
+//
+// "Development" IS WIDER THAN THE MEASURE AT THE DESIGN'S OWN MOBILE SIZE, SO
+// THE HEADING IS ALLOWED TO BREAK A WORD. This is not a guess about a size. The
+// design states this heading as text-4xl below 640px, which is 36px, and the
+// theme's fluid h1 preset measures 36.44px at 390 and 36px at 360. Pinning it to
+// the design's step changes nothing here: the longest single word in the string
+// is "Development", which measures 385px of scroll width at 36.44px against a
+// 342px measure at 390 and 380px against 312px at 360. The design reference
+// measures the same heading at 342px wide with scrollWidth 381 against
+// clientWidth 342 at its own 36px, so the design overflows by 39px here too and
+// no font size the design specifies can hold this word on one line.
+//
+// Nothing else is touched. The size stays the design's, the weight stays
+// extrabold, the tracking stays -0.025em, the leading stays 1.08, and the copy is
+// untouched. The only change is that a word which cannot fit is permitted to
+// break where it runs out of line instead of running out of the page.
+//
+// overflow-wrap: break-word and not anywhere. The two differ in how they feed a
+// container's intrinsic minimum size, and this heading is a block in a grid
+// column whose track is minmax(0, 1fr), so the track is already 0 and the
+// intrinsic minimum is not what is being fought here. break-word changes only
+// where this one string is allowed to break and leaves every intrinsic size
+// calculation exactly as it was.
+//
+// hyphens: auto was measured and does nothing here. With it alone the heading
+// still measures scrollWidth 385 against clientWidth 342 at 390, because this
+// Chromium build ships no hyphenation dictionary for the page's en-US language,
+// so it is not stated.
+//
+// Measured after: scrollWidth equals clientWidth at 390 and at 360, the right edge
+// is 366 and 336, inside both viewports, and the heading is three lines, which is
+// what it already was before: the word was already being wrapped, it was simply
+// not being wrapped tightly enough.
 .pj-hero .wp-block-heading {
 	font-family: var(--wp--preset--font-family--display);
 	font-weight: 800;
 	line-height: 1.08;
 	letter-spacing: -0.025em;
 	color: var(--wp--preset--color--text);
+	overflow-wrap: break-word;
 }
 
 // text-base sm:text-lg text-[#D8D5CA] leading-relaxed max-w-3xl, so 16px then
