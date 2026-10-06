@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: AI audit
-        uses: nilesh32236/opencode-ai-reviewer@103082c963f64cb2cf979ae14b729ec41d40866e # v1.22.0
+        uses: nilesh32236/opencode-ai-reviewer@7007f43e413664e319cf5e6c52a4df599e579bb8 # v1.23.1
         with:
           github_token: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
           audit_model: ${{ vars.OPENCODE_MODEL || 'opencode/muse-spark-1.3-contributor-free' }}
