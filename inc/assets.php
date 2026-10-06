@@ -100,3 +100,46 @@ if ( ! function_exists( 'maulik_portfolio_asset_version' ) ) {
 		return MAULIK_PORTFOLIO_VERSION;
 	}
 }
+
+if ( ! function_exists( 'maulik_portfolio_enqueue_editor_script' ) ) {
+	/**
+	 * Register and enqueue the block editor attribute repair script.
+	 *
+	 * WHY THIS IS AN EDITOR ONLY SCRIPT.
+	 *
+	 * assets/js/block-hand-authored-attributes.js adds filters to the block
+	 * editor data store so that attributes written into saved markup by hand
+	 * survive a save instead of being dropped by core/group's save(). It has no
+	 * frontend effect at all. Enqueuing it on wp_enqueue_scripts would ship
+	 * editor code to every visitor for no benefit, so it goes on
+	 * enqueue_block_editor_assets, which only ever fires for the post editor,
+	 * the site editor and the widgets screen.
+	 *
+	 * THE DEPENDENCIES ARE DECLARED, NOT ASSUMED.
+	 *
+	 * The script reads wp.hooks and wp.blocks at evaluation time, and the
+	 * filters have to be in place before the content is parsed. A missing
+	 * dependency here does not throw, which is what makes it easy to miss: the
+	 * script would quietly register nothing, the attributes would keep being
+	 * dropped, and there would be no error anywhere. wp-blocks is the
+	 * dependency that matters. wp-dom-ready is declared because the script
+	 * uses wp.domReady to patch block types core registered before this
+	 * script evaluated.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return void
+	 */
+	function maulik_portfolio_enqueue_editor_script() {
+		$relative = 'assets/js/block-hand-authored-attributes.js';
+
+		wp_enqueue_script(
+			'maulik-portfolio-block-hand-authored-attributes',
+			get_theme_file_uri( $relative ),
+			array( 'wp-blocks', 'wp-dom-ready' ),
+			maulik_portfolio_asset_version( $relative ),
+			true
+		);
+	}
+}
+add_action( 'enqueue_block_editor_assets', 'maulik_portfolio_enqueue_editor_script' );
