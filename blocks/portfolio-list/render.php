@@ -40,13 +40,26 @@
  * four of those had nowhere to live on the post at all, so migrating the
  * Projects page content would have stripped them from the page.
  *
- * The Core layout hook classes are deliberately not printed. On the static page
- * they were a side effect of every wrapper being a core group block, and each
- * element's display comes from its own hz- class instead: hz-card and
+ * The Core group layout hook classes is-layout-flow and
+ * wp-block-group-is-layout-flow are deliberately not printed. On the static page
+ * they were a side effect of every wrapper being a core group block, and they
+ * are not cosmetic even so: WordPress global styles carry
+ * :root :where(.is-layout-flow) > * { margin-block-start: <block gap> }, so the
+ * class does reach inside a card. The theme cancels that rule for this card
+ * with higher specificity everywhere it would otherwise land, which is why the
+ * class can be dropped rather than worked around:
+ *
+ *   .wp-block-group.pj-work .pj-work__grid > * { margin-block: 0 }
+ *   .wp-block-group.pj-work .hz-card__lead > * { margin-block: 0 }
+ *   .hz-section .hz-card__body > * { margin-block: 0 }
+ *   .hz-section .hz-card__scheme > * { margin-block: 0 }
+ *
+ * Each element's display comes from its own hz- class regardless: hz-card and
  * hz-card__foot are flex columns, hz-card__meta, hz-card__scheme-head,
  * hz-card__nodes and hz-card__tech are flex rows, and pj-work__grid is the grid.
- * Printing a class that styles this theme never reads would only be
- * decorative.
+ * The wp-block-paragraph and wp-block-heading classes are printed, because they
+ * are the Core hooks the static markup carried and the title and description are
+ * the same elements Core would have produced.
  *
  * The grid is a real list without being a ul. Each card is an article, which is
  * what the static markup used and what the filter script moves with
@@ -291,7 +304,7 @@ while ( $maulik_portfolio_list_query->have_posts() ) {
 
 	if ( $maulik_portfolio_list_show_excerpt && '' !== $maulik_portfolio_list_excerpt ) {
 		$maulik_portfolio_list_desc = sprintf(
-			'<p class="hz-card__desc">%s</p>',
+			'<p class="hz-card__desc wp-block-paragraph">%s</p>',
 			esc_html( wp_strip_all_tags( $maulik_portfolio_list_excerpt, true ) )
 		);
 	}
