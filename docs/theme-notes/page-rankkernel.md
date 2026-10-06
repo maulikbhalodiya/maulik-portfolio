@@ -39,11 +39,14 @@ the inner text of one original comment, in the order it appeared in the file.
 	to this page, because a reader who has just seen professional WordPress work
 	listed under an employer would otherwise assume the project belongs to it.
 
-	NINE SUBSYSTEMS, HONEST STATUS: 3 IMPLEMENTED, 3 IN PROGRESS, 3 PLANNED.
-	Status values are uppercase and space separated, as written here. The tally
-	is computed from the blocks below, not written into a heading as
-	"All States (9)", because a count that lives in one place and a set of rows
-	that lives in another will disagree the first time a row is added.
+	NINE SUBSYSTEMS, HONEST STATUS: 9 COMPLETED, 0 RUNNING, 5 PLANNED.
+	The three status values are the only ones, and they are uppercase and space
+	separated, as written here. RUNNING is zero on purpose. The project document
+	records no module as partially delivered, so nothing is mid-build and
+	nothing is faked to fill a third column. The tally is computed from the
+	blocks below, not written into a heading as "All States (9)", because a
+	count that lives in one place and a set of rows that lives in another will
+	disagree the first time a row is added.
 
 	A template is block markup. It is parsed, not executed, so it cannot call
 	esc_html__() and its literal text is NOT translatable.
@@ -53,12 +56,15 @@ the inner text of one original comment, in the order it appeared in the file.
 ```text
 			THE SUBSYSTEM REGISTER.
 
-			Nine subsystems, three per status. Each row is a group carrying its
-			status as mono metadata, so the status is data the editor can change
-			rather than a word baked into a heading.
+			Nine subsystem rows, all COMPLETED, plus one PLANNED group listing
+			the five registry ids that are deliberate reservations with nothing on
+			disk. Each row is a group carrying its status as mono metadata, so the
+			status is data the editor can change rather than a word baked into a
+			heading.
 
 			THE TALLY IS NOT WRITTEN INTO THE VISIBLE COPY. It is read off these
-			nine rows. Do not add a hardcoded count to a heading.
+			rows: 9 COMPLETED, 0 RUNNING, 5 PLANNED. Do not add a hardcoded count
+			to a heading.
 ```
 ## Comment 3 of 4 (originally at templates/page-rankkernel.html line 161)
 
