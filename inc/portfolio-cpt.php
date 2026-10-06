@@ -449,6 +449,34 @@ if ( ! function_exists( 'maulik_portfolio_register_portfolio_blocks' ) ) {
 			'blocks/portfolio-detail',
 		);
 
+		/*
+		 * THE EDITOR SCRIPTS ARE REGISTERED BY HAND BECAUSE THEY HAVE REAL
+		 * DEPENDENCIES.
+		 *
+		 * Both block.json files used to carry "editorScript": [ "file:./edit.js",
+		 * "file:./index.js" ]. A file:./ entry is registered by core as a
+		 * standalone script with no dependencies at all, and this theme has no
+		 * bundler and therefore no generated .asset.php to declare them. Nothing
+		 * then stated that wp, wp-blocks, wp-element, wp-dom-ready, wp-i18n,
+		 * wp-components and wp-block-editor must be present first, so both files
+		 * evaluated before core was. index.js takes window.wp as its IIFE
+		 * parameter, and that parameter is resolved eagerly at evaluation, so
+		 * window.wp was undefined and neither file could reach registerBlockType.
+		 * A guard inside index.js cannot repair that, because a guard that reads
+		 * wp.domReady is itself the statement that throws.
+		 *
+		 * Declaring the dependencies is the fix. edit.js reads wp.components and
+		 * wp.blockEditor, so it carries those two in addition to the base set,
+		 * and it is declared as a dependency of index.js because index.js reads
+		 * the edit component off the namespace edit.js puts there. That single
+		 * edge is what removes the need for any deferral.
+		 *
+		 * The handles are derived from the directory name rather than repeated, so
+		 * a block added to the array above cannot be registered with no
+		 * dependencies at all.
+		 */
+		$editor_deps = array( 'wp-blocks', 'wp-element', 'wp-i18n', 'wp-dom-ready' );
+
 		foreach ( $portfolio_block_dirs as $portfolio_block_dir ) {
 			$portfolio_block_path = get_theme_file_path( $portfolio_block_dir );
 
@@ -456,7 +484,40 @@ if ( ! function_exists( 'maulik_portfolio_register_portfolio_blocks' ) ) {
 				continue;
 			}
 
-			register_block_type( $portfolio_block_path );
+			$slug = basename( $portfolio_block_dir );
+
+			$edit_handle  = 'maulik-portfolio-' . $slug . '-edit';
+			$index_handle = 'maulik-portfolio-' . $slug . '-index';
+
+			$edit_relative  = $portfolio_block_dir . '/edit.js';
+			$index_relative = $portfolio_block_dir . '/index.js';
+
+			if ( ! wp_script_is( $edit_handle, 'registered' ) ) {
+				wp_register_script(
+					$edit_handle,
+					get_theme_file_uri( $edit_relative ),
+					array_merge( $editor_deps, array( 'wp-components', 'wp-block-editor' ) ),
+					maulik_portfolio_asset_version( $edit_relative ),
+					true
+				);
+			}
+
+			if ( ! wp_script_is( $index_handle, 'registered' ) ) {
+				wp_register_script(
+					$index_handle,
+					get_theme_file_uri( $index_relative ),
+					array_merge( $editor_deps, array( $edit_handle ) ),
+					maulik_portfolio_asset_version( $index_relative ),
+					true
+				);
+			}
+
+			register_block_type(
+				$portfolio_block_path,
+				array(
+					'editor_script_handles' => array( $edit_handle, $index_handle ),
+				)
+			);
 		}
 	}
 }

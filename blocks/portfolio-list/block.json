@@ -31,6 +31,5 @@
 		"interactivity": true
 	},
 	"render": "file:./render.php",
-	"viewScriptModule": "file:./view.js",
-	"editorScript": [ "file:./edit.js", "file:./index.js" ]
+	"viewScriptModule": "file:./view.js"
 }
