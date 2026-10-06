@@ -991,10 +991,26 @@
 //   transform scale         does not change getBBox, so the probe still
 //                           reports 151, and it distorts the glyphs
 //
-// THE FIX IS ONE STRING AND IT IS NOT A STYLE. Rename the node to the
-// design's own "Schema" in content/pages/rankkernel.html and in the matching
-// node in content/pages/home.html. Both are content files and neither is in
-// this partial's scope.
+// THE FIX LANDED, AND IT WAS NOT A RENAME. The owner was offered renaming the
+// node to the design's own "Schema" and splitting the label across two lines,
+// and chose the second. So the name stays full because Schema / JSON-LD is the
+// accurate name in this project's own RankKernel document, and it is now two
+// tspans inside the box the design already fixes at 136 by 52. That is a
+// content change, in content/pages/rankkernel.html and the matching node in
+// content/pages/home.html. The box was not widened and the font was not
+// reduced. Merged as PR 47.
+//
+// Measured on the deployed site at 390 after that change, against the sibling
+// rect in user units: the label is 93 in the 136 box, its box runs from -24 to
+// 4 inside a rect from -26 to 26, and the badge sits from 7 to 19, so the
+// second line clears the badge by 3 units. Twenty labelled boxes checked on this
+// page and 36 on the homepage, zero overrunning. Desktop 768 and 1440
+// rechecked, no regression.
+//
+// DO NOT SHORTEN THIS NAME TO MAKE A NUMBER FIT. The 151 was a real defect and
+// it is fixed. If a future label overruns again, the answer is a second tspan
+// or a longer box agreed with the design, not a smaller word.
+//
 //
 // TO CHECK IT LATER, COMPARE THE TEXT WITH THE SIBLING RECT IN USER UNITS:
 // getBBox().width against the rect's width attribute. Do not compare with the
