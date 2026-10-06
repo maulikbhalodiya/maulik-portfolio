@@ -13,6 +13,5 @@
 	"supports": {
 		"html": false,
 		"className": true
-	},
-	"editorScript": [ "file:./edit.js", "file:./index.js" ]
+	}
 }

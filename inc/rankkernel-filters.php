@@ -75,6 +75,20 @@ if ( ! defined( 'MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_HANDLE' ) ) {
 	define( 'MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_HANDLE', 'maulik-portfolio-rankkernel-filter' );
 }
 
+if ( ! defined( 'MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_EDIT_HANDLE' ) ) {
+	/**
+	 * Editor script handle for edit.js, the save and edit component.
+	 */
+	define( 'MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_EDIT_HANDLE', 'maulik-portfolio-rankkernel-filters-edit' );
+}
+
+if ( ! defined( 'MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_INDEX_HANDLE' ) ) {
+	/**
+	 * Editor script handle for index.js, the block type registration.
+	 */
+	define( 'MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_INDEX_HANDLE', 'maulik-portfolio-rankkernel-filters-index' );
+}
+
 if ( ! function_exists( 'maulik_portfolio_rankkernel_filters_tabs' ) ) {
 	/**
 	 * The four filter tabs, in the order the design states them.
@@ -238,6 +252,58 @@ if ( ! function_exists( 'maulik_portfolio_rankkernel_filters_register' ) ) {
 	 * @return void
 	 */
 	function maulik_portfolio_rankkernel_filters_register() {
+		/*
+		 * THE EDITOR SCRIPTS ARE REGISTERED BY HAND BECAUSE THEY HAVE REAL
+		 * DEPENDENCIES.
+		 *
+		 * block.json used to carry "editorScript": [ "file:./edit.js",
+		 * "file:./index.js" ]. A file:./ entry is registered by core as a
+		 * standalone script with no dependencies at all, and this theme has no
+		 * bundler and therefore no generated .asset.php to declare them. Nothing
+		 * then stated that wp, wp-blocks, wp-element, wp-dom-ready, wp-i18n,
+		 * wp-components and wp-block-editor must be present first, so both files
+		 * evaluated before core was. index.js takes window.wp as its IIFE
+		 * parameter, and that parameter is resolved eagerly at evaluation, so
+		 * window.wp was undefined and neither file could reach registerBlockType.
+		 * A guard inside index.js cannot repair that, because a guard that reads
+		 * wp.domReady is itself the statement that throws.
+		 *
+		 * Declaring the dependencies is the fix. edit.js reads wp.components and
+		 * wp.blockEditor, so it carries those two in addition to the base set,
+		 * and it is declared as a dependency of index.js because index.js reads
+		 * the edit component off the namespace edit.js puts there. That single
+		 * edge is what removes the need for any deferral.
+		 */
+		$editor_deps = array( 'wp-blocks', 'wp-element', 'wp-i18n', 'wp-dom-ready' );
+
+		$edit_relative  = 'blocks/rankkernel-filters/edit.js';
+		$index_relative = 'blocks/rankkernel-filters/index.js';
+
+		$editor_handles = array(
+			MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_EDIT_HANDLE,
+			MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_INDEX_HANDLE,
+		);
+
+		if ( ! wp_script_is( MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_EDIT_HANDLE, 'registered' ) ) {
+			wp_register_script(
+				MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_EDIT_HANDLE,
+				get_theme_file_uri( $edit_relative ),
+				array_merge( $editor_deps, array( 'wp-components', 'wp-block-editor' ) ),
+				maulik_portfolio_asset_version( $edit_relative ),
+				true
+			);
+		}
+
+		if ( ! wp_script_is( MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_INDEX_HANDLE, 'registered' ) ) {
+			wp_register_script(
+				MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_INDEX_HANDLE,
+				get_theme_file_uri( $index_relative ),
+				array_merge( $editor_deps, array( MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_EDIT_HANDLE ) ),
+				maulik_portfolio_asset_version( $index_relative ),
+				true
+			);
+		}
+
 		$script_relative = 'assets/js/rankkernel-filter.js';
 
 		if ( ! wp_script_is( MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_HANDLE, 'registered' ) ) {
@@ -278,14 +344,17 @@ if ( ! function_exists( 'maulik_portfolio_rankkernel_filters_register' ) ) {
 		 * editor shows a block with no settings instead of a block whose settings
 		 * are unknown.
 		 *
-		 * TWO KEYS STAY IN THE ARRAY BECAUSE THE BLOCK.JSON FILE CANNOT HOLD THEM.
+		 * THREE KEYS STAY IN THE ARRAY BECAUSE THE BLOCK.JSON FILE CANNOT HOLD THEM.
 		 *
-		 * render_callback is a PHP callable, which has no JSON representation, and
-		 * view_script_handles names a handle this theme registers by hand in the
-		 * wp_register_script() call above rather than a file the metadata could
-		 * point at. Both are passed as $args, which core merges over the settings
-		 * it read from the file, so neither changes behaviour. The front end keeps
-		 * downloading the filter script only on the pages that render this block.
+		 * render_callback is a PHP callable, which has no JSON representation.
+		 * view_script_handles and editor_script_handles name handles this theme
+		 * registers by hand in the wp_register_script() calls above rather than
+		 * files the metadata could point at, because a file:./ entry in block.json
+		 * carries no dependencies and that is what stopped these blocks
+		 * registering at all. All three are passed as $args, which core merges over
+		 * the settings it read from the file, so none of them changes behaviour.
+		 * The front end keeps downloading the filter script only on the pages that
+		 * render this block.
 		 *
 		 * NO wp:comment BLOCK IS INVOLVED ANYWHERE HERE. Serialising a dynamic
 		 * block into post content by hand requires embedding JSON in an HTML
@@ -308,8 +377,9 @@ if ( ! function_exists( 'maulik_portfolio_rankkernel_filters_register' ) ) {
 		register_block_type(
 			$block_path,
 			array(
-				'view_script_handles' => array( MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_HANDLE ),
-				'render_callback'     => 'maulik_portfolio_rankkernel_filters_render',
+				'editor_script_handles' => $editor_handles,
+				'view_script_handles'   => array( MAULIK_PORTFOLIO_RANKKERNEL_FILTERS_HANDLE ),
+				'render_callback'       => 'maulik_portfolio_rankkernel_filters_render',
 			)
 		);
 	}

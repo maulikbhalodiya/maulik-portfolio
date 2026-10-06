@@ -40,6 +40,16 @@ if ( ! defined( 'MAULIK_PORTFOLIO_HERO_ECOSYSTEM_BLOCK' ) ) {
 	 * View script handle for the canvas.
 	 */
 	define( 'MAULIK_PORTFOLIO_HERO_ECOSYSTEM_HANDLE', 'maulik-portfolio-hero-ecosystem' );
+
+	/**
+	 * Editor script handle for edit.js, the save and edit component.
+	 */
+	define( 'MAULIK_PORTFOLIO_HERO_ECOSYSTEM_EDIT_HANDLE', 'maulik-portfolio-hero-ecosystem-edit' );
+
+	/**
+	 * Editor script handle for index.js, the block type registration.
+	 */
+	define( 'MAULIK_PORTFOLIO_HERO_ECOSYSTEM_INDEX_HANDLE', 'maulik-portfolio-hero-ecosystem-index' );
 }
 
 if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_nodes' ) ) {
@@ -554,6 +564,62 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_register' ) ) {
 	 * @return void
 	 */
 	function maulik_portfolio_hero_ecosystem_register() {
+		/*
+		 * THE EDITOR SCRIPTS ARE REGISTERED BY HAND BECAUSE THEY HAVE REAL
+		 * DEPENDENCIES.
+		 *
+		 * block.json used to carry "editorScript": [ "file:./edit.js",
+		 * "file:./index.js" ]. A file:./ entry is registered by core as a
+		 * standalone script with no dependencies at all, and this theme has no
+		 * bundler and therefore no generated .asset.php to declare them. Nothing
+		 * then stated that wp, wp-blocks, wp-element, wp-dom-ready, wp-i18n,
+		 * wp-components and wp-block-editor must be present first, so both files
+		 * evaluated before core was. index.js takes window.wp as its IIFE
+		 * parameter, and that parameter is resolved eagerly at evaluation, so
+		 * window.wp was undefined and index.js threw
+		 * "Cannot read properties of undefined (reading 'domReady')" while
+		 * edit.js threw the same error reading 'element'. Neither block
+		 * registered, which is why wp.blocks.getBlockTypes() held zero
+		 * maulik-portfolio blocks. The guards inside the two files cannot fix
+		 * that, because a guard that reads wp.domReady is itself the statement
+		 * that throws.
+		 *
+		 * Declaring the dependencies is the fix. The base set below is what
+		 * index.js reads directly. edit.js additionally reads wp.components and
+		 * wp.blockEditor, so it carries those two as well, and it is declared as a
+		 * dependency of index.js because index.js reads the edit component off
+		 * window.wp.maulikPortfolio that edit.js puts there. That single edge is
+		 * what makes any deferral unnecessary, so nothing in either file has to
+		 * wait for a ready event.
+		 */
+		$editor_deps = array( 'wp-blocks', 'wp-element', 'wp-i18n', 'wp-dom-ready' );
+
+		$edit_relative  = 'blocks/hero-ecosystem/edit.js';
+		$index_relative = 'blocks/hero-ecosystem/index.js';
+		$edit_version   = maulik_portfolio_asset_version( $edit_relative );
+		$index_version  = maulik_portfolio_asset_version( $index_relative );
+		$editor_handles = array( MAULIK_PORTFOLIO_HERO_ECOSYSTEM_EDIT_HANDLE, MAULIK_PORTFOLIO_HERO_ECOSYSTEM_INDEX_HANDLE );
+
+		if ( ! wp_script_is( MAULIK_PORTFOLIO_HERO_ECOSYSTEM_EDIT_HANDLE, 'registered' ) ) {
+			wp_register_script(
+				MAULIK_PORTFOLIO_HERO_ECOSYSTEM_EDIT_HANDLE,
+				get_theme_file_uri( $edit_relative ),
+				array_merge( $editor_deps, array( 'wp-components', 'wp-block-editor' ) ),
+				$edit_version,
+				true
+			);
+		}
+
+		if ( ! wp_script_is( MAULIK_PORTFOLIO_HERO_ECOSYSTEM_INDEX_HANDLE, 'registered' ) ) {
+			wp_register_script(
+				MAULIK_PORTFOLIO_HERO_ECOSYSTEM_INDEX_HANDLE,
+				get_theme_file_uri( $index_relative ),
+				array_merge( $editor_deps, array( MAULIK_PORTFOLIO_HERO_ECOSYSTEM_EDIT_HANDLE ) ),
+				$index_version,
+				true
+			);
+		}
+
 		$script_relative = 'assets/js/hero-ecosystem.js';
 
 		$version = defined( 'MAULIK_PORTFOLIO_VERSION' ) ? (string) MAULIK_PORTFOLIO_VERSION : '0.0.0';
@@ -586,14 +652,17 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_register' ) ) {
 		 * changes. inc/portfolio-cpt.php already does this for the two portfolio
 		 * blocks.
 		 *
-		 * TWO KEYS STAY IN THE ARRAY BECAUSE THE BLOCK.JSON FILE CANNOT HOLD THEM.
+		 * THREE KEYS STAY IN THE ARRAY BECAUSE THE BLOCK.JSON FILE CANNOT HOLD THEM.
 		 *
-		 * render_callback is a PHP callable, which has no JSON representation, and
-		 * view_script_handles names a handle this theme registers by hand in the
-		 * wp_register_script() call above rather than a file the metadata could
-		 * point at. Both are passed as $args, which core merges over the settings
-		 * it read from the file, so neither changes behaviour. The front end keeps
-		 * downloading the canvas only on the pages that render this block.
+		 * render_callback is a PHP callable, which has no JSON representation.
+		 * view_script_handles and editor_script_handles name handles this theme
+		 * registers by hand in the wp_register_script() calls above rather than
+		 * files the metadata could point at, because a file:./ entry in block.json
+		 * carries no dependencies and that is what stopped these blocks
+		 * registering at all. All three are passed as $args, which core merges over
+		 * the settings it read from the file, so none of them changes behaviour.
+		 * The front end keeps downloading the canvas only on the pages that render
+		 * this block.
 		 *
 		 * NO wp:comment BLOCK IS INVOLVED ANYWHERE HERE. Serialising a dynamic
 		 * block into post content by hand requires embedding JSON in an HTML
@@ -615,8 +684,9 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_register' ) ) {
 		register_block_type(
 			$block_path,
 			array(
-				'view_script_handles' => array( MAULIK_PORTFOLIO_HERO_ECOSYSTEM_HANDLE ),
-				'render_callback'     => 'maulik_portfolio_hero_ecosystem_render',
+				'editor_script_handles' => $editor_handles,
+				'view_script_handles'   => array( MAULIK_PORTFOLIO_HERO_ECOSYSTEM_HANDLE ),
+				'render_callback'       => 'maulik_portfolio_hero_ecosystem_render',
 			)
 		);
 	}
