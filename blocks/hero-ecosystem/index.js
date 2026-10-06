@@ -7,8 +7,24 @@
  * a bundler producing a build directory that block.json points at instead. This
  * theme has no bundler step, so the build half of that convention does not
  * exist and pretending it does would mean committing compiled output. Both
- * files are therefore plain classic scripts, declared in order in block.json's
- * editorScript array, and index.js is the one that calls registerBlockType.
+ * files are therefore plain classic scripts, declared in the editorScript array
+ * in block.json, and index.js is the one that calls registerBlockType.
+ *
+ * WHY THE REGISTERING IS DEFERRED TO wp.domReady.
+ *
+ * edit.js publishes its edit component at the end of its own run, as
+ * wp.maulikPortfolio.heroEcosystemEdit, and index.js reads it from there. This
+ * theme has no build step, so there is no generated .asset.php to declare edit.js
+ * as a dependency of index.js, and block.json's editorScript array order is not
+ * honoured by the editor. Registering at script evaluation time therefore
+ * dereferenced wp.maulikPortfolio before edit.js had created it, which threw a
+ * TypeError and left the block unregistered in the editor. wp.domReady fires
+ * after every document script has run, so by then the edit component exists no
+ * matter which of the two files the browser fetched first.
+ *
+ * The other fix would be to declare edit.js as a dependency of index.js in the
+ * enqueue code in inc/, which is the more correct dependency graph. That is out
+ * of this file's scope, so it is noted rather than done here. Doing both is fine.
  *
  * WHY THE SETTINGS ARE NOT SPREAD IN HERE.
  *
@@ -29,12 +45,22 @@
 ( function ( wp ) {
 	'use strict';
 
-	var edit = wp.maulikPortfolio.heroEcosystemEdit;
+	wp.domReady( function () {
+		var namespace = wp.maulikPortfolio || {};
+		var edit = namespace.heroEcosystemEdit;
 
-	wp.blocks.registerBlockType( 'maulik-portfolio/hero-ecosystem', {
-		edit: edit,
-		save: function () {
-			return null;
-		},
+		if ( typeof edit !== 'function' ) {
+			throw new Error(
+				'maulik-portfolio/hero-ecosystem: edit.js did not publish ' +
+					'wp.maulikPortfolio.heroEcosystemEdit.'
+			);
+		}
+
+		wp.blocks.registerBlockType( 'maulik-portfolio/hero-ecosystem', {
+			edit: edit,
+			save: function () {
+				return null;
+			},
+		} );
 	} );
 } )( window.wp );
