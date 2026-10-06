@@ -254,7 +254,7 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_css' ) ) {
 		// label 16.00.
 		//
 		// Ours stated nowrap and ellipsis unconditionally, so below 640 the same
-		// 136.8px of available width truncated "Engineering Ecosystem, 3D Spatial
+		// 136.8px of available width truncated "Engineering Ecosystem · 3D Spatial
 		// Architecture" to a single ellipsised line and the header measured 53,
 		// 36px short of the design. white-space is inherited, so the header's own
 		// nowrap has to be undone on the label here, and from 640 upwards the
@@ -472,7 +472,7 @@ if ( ! function_exists( 'maulik_portfolio_hero_ecosystem_render' ) ) {
 				. '</button>'
 				. '</div>'
 				. '</div>',
-			esc_html__( 'Engineering Ecosystem, 3D Spatial Architecture', 'maulik-portfolio' ),
+			esc_html__( 'Engineering Ecosystem · 3D Spatial Architecture', 'maulik-portfolio' ),
 			esc_attr__( 'Pause the 3D ecosystem rotation', 'maulik-portfolio' ),
 			esc_html__( 'Pause Orbit', 'maulik-portfolio' ),
 			esc_attr__( 'Reset the 3D view orientation', 'maulik-portfolio' ),
