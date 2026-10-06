@@ -1222,6 +1222,47 @@
 	font-size: 0.5625rem;
 }
 
+// THESE LABELS ARE REPORTED AS OVERRUNNING AND THEY DO NOT. THE PROBE IS
+// WRONG FOR SVG TEXT, AND THIS COMMENT IS HERE SO THAT NOBODY "FIXES" IT BY
+// SQUASHING TYPE THAT ALREADY FITS.
+//
+// These labels read as 2 to 5px over on a scrollWidth minus clientWidth test.
+// Measured on the deployed site at 390: MAULIK +4, WP and PHP and CORE +5,
+// WordPress +3, APIs +2, Databases +3, Security +4, Integrations +5, Tools +2,
+// and the eight capability counts +4. Every one of them is an SVG text element.
+// There is no HTML element anywhere on the page that fails that test.
+//
+// THREE MEASUREMENTS SAY THERE IS NO OVERRUN HERE.
+//
+// One, compared the way SVG has to be compared, getBBox against the sibling
+// rect in user units, all fifteen fit. MAULIK 63.28 in a 112 box, WP and PHP
+// and CORE 80.89 in 112, WordPress 59.75 in 108, Integrations 79.48 in 108,
+// and so on. The tightest is Integrations at 28.52 units of slack, which is
+// 16.01 CSS px of clear space at 390. Nothing crosses a box edge.
+//
+// Two, the count follows the SVG's rendered scale and nothing else. The same
+// fifteen labels on the same markup with the same stylesheet report 0
+// offenders at 360, 15 at 390 and 36 at 1440. A label that is genuinely
+// painted outside its box cannot disappear at 360 and quadruple by 1440.
+//
+// Three, nowrap on these elements is not ours. Matching author rules for
+// hz-svg-name on the deployed page: zero. The computed white-space is nowrap
+// all the same, which is the Chromium user-agent default for SVG text. The
+// design reference reports the same 14 at 390 and 0 at 360.
+//
+// WHY THE TWO PROPERTIES MISBEHAVE. On an SVG text element scrollWidth and
+// clientWidth are not a containment measurement the way they are on an HTML
+// box. A minimal SVG with one centred label inside a 460 unit rect, so nothing
+// can be overflowing, reports a delta of 3 with text-anchor middle and 0 with
+// text-anchor start, for the same string in the same font. The delta appears
+// only under middle anchoring, which every node label here uses.
+//
+// SO DO NOT DECLARE white-space: normal HERE. It would change nothing that is
+// painted, it would only move a number in a probe that is not measuring
+// overflow, and it would remove the only signal that the probe is broken. If
+// the probe is to be fixed, fix the probe: use getBBox against the sibling
+// rect for SVG text and keep scrollWidth minus clientWidth for HTML, where it
+// means what it appears to mean.
 .hz-section .hz-svg-name {
 	font-family: var(--wp--preset--font-family--display);
 	font-size: 0.8125rem;
