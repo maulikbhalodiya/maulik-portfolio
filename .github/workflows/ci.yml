@@ -216,6 +216,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # Every uses: line in .github/workflows/ is pinned to a full commit SHA. The
+      # pinning was done by hand and is worthless if it can decay back to @v4 one
+      # unremarkable pull request at a time, because nothing else in CI reads
+      # that line. This step runs before the content gates because a drifting
+      # action reference is a supply chain problem, and it is a supply chain
+      # problem in every workflow file, not only in this one. ci.yml triggers on
+      # push to main and on every pull request, which is the full set of ways a
+      # workflow file can change, so one run here covers ai-audit.yml,
+      # ai-review.yml and live-deploy.yml as well. A reusable workflow would add
+      # the plumbing without adding any coverage.
+      - name: Assert GitHub Actions references are pinned to commit SHAs
+        run: |
+          set -euo pipefail
+          tools/check-action-pins.sh
+
       # Hard content rule for this project. No em dashes, no en dashes, anywhere:
       # not in code, not in comments, not in user-facing copy, not in docs, not in
       # commit messages. This is enforced mechanically because it is the kind of
