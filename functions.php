@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  * Used to bust asset caches. Kept in sync with the Version header in
  * style.css by hand, because Core does not read style.css at runtime for this.
  */
-define( 'MAULIK_PORTFOLIO_VERSION', '0.1.0' );
+define( 'MAULIK_PORTFOLIO_VERSION', '1.0.0' );
 
 /**
  * Absolute path to the theme directory, with a trailing slash.
