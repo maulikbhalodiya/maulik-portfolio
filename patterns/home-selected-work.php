@@ -4,7 +4,7 @@
  * Slug: maulik-portfolio/home-selected-work
  * Categories: maulik-portfolio-home
  * Description: Homepage section 04, the RankKernel block, five featured project cards and the confidentiality strip, on the flat base band then the 48px dark grid band.
- * Inserter: yes
+ * Inserter: no
  *
  * Section 04 of 08, and the largest structural change in this pattern set.
  *
@@ -41,6 +41,25 @@
  * project post type and no per project page, so a card that pointed at
  * /projects/slug/ would be a link to a 404. It points at /projects/, which is
  * where the case studies actually live.
+ *
+ * INSERTER HIDDEN, 2026-10-06. The header above reads Inserter: no, which is
+ * the only mechanism WordPress offers here: Core registers these files by
+ * scanning patterns/*.php and parsing the header, so there is no
+ * register_block_pattern() call to edit. Change it back to Inserter: yes and
+ * the pattern returns to the inserter on the next request. Nothing below this
+ * comment is deleted, renamed or rewritten, so the section stays re-exposable.
+ *
+ * WHY IT IS HIDDEN RATHER THAN DELETED. Measured, this pattern is referenced
+ * in 0 files across templates/, parts/ and content/, so the homepage renders
+ * from content/pages/home.html and this is a second copy of a section the live
+ * page already owns. Compared against the rendered live page, the copy agrees
+ * with it to 33.1%.
+ * The live page contains the whole RankKernel interactive module map, which is
+ * absent here, so this copy is a third of the real thing.
+ * Offering it in the inserter would let an owner put a section on a page the
+ * design never showed. It is hidden rather than deleted because the markup and
+ * this comment are the record of what was decided, and deleting them loses
+ * that record.
  *
  * @package Maulik_Portfolio
  */

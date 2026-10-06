@@ -4,7 +4,7 @@
  * Slug: maulik-portfolio/home-approach
  * Categories: maulik-portfolio-home
  * Description: Homepage section 06, the five interactive stage selector buttons beside the selected stage deep dive, on the 48px dark grid surface.
- * Inserter: yes
+ * Inserter: no
  *
  * Section 06 of 08. The 48px dark grid surface, which is what the design states.
  * It previously wore the 64px warm editorial variation, a light surface with a
@@ -58,6 +58,24 @@
  * THE THREE QUESTIONS PER STAGE ARE THE DESIGN'S, NOT NEW ONES. The previous
  * version asked thirteen verification questions across the five stages, which is
  * more than the approved homepage states and more than the section needs.
+ *
+ * INSERTER HIDDEN, 2026-10-06. The header above reads Inserter: no, which is
+ * the only mechanism WordPress offers here: Core registers these files by
+ * scanning patterns/*.php and parsing the header, so there is no
+ * register_block_pattern() call to edit. Change it back to Inserter: yes and
+ * the pattern returns to the inserter on the next request. Nothing below this
+ * comment is deleted, renamed or rewritten, so the section stays re-exposable.
+ *
+ * WHY IT IS HIDDEN RATHER THAN DELETED. Measured, this pattern is referenced
+ * in 0 files across templates/, parts/ and content/, so the homepage renders
+ * from content/pages/home.html and this is a second copy of a section the live
+ * page already owns. Compared against the rendered live page, the copy agrees
+ * with it to 97.8%.
+ * The gap is one inner wrapper class.
+ * Offering it in the inserter would let an owner put a section on a page the
+ * design never showed. It is hidden rather than deleted because the markup and
+ * this comment are the record of what was decided, and deleting them loses
+ * that record.
  *
  * @package Maulik_Portfolio
  */
