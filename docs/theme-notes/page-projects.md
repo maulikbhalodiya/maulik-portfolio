@@ -163,7 +163,7 @@ records the disagreement and does not attempt to reconcile it.
 | Source | Schema | REST |
 | --- | --- | --- |
 | `design-reference/src/data/portfolioData.ts` lines 508 and 519 | `status: 'IN PROGRESS' as SubsystemStatus` | `status: 'IN PROGRESS' as SubsystemStatus` |
-| `rk-verify/docs/RANKKERNEL-CURRENT-STATE.md` lines 61 and 67 | `Schema` marked `COMPLETE` | `REST / Headless` marked `PARTIAL` |
+| `/home/ubuntu/rk-verify/docs/RANKKERNEL-CURRENT-STATE.md` lines 61 and 67 | `Schema` marked `COMPLETE` | `REST / Headless` marked `PARTIAL` |
 | live `/rankkernel/` | row `Schema and JSON-LD` | no REST module row |
 
 Three details are worth stating precisely, because the loose version of this claim is wrong
@@ -187,7 +187,7 @@ JSON-LD, Instant Indexing, XML Sitemaps, Content Analysis, Redirects and 404 Mon
 is no REST row. A REST reference does appear on that page, but as a technology chip in the
 stack list, not as a subsystem.
 
-**Which source governs.** `rk-verify/docs/RANKKERNEL-CURRENT-STATE.md` line 3 declares itself
+**Which source governs.** `/home/ubuntu/rk-verify/docs/RANKKERNEL-CURRENT-STATE.md` line 3 declares itself
 the single source of truth: "This file is the single source of truth for where RankKernel is
 right now." Its stated precedence rule is that when another document disagrees, the repository
 is authoritative and the disagreement must be verified rather than resolved from memory. Under
