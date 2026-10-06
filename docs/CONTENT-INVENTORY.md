@@ -490,13 +490,23 @@ future reader will assume there are numbers to strip.
 
 ## 7. RANKKERNEL (9 subsystems, honest status)
 
-Status tally: **3 IMPLEMENTED, 3 IN PROGRESS, 3 PLANNED.**
+Status tally: **9 COMPLETED, 0 RUNNING, 5 PLANNED.** The registry reserves 14
+module ids. Nine are shipped. Five are deliberate reservations with no
+implementation. The project document never describes a module as partially
+delivered, so RUNNING is zero and not a placeholder.
 
 | Status | Subsystems |
 |---|---|
-| IMPLEMENTED | Modules, Settings, Metadata |
-| IN PROGRESS | Schema, REST, Sitemaps |
-| PLANNED | Content Analysis, Redirects, 404 Monitoring |
+| COMPLETED | Metadata Engine, Content Analysis, XML Sitemaps, Schema and JSON-LD, Breadcrumbs, Robots.txt and llms.txt, Redirects, 404 Monitor, Instant Indexing |
+| RUNNING | None. No module is recorded as mid-build |
+| PLANNED | Importer, Image SEO, Gutenberg Suite, AI Suite, Headless. Reserved ids with nothing on disk |
+
+PLANNED is not a build promise here. The document calls these five deliberate
+reservations and the code is honest about that rather than shipping a stub.
+
+Five of the nine shipped modules are on by default and four are off by default,
+which is what keeps a default install lean. All nine are COMPLETED, because the
+status records delivery, not the default enable flag.
 
 This matches the verified capabilities exactly. Nothing is overstated. The
 `independenceNotice` is explicit:
