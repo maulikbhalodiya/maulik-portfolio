@@ -21,16 +21,45 @@
  * on the argument, so the output escaping sniff has something real to check and
  * so a future edit cannot accidentally print an unescaped attribute.
  *
- * WHY THE CARD MARKUP IS HAND WRITTEN INSTEAD OF NESTED BLOCKS.
+ * The card is assembled from the project post rather than from nested blocks.
  *
  * The markup is the markup _page-projects.scss and _sections.scss already
  * select on: hz-card, hz-card__body, hz-card__meta, hz-card__lead,
- * hz-card__title, hz-card__desc, hz-card__foot and hz-link. That stylesheet
- * cancels Core's is-layout-flow block gap with two class selectors, so the
- * class names are load bearing and not decoration. A previous version of this
- * file emitted portfolio-list__card and friends, which appear nowhere in the
- * compiled stylesheet, so the grid rendered with every spacing and colour rule
- * the design depends on missing. The names below are the ones that exist.
+ * hz-card__title, hz-card__desc, hz-card__scheme, hz-card__scheme-head,
+ * hz-card__scheme-label, hz-card__nodes, hz-card__node, hz-card__node-sep,
+ * hz-card__foot, hz-card__tech and hz-link. That stylesheet cancels Core's
+ * is-layout-flow block gap with two class selectors, so the class names are
+ * load bearing and not decoration. A previous version of this file emitted
+ * portfolio-list__card and friends, which appear nowhere in the compiled
+ * stylesheet, so the grid rendered with every spacing and colour rule the
+ * design depends on missing. The names below are the ones that exist.
+ *
+ * Every field the static cards carried is read from the post: the index and kind
+ * line, the role line, the scheme label, the node count label, the node strip,
+ * the technology list, the category classes and the link target. Before this,
+ * four of those had nowhere to live on the post at all, so migrating the
+ * Projects page content would have stripped them from the page.
+ *
+ * The Core group layout hook classes is-layout-flow and
+ * wp-block-group-is-layout-flow are deliberately not printed. On the static page
+ * they were a side effect of every wrapper being a core group block, and they
+ * are not cosmetic even so: WordPress global styles carry
+ * :root :where(.is-layout-flow) > * { margin-block-start: <block gap> }, so the
+ * class does reach inside a card. The theme cancels that rule for this card
+ * with higher specificity everywhere it would otherwise land, which is why the
+ * class can be dropped rather than worked around:
+ *
+ *   .wp-block-group.pj-work .pj-work__grid > * { margin-block: 0 }
+ *   .wp-block-group.pj-work .hz-card__lead > * { margin-block: 0 }
+ *   .hz-section .hz-card__body > * { margin-block: 0 }
+ *   .hz-section .hz-card__scheme > * { margin-block: 0 }
+ *
+ * Each element's display comes from its own hz- class regardless: hz-card and
+ * hz-card__foot are flex columns, hz-card__meta, hz-card__scheme-head,
+ * hz-card__nodes and hz-card__tech are flex rows, and pj-work__grid is the grid.
+ * The wp-block-paragraph and wp-block-heading classes are printed, because they
+ * are the Core hooks the static markup carried and the title and description are
+ * the same elements Core would have produced.
  *
  * The grid is a real list without being a ul. Each card is an article, which is
  * what the static markup used and what the filter script moves with
@@ -191,6 +220,13 @@ while ( $maulik_portfolio_list_query->have_posts() ) {
 	$maulik_portfolio_list_id           = (int) get_the_ID();
 	$maulik_portfolio_list_title        = get_the_title( $maulik_portfolio_list_id );
 	$maulik_portfolio_list_role         = maulik_portfolio_get_project_role( $maulik_portfolio_list_id );
+	$maulik_portfolio_list_index_label  = maulik_portfolio_get_project_field( $maulik_portfolio_list_id, MAULIK_PORTFOLIO_PROJECT_META_INDEX_LABEL );
+	$maulik_portfolio_list_scheme_label = maulik_portfolio_get_project_field( $maulik_portfolio_list_id, MAULIK_PORTFOLIO_PROJECT_META_SCHEME );
+	$maulik_portfolio_list_node_count   = maulik_portfolio_get_project_field( $maulik_portfolio_list_id, MAULIK_PORTFOLIO_PROJECT_META_NODE_COUNT );
+	$maulik_portfolio_list_nodes        = maulik_portfolio_get_project_list( $maulik_portfolio_list_id, MAULIK_PORTFOLIO_PROJECT_META_NODES );
+	$maulik_portfolio_list_tech_list    = maulik_portfolio_get_project_list( $maulik_portfolio_list_id, MAULIK_PORTFOLIO_PROJECT_META_TECH );
+	$maulik_portfolio_list_link_href    = maulik_portfolio_get_project_field( $maulik_portfolio_list_id, MAULIK_PORTFOLIO_PROJECT_META_HREF );
+	$maulik_portfolio_list_categories   = maulik_portfolio_get_project_category_classes( $maulik_portfolio_list_id );
 	$maulik_portfolio_list_excerpt      = get_the_excerpt( $maulik_portfolio_list_id );
 	$maulik_portfolio_list_show_excerpt = isset( $attributes['showExcerpt'] ) ? (bool) $attributes['showExcerpt'] : true;
 	$maulik_portfolio_list_slug         = (string) get_post_field( 'post_name', $maulik_portfolio_list_id );
@@ -220,16 +256,32 @@ while ( $maulik_portfolio_list_query->have_posts() ) {
 		: '#' . $maulik_portfolio_list_anchor;
 
 	/*
-	 * The meta row is two spans: the position in the list with the kind of work
-	 * it is, and the role line. The position is derived from the query result
-	 * order, so it renumbers itself when the order attribute changes instead of
-	 * being a number someone has to keep correct by hand.
+	 * A stored href wins over the derived one, because the case study the card
+	 * links to is a fact about the project rather than something to be inferred
+	 * from its slug. An empty field falls back to the anchor, so a project
+	 * created without one still gets a link that resolves.
 	 */
-	$maulik_portfolio_list_kind = sprintf(
-		/* translators: %1$d: the position of this project in the grid, zero padded to two digits. */
-		esc_html__( '%1$02d · Professional Project', 'maulik-portfolio' ),
-		$maulik_portfolio_list_index
-	);
+	if ( '' !== $maulik_portfolio_list_link_href ) {
+		$maulik_portfolio_list_href = $maulik_portfolio_list_link_href;
+	}
+
+	/*
+	 * The meta row is two spans: the position in the list with the kind of work
+	 * it is, and the role line. The stored label is used when the post carries
+	 * one. Otherwise the position is derived from the query result order, so it
+	 * renumbers itself when the order attribute changes instead of being a
+	 * number someone has to keep correct by hand.
+	 *
+	 * Both branches escape where the value is produced, so the print below
+	 * cannot double encode one and leave the other raw.
+	 */
+	$maulik_portfolio_list_kind = '' !== $maulik_portfolio_list_index_label
+		? esc_html( $maulik_portfolio_list_index_label )
+		: sprintf(
+			/* translators: %1$d: the position of this project in the grid, zero padded to two digits. */
+			esc_html__( '%1$02d · Professional Project', 'maulik-portfolio' ),
+			$maulik_portfolio_list_index
+		);
 
 	$maulik_portfolio_list_meta_spans = sprintf(
 		'<span class="hz-meta">%s</span>',
@@ -252,8 +304,103 @@ while ( $maulik_portfolio_list_query->have_posts() ) {
 
 	if ( $maulik_portfolio_list_show_excerpt && '' !== $maulik_portfolio_list_excerpt ) {
 		$maulik_portfolio_list_desc = sprintf(
-			'<p class="hz-card__desc">%s</p>',
+			'<p class="hz-card__desc wp-block-paragraph">%s</p>',
 			esc_html( wp_strip_all_tags( $maulik_portfolio_list_excerpt, true ) )
+		);
+	}
+
+	/*
+	 * The scheme panel names the architecture and counts its nodes, then lists
+	 * the nodes themselves. It is omitted entirely when neither a scheme nor a
+	 * node strip is stored, rather than printed as an empty box.
+	 */
+	$maulik_portfolio_list_scheme = '';
+
+	if ( '' !== $maulik_portfolio_list_scheme_label || array() !== $maulik_portfolio_list_nodes ) {
+		$maulik_portfolio_list_scheme_head = '';
+
+		if ( '' !== $maulik_portfolio_list_scheme_label ) {
+			$maulik_portfolio_list_scheme_head .= sprintf(
+				'<span class="hz-card__scheme-label">%s</span>',
+				esc_html( $maulik_portfolio_list_scheme_label )
+			);
+		}
+
+		if ( '' !== $maulik_portfolio_list_node_count ) {
+			$maulik_portfolio_list_scheme_head .= sprintf(
+				'<span class="hz-card__scheme-label">%s</span>',
+				esc_html( $maulik_portfolio_list_node_count )
+			);
+		}
+
+		if ( '' !== $maulik_portfolio_list_scheme_head ) {
+			$maulik_portfolio_list_scheme_head = sprintf(
+				'<div class="wp-block-group hz-card__scheme-head">%s</div>',
+				$maulik_portfolio_list_scheme_head // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Both spans were escaped when this fragment was built.
+			);
+		}
+
+		/*
+		 * A slash in the stored list is a separator rather than a node, so it
+		 * becomes the separator element. The separator is hidden from assistive
+		 * technology on purpose: a screen reader announcing every slash and
+		 * middot between list items reads the decoration back as content.
+		 */
+		$maulik_portfolio_list_node_items = '';
+
+		foreach ( $maulik_portfolio_list_nodes as $maulik_portfolio_list_node ) {
+			if ( '/' === $maulik_portfolio_list_node ) {
+				$maulik_portfolio_list_node_items .= '<span class="hz-card__node-sep" aria-hidden="true">/</span>';
+				continue;
+			}
+
+			$maulik_portfolio_list_node_items .= sprintf(
+				'<span class="hz-card__node">%s</span>',
+				esc_html( $maulik_portfolio_list_node )
+			);
+		}
+
+		if ( '' !== $maulik_portfolio_list_node_items ) {
+			$maulik_portfolio_list_node_items = sprintf(
+				'<div class="hz-card__nodes">%s</div>',
+				$maulik_portfolio_list_node_items // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Each item was escaped when it was built.
+			);
+		}
+
+		$maulik_portfolio_list_scheme = sprintf(
+			'<div class="wp-block-group hz-card__scheme">%1$s%2$s</div>',
+			$maulik_portfolio_list_scheme_head, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Both spans were escaped when this fragment was built.
+			$maulik_portfolio_list_node_items // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Each item was escaped when it was built.
+		);
+	}
+
+	/*
+	 * The technology strip is a middot separated list, and the middots are
+	 * hidden from assistive technology for the same reason the node separators
+	 * are: they are punctuation between items, not content.
+	 */
+	$maulik_portfolio_list_tech = '';
+
+	if ( array() !== $maulik_portfolio_list_tech_list ) {
+		$maulik_portfolio_list_tech_items = '';
+		$maulik_portfolio_list_tech_first = true;
+
+		foreach ( $maulik_portfolio_list_tech_list as $maulik_portfolio_list_tech_item ) {
+			if ( ! $maulik_portfolio_list_tech_first ) {
+				$maulik_portfolio_list_tech_items .= '<span aria-hidden="true">·</span>';
+			}
+
+			$maulik_portfolio_list_tech_items .= sprintf(
+				'<span>%s</span>',
+				esc_html( $maulik_portfolio_list_tech_item )
+			);
+
+			$maulik_portfolio_list_tech_first = false;
+		}
+
+		$maulik_portfolio_list_tech = sprintf(
+			'<div class="wp-block-group hz-card__tech hz-meta">%s</div>',
+			$maulik_portfolio_list_tech_items // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Each item was escaped when it was built.
 		);
 	}
 
@@ -263,18 +410,33 @@ while ( $maulik_portfolio_list_query->have_posts() ) {
 	 * would be reachable only with a mouse and would have no name at all.
 	 */
 	$maulik_portfolio_list_foot = sprintf(
-		'<div class="wp-block-group hz-card__foot"><a class="hz-link" href="%1$s"><span>%2$s</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a></div>',
+		'<div class="wp-block-group hz-card__foot">%1$s<a class="hz-link" href="%2$s"><span>%3$s</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hz-icon" aria-hidden="true" focusable="false"><path d="M7 7h10v10"></path><path d="M7 17 17 7"></path></svg></a></div>',
+		$maulik_portfolio_list_tech, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Each item was escaped when this fragment was built.
 		esc_url( $maulik_portfolio_list_href ),
 		esc_html_x( 'View Case Study', 'link on a project card', 'maulik-portfolio' )
 	);
 
+	/*
+	 * The pj-cat-* classes come from the project_cat terms, one class per term
+	 * with the term slug as the suffix. They are the contract with
+	 * assets/js/project-filters.js, which tests card.classList.contains(
+	 * 'pj-cat-' + slug ) for the tab that was clicked, so a card with no terms
+	 * renders under the all tab only.
+	 */
+	$maulik_portfolio_list_card_classes = array_merge(
+		array( 'wp-block-group', 'hz-card', 'pj-card' ),
+		$maulik_portfolio_list_categories
+	);
+
 	$maulik_portfolio_list_cards .= sprintf(
-		'<article class="wp-block-group hz-card pj-card" role="listitem" id="%1$s"><div class="wp-block-group hz-card__body">%2$s<div class="wp-block-group hz-card__lead"><h3 class="wp-block-heading hz-card__title">%3$s</h3>%4$s</div></div>%5$s</article>',
+		'<article class="%1$s" role="listitem" id="%2$s"><div class="wp-block-group hz-card__body">%3$s<div class="wp-block-group hz-card__lead"><h3 class="wp-block-heading hz-card__title">%4$s</h3>%5$s</div>%6$s</div>%7$s</article>',
+		esc_attr( implode( ' ', $maulik_portfolio_list_card_classes ) ),
 		esc_attr( $maulik_portfolio_list_anchor ),
 		$maulik_portfolio_list_meta, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Both spans were escaped when this fragment was built.
 		esc_html( $maulik_portfolio_list_title ),
 		$maulik_portfolio_list_desc, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- It was escaped when this fragment was built.
-		$maulik_portfolio_list_foot // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- The href and the link text were escaped when this fragment was built.
+		$maulik_portfolio_list_scheme, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every value in it was escaped when it was built.
+		$maulik_portfolio_list_foot // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- The href, the link text and every tech item were escaped when this fragment was built.
 	);
 }
 
@@ -329,11 +491,13 @@ if ( $maulik_portfolio_list_maxpage > 1 ) {
  *
  * hz-work__grid is the same class the static grid carried, and it is what
  * supplies display: grid and the 32px gap. pj-work__grid is the page scoped
- * class that zeroes Core's is-layout-flow block gap on each card.
+ * class the filter script and the stylesheet select on.
  *
- * The element is a ul and the cards are li, so the number of items a screen
- * reader announces matches the number of cards, and it stays a grid container
- * for the filter script.
+ * role="list" on this element and role="listitem" on each card carry the list
+ * semantics, so the number of items a screen reader announces matches the
+ * number of cards. A ul with li children would not do here, because the grid
+ * also holds the Pagination block when there is more than one page of results,
+ * and a pagination list nested inside a list item is the wrong structure.
  */
 $maulik_portfolio_list_wrapper_attributes = get_block_wrapper_attributes(
 	array(
@@ -353,6 +517,8 @@ unset( $maulik_portfolio_list_wrapper_attributes );
 unset(
 	$maulik_portfolio_list_anchor,
 	$maulik_portfolio_list_args,
+	$maulik_portfolio_list_card_classes,
+	$maulik_portfolio_list_categories,
 	$maulik_portfolio_list_cards,
 	$maulik_portfolio_list_count,
 	$maulik_portfolio_list_desc,
@@ -361,9 +527,15 @@ unset(
 	$maulik_portfolio_list_href,
 	$maulik_portfolio_list_id,
 	$maulik_portfolio_list_index,
+	$maulik_portfolio_list_index_label,
+	$maulik_portfolio_list_kind,
+	$maulik_portfolio_list_link_href,
 	$maulik_portfolio_list_markup,
 	$maulik_portfolio_list_maxpage,
 	$maulik_portfolio_list_meta,
+	$maulik_portfolio_list_node_count,
+	$maulik_portfolio_list_node_items,
+	$maulik_portfolio_list_nodes,
 	$maulik_portfolio_list_order,
 	$maulik_portfolio_list_order_key,
 	$maulik_portfolio_list_order_map,
@@ -371,7 +543,15 @@ unset(
 	$maulik_portfolio_list_post_type_object,
 	$maulik_portfolio_list_query,
 	$maulik_portfolio_list_role,
+	$maulik_portfolio_list_scheme,
+	$maulik_portfolio_list_scheme_head,
+	$maulik_portfolio_list_scheme_label,
 	$maulik_portfolio_list_show_excerpt,
 	$maulik_portfolio_list_slug,
+	$maulik_portfolio_list_tech,
+	$maulik_portfolio_list_tech_first,
+	$maulik_portfolio_list_tech_item,
+	$maulik_portfolio_list_tech_items,
+	$maulik_portfolio_list_tech_list,
 	$maulik_portfolio_list_title
 );
