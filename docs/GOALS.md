@@ -3,11 +3,11 @@
 One goal at a time. Each goal has a clear finish line. A goal is only
 **COMPLETE** when every acceptance check is **DONE**, verified in a browser.
 
-**Status:** one goal in progress. Later goals are queued, not started.
+**Status:** one goal is `RUNNING`. Later goals are `QUEUED`, not started.
 
 ---
 
-## GOAL 1: Home page complete  ·  `IN PROGRESS`
+## GOAL 1: Home page complete  ·  `RUNNING`
 
 > Reproduce the approved design's Home page exactly, with working
 > interactions, and deliver it for your review before any other page is touched.

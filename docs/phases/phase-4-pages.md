@@ -78,7 +78,9 @@ links. The option list and the data vocabulary are different word sets:
 
 - [ ] `templates/page-rankkernel.html`
 - [ ] **This ships.** It is the site's own SEO engine, which is the story
-- [ ] 9 subsystems with honest status: 3 IMPLEMENTED, 3 IN PROGRESS, 3 PLANNED
+- [ ] 9 subsystems with honest status: 9 COMPLETED, 0 RUNNING, 5 PLANNED.
+      RUNNING is zero because no module is recorded as mid-build. The five
+      PLANNED are deliberate reservations with no implementation
 - [ ] The 14-edge dependency graph, which is a real graph and the strongest
       asset on the page
 - [ ] Independence notice verbatim: not affiliated with the employer, not client
