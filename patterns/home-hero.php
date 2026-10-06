@@ -4,7 +4,7 @@
  * Slug: maulik-portfolio/home-hero
  * Categories: maulik-portfolio-home, featured
  * Description: Homepage section 01, the opening hero with the single h1, on the 48px dark grid surface. Insert on a page that has no other h1.
- * Inserter: yes
+ * Inserter: no
  *
  * Section 01 of 08. The dark grid surface and the only h1 in the pattern set, so
  * a page built from these patterns has one top level heading and no skipped
@@ -43,6 +43,25 @@
  * and the title accessors are all unavailable and are not used. What does work is
  * esc_html__(), esc_url(), esc_attr(), get_home_url() and iterating this file's
  * own arrays.
+ *
+ * INSERTER HIDDEN, 2026-10-06. The header above reads Inserter: no, which is
+ * the only mechanism WordPress offers here: Core registers these files by
+ * scanning patterns/*.php and parsing the header, so there is no
+ * register_block_pattern() call to edit. Change it back to Inserter: yes and
+ * the pattern returns to the inserter on the next request. Nothing below this
+ * comment is deleted, renamed or rewritten, so the section stays re-exposable.
+ *
+ * WHY IT IS HIDDEN RATHER THAN DELETED. Measured, this pattern is referenced
+ * in 0 files across templates/, parts/ and content/, so the homepage renders
+ * from content/pages/home.html and this is a second copy of a section the live
+ * page already owns. Compared against the rendered live page, the copy agrees
+ * with it to 100.0%.
+ * The only difference is get_home_url() against the page's relative URL, so
+ * this is the closest copy in the set and is hidden with the rest of it.
+ * Offering it in the inserter would let an owner put a section on a page the
+ * design never showed. It is hidden rather than deleted because the markup and
+ * this comment are the record of what was decided, and deleting them loses
+ * that record.
  *
  * @package Maulik_Portfolio
  */

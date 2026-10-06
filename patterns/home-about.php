@@ -4,7 +4,7 @@
  * Slug: maulik-portfolio/home-about
  * Categories: maulik-portfolio-home
  * Description: Homepage section 07, the identity column and the two snapshot cards, on the flat base surface.
- * Inserter: yes
+ * Inserter: no
  *
  * Section 07 of 08. Flat #0A0A0B with a 1px #262626 rule under it, which is what
  * the design states. It previously wore the 48px dark grid variation, which put a
@@ -27,6 +27,24 @@
  * THE LIGHT SURFACES ARE GONE FROM THE HOMEPAGE BODY. Amber on a light ground
  * fails contrast badly, so nothing amber is text on a light section. Restoring
  * the flat dark ground removes the question rather than answering it.
+ *
+ * INSERTER HIDDEN, 2026-10-06. The header above reads Inserter: no, which is
+ * the only mechanism WordPress offers here: Core registers these files by
+ * scanning patterns/*.php and parsing the header, so there is no
+ * register_block_pattern() call to edit. Change it back to Inserter: yes and
+ * the pattern returns to the inserter on the next request. Nothing below this
+ * comment is deleted, renamed or rewritten, so the section stays re-exposable.
+ *
+ * WHY IT IS HIDDEN RATHER THAN DELETED. Measured, this pattern is referenced
+ * in 0 files across templates/, parts/ and content/, so the homepage renders
+ * from content/pages/home.html and this is a second copy of a section the live
+ * page already owns. Compared against the rendered live page, the copy agrees
+ * with it to 88.3%.
+ * This copy drops the trailing arrow SVG the live page carries.
+ * Offering it in the inserter would let an owner put a section on a page the
+ * design never showed. It is hidden rather than deleted because the markup and
+ * this comment are the record of what was decided, and deleting them loses
+ * that record.
  *
  * @package Maulik_Portfolio
  */

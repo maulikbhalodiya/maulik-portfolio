@@ -4,7 +4,7 @@
  * Slug: maulik-portfolio/home-technical-stack
  * Categories: maulik-portfolio-home
  * Description: Homepage section 03, the node map and the seven verified domains with all forty one skill entries, on the 48px dark grid surface.
- * Inserter: yes
+ * Inserter: no
  *
  * Section 03 of 08. The 48px dark grid surface, which is what the design states.
  * It previously wore the 32px dark subgrid variation, a texture the design does
@@ -55,6 +55,25 @@
  * design reference does not do anywhere, and that hover and keyboard focus pause
  * it with no visible pause control. assets/js/section-switcher.js implements
  * that; data-hz-rotates is what asks for it, and no other section carries it.
+ *
+ * INSERTER HIDDEN, 2026-10-06. The header above reads Inserter: no, which is
+ * the only mechanism WordPress offers here: Core registers these files by
+ * scanning patterns/*.php and parsing the header, so there is no
+ * register_block_pattern() call to edit. Change it back to Inserter: yes and
+ * the pattern returns to the inserter on the next request. Nothing below this
+ * comment is deleted, renamed or rewritten, so the section stays re-exposable.
+ *
+ * WHY IT IS HIDDEN RATHER THAN DELETED. Measured, this pattern is referenced
+ * in 0 files across templates/, parts/ and content/, so the homepage renders
+ * from content/pages/home.html and this is a second copy of a section the live
+ * page already owns. Compared against the rendered live page, the copy agrees
+ * with it to 94.4%.
+ * The live page carries role="tabpanel" on seven panels plus aria-controls,
+ * and this copy carries tabindex="-1" in their place.
+ * Offering it in the inserter would let an owner put a section on a page the
+ * design never showed. It is hidden rather than deleted because the markup and
+ * this comment are the record of what was decided, and deleting them loses
+ * that record.
  *
  * @package Maulik_Portfolio
  */
