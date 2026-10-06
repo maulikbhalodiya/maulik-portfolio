@@ -37,6 +37,7 @@ require_once MAULIK_PORTFOLIO_DIR . 'inc/fonts.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/performance.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/patterns-category.php';
 require_once MAULIK_PORTFOLIO_DIR . 'inc/hero-ecosystem.php';
+require_once MAULIK_PORTFOLIO_DIR . 'inc/block-attributes.php';
 
 /**
  * Enqueue the section switcher script.
