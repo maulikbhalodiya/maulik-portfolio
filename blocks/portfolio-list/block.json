@@ -12,7 +12,8 @@
 	"attributes": {
 		"count": {
 			"type": "number",
-			"default": 6
+			"default": 9,
+			"description": "How many published projects to show. 9 is the number of case studies the Projects page carried before it read this post type. Clamped server side to 1 through 24 so the query stays bounded."
 		},
 		"showExcerpt": {
 			"type": "boolean",
@@ -20,7 +21,8 @@
 		},
 		"order": {
 			"type": "string",
-			"default": "date"
+			"default": "menu-order",
+			"description": "Query order, matched against a fixed allow list server side. 'menu-order' sorts on the Page Attributes Order field and then newest first, which is the order the case studies were authored in."
 		}
 	},
 	"supports": {
