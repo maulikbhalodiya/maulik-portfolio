@@ -258,6 +258,17 @@ if ( ! function_exists( 'maulik_portfolio_register_project_taxonomy' ) ) {
 	 * @return void
 	 */
 	function maulik_portfolio_register_project_taxonomy() {
+		/*
+		 * 'popular_items' is deliberately absent from this array rather than
+		 * present with a null value.
+		 *
+		 * WordPress core documents that label as unused and its own default
+		 * for it is null. Writing it explicitly as null makes PHPStan infer
+		 * array<string, string|null> for the entire labels array, which
+		 * register_taxonomy() does not accept because the stub types labels as
+		 * array<string>. Omitting the key leaves the array a plain
+		 * array<string> and keeps core's own default behaviour.
+		 */
 		$labels = array(
 			'name'                       => _x( 'Project Categories', 'taxonomy general name', 'maulik-portfolio' ),
 			'singular_name'              => _x( 'Project Category', 'taxonomy singular name', 'maulik-portfolio' ),
@@ -271,7 +282,6 @@ if ( ! function_exists( 'maulik_portfolio_register_project_taxonomy' ) ) {
 			'not_found'                  => __( 'No categories found.', 'maulik-portfolio' ),
 			'back_to_items'              => __( 'Back to Categories', 'maulik-portfolio' ),
 			'choose_from_most_used'      => __( 'Most Used', 'maulik-portfolio' ),
-			'popular_items'              => null,
 			'separate_items_with_commas' => __( 'Separate categories with commas', 'maulik-portfolio' ),
 			'add_or_remove_items'        => __( 'Add or remove categories', 'maulik-portfolio' ),
 		);
@@ -392,7 +402,14 @@ if ( ! function_exists( 'maulik_portfolio_project_meta_list_sanitize_cb' ) ) {
 			}
 		}
 
-		return (string) wp_json_encode( array_values( $clean ), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+		/*
+		 * $clean is already a list. It is only ever appended to after being
+		 * initialised as an empty array, and every unset or empty entry is
+		 * skipped rather than spliced out, so its keys are already sequential
+		 * and array_values() would have no effect. Calling it anyway is what
+		 * PHPStan flagged as arrayValues.list.
+		 */
+		return (string) wp_json_encode( $clean, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 	}
 }
 
