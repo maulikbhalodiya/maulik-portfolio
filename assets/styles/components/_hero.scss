@@ -181,6 +181,43 @@ $hero-column-gap: 3rem;
 	max-width: 100%;
 }
 
+// THE FOOTER COVERS 157.5px OF THE CANVAS AND THAT CANNOT BE UNDONE HERE.
+//
+// Measured on the deployed site at 390 and 360: panel 500, canvas 498, tab row
+// 30, footer 157.5, overlap 157.5. Removing the tab row wrap in #43 took the
+// footer from 221.5 to this, and this is the design's own figure. The design
+// reference measures footer 157.5, overlap 157.5, at the same widths.
+//
+// The 157.48 decomposes exactly, and every term is the design's:
+// 1px border, 16 and 16 padding, the 29.98 tab row, a 12 gap, and an 82.5
+// readout that is a 16 title, a 4 margin and a 58.5 summary of three 19.5
+// lines.
+//
+// WHY THE FOOTER CANNOT SIT BELOW THE CANVAS. The canvas is position absolute
+// at inset 0, so it fills the whole panel, and the footer is in normal flow at
+// the bottom of a panel whose height is fixed at 500px. There is no layout in
+// which a footer inside a fixed-height panel with an inset-0 canvas avoids
+// overlapping it. Moving the canvas edge up to clear the footer is the only
+// lever, and it is worse than the thing it fixes.
+//
+// IT COVERS NOTHING TODAY. Scanning the canvas bitmap for the lowest row that
+// carries ink: at 390 and 360 the lowest ink is at 337.64 and the footer starts
+// at 340.52, so the 157.5px of overlap is empty canvas. At 1440 the lowest ink
+// is 406.59 against a footer top of 440.02. The drawing sits in the upper band
+// and the footer sits below all of it.
+//
+// AND FORCING THE CANVAS TO CLEAR THE FOOTER MAKES THE DRAWING WORSE.
+// Measured with the canvas held to 340px so the footer clears it, a 32 percent
+// loss of drawing area: the scene compresses, the API and Database labels
+// collide harder than they already do, WordPress and Git collide, and the
+// RankKernel label clips at the right edge. That trades an overlap covering
+// empty space for a new clipped label, which is the same trade #43 removed in
+// the other direction.
+//
+// SO THIS DECLARATION STAYS AND max-width STAYS. If you are here trying to
+// zero the overlap, the only real fixes are to make the panel taller than
+// 500px, which the design fixes, or to shorten the readout summary, which is
+// content. Both are out of scope here, and the first one is a departure.
 .wp-block-group.hero__col--visual .maulik-hero-canvas {
 	display: block;
 	max-width: 100%;
