@@ -42,13 +42,18 @@
 
 	/*
 	 * The order options are declared once, here, rather than inline in the
-	 * control. The render file maps the same five keys through its own allow
-	 * list, because an attribute value arrives from the block comment and is
-	 * therefore author input rather than trusted configuration. A key this list
-	 * does not offer falls back to date server side, so an old or hand edited
-	 * block degrades to a defined order instead of an undefined query shape.
+	 * control. The render file maps the same keys through its own allow list,
+	 * because an attribute value arrives from the block comment and is therefore
+	 * author input rather than trusted configuration. A key this list does not
+	 * offer falls back to menu-order server side, so an old or hand edited block
+	 * degrades to a defined order instead of an undefined query shape.
+	 *
+	 * menu-order is first and is the default because it is the order the case
+	 * studies were authored in. It sorts on the Page Attributes Order field and
+	 * falls back to newest first for two projects left at the same position.
 	 */
 	var ORDER_OPTIONS = [
+		{ label: __( 'Authored order', 'maulik-portfolio' ), value: 'menu-order' },
 		{ label: __( 'Newest first', 'maulik-portfolio' ), value: 'date' },
 		{ label: __( 'Oldest first', 'maulik-portfolio' ), value: 'date-asc' },
 		{ label: __( 'Title, A to Z', 'maulik-portfolio' ), value: 'title' },
