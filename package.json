@@ -20,6 +20,6 @@
 	"devDependencies": {
 		"@axe-core/cli": "^4.13.0",
 		"@wordpress/scripts": "^36.0.0",
-		"sass": "^1.105.0"
+		"sass": "^1.106.1"
 	}
 }
